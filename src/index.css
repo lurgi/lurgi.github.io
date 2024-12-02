@@ -1,0 +1,21 @@
+/* a태그 초기화*/
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+a:visited {
+  color: inherit;
+}
+
+a:hover,
+a:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+a:active {
+  text-decoration: none;
+  color: inherit;
+}

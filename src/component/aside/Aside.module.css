@@ -1,0 +1,20 @@
+@media (min-width: 1024px) {
+  .aside {
+    position: absolute;
+    transform: translateX(-26rem);
+  }
+}
+
+.aside {
+  width: 10rem;
+}
+
+.aside ul {
+  list-style: none;
+  padding: 0;
+}
+
+.aside li {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}

@@ -1,0 +1,11 @@
+@media (min-width: 1024px) {
+  .main {
+    margin-left: 2rem;
+  }
+}
+
+.main {
+  padding: 1rem;
+  width: 42rem;
+  overflow-y: auto;
+}
