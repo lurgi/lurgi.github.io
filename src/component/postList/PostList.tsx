@@ -1,16 +1,20 @@
 import { Fragment } from "react/jsx-runtime";
 import styles from "./PostList.module.css";
 import { posts, postTypes } from "../../data";
+import { Link } from "react-router";
 
 interface PostPreviewProps {
+  url: string;
   title: string;
   date: string;
 }
 
-function PostPreview({ title, date }: PostPreviewProps) {
+function PostPreview({ url, title, date }: PostPreviewProps) {
   return (
     <div className={styles.postPreview}>
-      <h3>{title}</h3>
+      <Link to={url}>
+        <h3>{title}</h3>
+      </Link>
       <p>{date}</p>
     </div>
   );
@@ -26,7 +30,7 @@ function PostPartList({ type, posts }: PostListPart) {
     <div className={styles.postPartList}>
       <h2>{type}</h2>
       {posts.map((post) => (
-        <PostPreview key={post.id} title={post.title} date={post.date} />
+        <PostPreview url={`/${post.type}/${post.fileName}`} key={post.id} title={post.title} date={post.date} />
       ))}
     </div>
   );

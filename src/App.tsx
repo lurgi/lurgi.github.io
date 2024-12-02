@@ -1,6 +1,7 @@
 import { createHashRouter, RouterProvider } from "react-router";
 import Layout from "./component/layout/Layout";
 import PostList from "./component/postList/PostList";
+import PostDetail from "./component/postDetail/PostDetail";
 
 function App() {
   const router = createHashRouter([
@@ -13,10 +14,10 @@ function App() {
           path: "/:postType",
           element: <PostList />,
         },
-        // {
-        //   path: "/:postType/:id",
-        //   element: <Post />,
-        // },
+        {
+          path: "/:postType/:postFileName",
+          element: <PostDetail />,
+        },
       ],
     },
   ]);

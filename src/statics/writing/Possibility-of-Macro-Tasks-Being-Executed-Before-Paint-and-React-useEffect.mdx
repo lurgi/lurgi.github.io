@@ -1,0 +1,94 @@
+# Paint 이전 Macro Task가 실행될 가능성과 React의 useEffect
+
+이전 아티클에서 useEffect는 macro Task를 통해 Paint 직후 실행됨을 시사하는 아티클을 작성하였습니다.
+
+[[React] useLayoutEffect와 useEffect](https://lurgi.tistory.com/207)
+
+추가적으로 부족한 부분을 공부해보면서 Paint 이전 useEffect의 콜백이 실행될 가능성에 대해서 공부해보려 합니다!!!
+
+[useEffect sometimes fires before paint](https://thoughtspile.github.io/2021/11/15/unintentional-layout-effect/)
+
+해당 아티클을 접하고, 내용을 추가해야 될 부분이 있어 적어봅니다.
+
+위 아티클의 내용을 요약하자면 다음과 같습니다
+
+**useLayoutEffect에서 상태를 업데이트 하게 된다면, useEffect가 Paint 이전에 호출되는 것 처럼 동작할 수 있습니다.**
+
+일단 React에서 useEffect는 **Message Channel**을 이용합니다. setTimeout이 아니라요. 하지만 Message Channel 역시 **Macro Task Queue**에서 관리됩니다!
+
+[HTML Standard](https://html.spec.whatwg.org/#event-loop)
+
+## 1️⃣ Macro Task가 Paint이전 실행될 가능성
+
+❗️ HTML Standard를 통해서 최대한 이해하려 해보았지만, 많이 어려운 부분이 있어 GPT와 함께 대략적으로 **이벤트 루프와 렌더링의 상관 관계**에 대해서 이해하려 노력하였습니다! 따라서 **잘못된 정보가 포함**되어있을 수 있습니다.
+
+우선 Tick의 개념부터 짚고 넘어가겠습니다.
+
+**Tick** 은 이벤트 루프가 한 번 **실행 가능한 태스크를 선택하고 실행한 뒤 마이크로태스크 큐를 비우는** 단위 과정입니다. 간단히 말해, 이벤트 루프가 한 사이클을 처리하는 최소 단위를 의미합니다.
+
+하지만, **렌더링 루프는 주사율에 맞춰 실행**됩니다. 60FPS의 주사율의 경우 16.66666…ms에 맞춰 렌더링 루프가 실행됩니다. (매 16.666…ms 마다 실행된다는 말은 아닙니다.)
+
+렌더링 루프와 이벤트 루프는 **병렬적으로 실행**됩니다. 따라서 **이벤트 루프의 Tick과 렌더링 루프의 주기가 맞지 않는 경우**도 있습니다.
+
+## 2️⃣ 그렇다면 렌더링 주기가 맞지 않는 경우는 어떤 경우가 있을까?
+
+[HTML Standard](https://html.spec.whatwg.org/#event-loop-processing-model)
+
+*The step labeled Filter non-renderable documents prevents the user agent from updating the rendering when it is unable to present new content to the user.*
+
+*The step labeled Unnecessary rendering prevents the user agent from updating the rendering when there's no new content to draw.*
+
+*This step enables the user agent to prevent the steps below from running for other reasons, for example, to ensure certain [tasks](https://html.spec.whatwg.org/#concept-task) are executed immediately after each other, with only [microtask checkpoints](https://html.spec.whatwg.org/#perform-a-microtask-checkpoint) interleaved (and without, e.g., [animation frame callbacks](https://html.spec.whatwg.org/#run-the-animation-frame-callbacks) interleaved). Concretely, a user agent might wish to coalesce timer callbacks together, with no intermediate rendering updates.*
+
+위 글을 해석하면 다음과 같습니다.
+
+***"렌더링 불가능 문서 필터링(Filter non-renderable documents)"으로 명명된 단계는, 사용자 에이전트가 사용자에게 새로운 콘텐츠를 표시할 수 없는 경우 렌더링 업데이트를 방지합니다.***
+
+***"불필요한 렌더링(Unnecessary rendering)"으로 명명된 단계는, 그릴 새로운 콘텐츠가 없을 때 사용자 에이전트가 렌더링 업데이트를 방지합니다.***
+
+***이 단계는 사용자 에이전트가 이후 단계의 실행을 다른 이유로 중단할 수 있도록 합니다. 예를 들어, 특정 태스크가 서로 바로 이어서 실행되도록 보장하면서, 중간에 마이크로태스크 점검(microtask checkpoints)만 삽입하고 애니메이션 프레임 콜백(animation frame callbacks)과 같은 중간 렌더링 업데이트는 삽입하지 않습니다.***
+
+***구체적으로, 사용자 에이전트는 타이머 콜백(timer callbacks)을 병합(coalesce)하고, 중간 렌더링 업데이트 없이 실행하려 할 수 있습니다.***
+
+요약하자면, 렌더링 최적화를 위해 렌더링 업데이트를 실행하지 않게 되고, 이 때문에 이벤트 루프의 하나의 Tick을 우선 실행할 가능성을 시사합니다.
+
+즉 사용자 입장에서 **Paint가 일어나기 이전 Macro Task가 실행될 수 있음**을 의미하는 것이죠!
+
+그렇다면 그런 상황은 어떤 상황일까요?
+
+### ☑️ **애니메이션 프레임의 타이밍 지연**
+
+requestAnimationFrame 때문에 Paint가 지연될 수 있음에 대한 추론을 적어보려고 합니다.
+
+위 HTML Standard에 따르면 **Paint 지연에 따른 MacroTask의 실행을 시사**한다고 했습니다.
+
+**requestAnimationFrame의 경우 주사율에 맞춰 Paint 이전에 실행**되는 함수이고, 따라서 해당 메서드가 실행됨에 따라 **주사율에 맞지 않게 실행되지 않음**으로, **Paint 발생이 지연**될 수 있다는 것입니다.
+
+즉 60FPS의 환경에서 16.666…ms 타이밍에 맞춰 메서드 실행이 되지 않아, MacroTask가 우선 실행될 수 있음을 추론할 수 있습니다.
+
+## 3️⃣ React의 useEffect는 어떻게 만들어졌을까?
+
+[React: How does React make sure that useEffect is called after the browser has had a chance to paint?](https://stackoverflow.com/questions/56727477/react-how-does-react-make-sure-that-useeffect-is-called-after-the-browser-has-h/56727837#56727837)
+
+위 아티클에 따르면, useEffect는 **requestAnimationFrame과 MessageChannel을 이용한 트릭을 이용**해 setTimeout보다 안전하게 실행되고 있다고 말합니다.
+
+```tsx
+const channel = new MessageChannel();
+
+ channel.port1.onmessage = function() {
+  console.log("after repaint");
+ };
+
+ requestAnimationFrame(function () {
+   console.log("before repaint");
+   channel.port2.postMessage(undefined);
+ });
+```
+
+**MessageChannel을 만들고, 이를 requestAnimationFrame에서 콜백으로 실행**시킴으로써, **Paint 주기에 정확히 맞춰 실행**되도록 만들었다는 걸 알 수 있습니다!
+
+## ❗️정리해보자!
+
+1. **브라우저의 Paint지연이 발생**한다면 **이벤트 루프의 Queue를 우선 실행**함으로써 Task가 Paint 이전 실행될 수 있음.
+2. React는 setTimeout을 사용하여 발생할 수 있는 Paint 이전 실행을 **MessageChannel과 requestAnimationFrame을 통해 방지**하였음.
+3. 하지만 **useLayoutEffect에서 State를 변경**한다면 Paint이전 **useEffect의 콜백함수가 실행**될 수 있음. **useLayoutEffect는 상태가 아닌 화면 애니메이션에만 관여할 것.**
