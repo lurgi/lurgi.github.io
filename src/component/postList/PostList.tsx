@@ -1,7 +1,7 @@
 import { Fragment } from "react/jsx-runtime";
 import styles from "./PostList.module.css";
 import { posts, postTypes } from "../../data";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 
 interface PostPreviewProps {
   url: string;
@@ -37,13 +37,19 @@ function PostPartList({ type, posts }: PostListPart) {
 }
 
 export default function PostList() {
+  const { postType } = useParams() as { postType: PostType };
+
   return (
     <div className={styles.postList}>
-      {postTypes.map((key) => (
-        <Fragment key={key}>
-          <PostPartList type={key} posts={posts[key]} />
-        </Fragment>
-      ))}
+      {postType ? (
+        <PostPartList type={postType} posts={posts[postType]} />
+      ) : (
+        postTypes.map((key) => (
+          <Fragment key={key}>
+            <PostPartList type={key} posts={posts[key]} />
+          </Fragment>
+        ))
+      )}
     </div>
   );
 }

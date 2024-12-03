@@ -8,11 +8,11 @@ export default function Aside() {
       <nav>
         <ul>
           <li>
-            <Link to={"/"}>Park Jeong Woo</Link>
+            <Link to={"/"}>Park Jeong Woo (lurgi)</Link>
           </li>
           {postTypes.map((type) => (
             <li key={type}>
-              <Link to={"/"}>{type}</Link>
+              <Link to={`/${type}`}>{type}</Link>
             </li>
           ))}
         </ul>
