@@ -1,3 +1,7 @@
+body {
+  margin: 0;
+}
+
 /* a태그 초기화*/
 a {
   text-decoration: none;

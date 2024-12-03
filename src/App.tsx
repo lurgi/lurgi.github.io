@@ -1,5 +1,6 @@
 import { createHashRouter, RouterProvider } from "react-router";
 import Layout from "./component/layout/Layout";
+import Home from "./component/home/Home";
 import PostList from "./component/postList/PostList";
 import PostDetail from "./component/postDetail/PostDetail";
 
@@ -9,7 +10,7 @@ function App() {
       path: "/",
       element: <Layout />,
       children: [
-        { path: "/", element: <PostList /> },
+        { path: "/", element: <Home /> },
         {
           path: "/:postType",
           element: <PostList />,

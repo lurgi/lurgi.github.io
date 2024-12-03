@@ -1,11 +1,12 @@
 @media (min-width: 1024px) {
   .aside {
-    position: absolute;
-    transform: translateX(-26rem);
+    position: fixed;
+    transform: translateX(-28rem);
   }
 }
 
 .aside {
+  margin-top: 1rem;
   width: 10rem;
 }
 
