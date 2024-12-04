@@ -5,6 +5,8 @@
 }
 
 .main {
+  box-sizing: border-box;
   padding: 1rem;
-  width: 42rem;
+  max-width: 42rem;
+  width: 100vw;
 }
