@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import type { MDXComponents } from "mdx/types.js";
 import FancyLink from "../MDXComponents/FancyLink/FancyLink";
 import FancyCode from "../MDXComponents/FancyCode/FancyCode";
+import FancyImage from "../MDXComponents/FancyImage/FancyImage";
 
 function dynamicImportMDX(type: PostType, fileName: string) {
   const modules = (() => {
@@ -28,7 +29,7 @@ export default function PostDetail() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <MDX components={{ a: FancyLink, code: FancyCode }} />
+      <MDX components={{ a: FancyLink, code: FancyCode, img: FancyImage }} />
     </Suspense>
   );
 }
