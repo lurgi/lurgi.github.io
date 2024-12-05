@@ -5,6 +5,7 @@ import type { MDXComponents } from "mdx/types.js";
 import FancyLink from "../MDXComponents/FancyLink/FancyLink";
 import FancyCode from "../MDXComponents/FancyCode/FancyCode";
 import FancyImage from "../MDXComponents/FancyImage/FancyImage";
+import Bat from "../loading/bat/Bat";
 
 function dynamicImportMDX(type: PostType, fileName: string) {
   const modules = (() => {
@@ -28,7 +29,7 @@ export default function PostDetail() {
   const MDX = dynamicImportMDX(postType, postFileName);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Bat />}>
       <MDX components={{ a: FancyLink, code: FancyCode, img: FancyImage }} />
     </Suspense>
   );

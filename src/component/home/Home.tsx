@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import styles from "./Home.module.css";
 import { posts, postTypes } from "../../data";
 import PostPreview from "../preview/PostPreview";
+import Bat from "../loading/bat/Bat";
 
 interface PostListPart {
   type: PostType;
@@ -22,7 +23,10 @@ function PostPartList({ type, posts }: PostListPart) {
 export default function Home() {
   return (
     <>
-      <div style={{ margin: "10rem 0rem" }}>🐶안녕하세요!✋ 나중에 이곳에 소개가 들어갈거에요!</div>
+      <div style={{ margin: "10rem 0rem" }}>
+        <Bat />
+        🐶안녕하세요!✋ 나중에 이곳에 소개가 들어갈거에요!
+      </div>
       <div className={styles.postList}>
         {postTypes.map((key) => (
           <Fragment key={key}>
