@@ -1,5 +1,6 @@
 import { ComponentType, lazy, Suspense } from "react";
 import { useParams } from "react-router";
+import styles from "./PostDetail.module.css";
 
 import type { MDXComponents } from "mdx/types.js";
 import FancyLink from "../MDXComponents/FancyLink/FancyLink";
@@ -30,7 +31,9 @@ export default function PostDetail() {
 
   return (
     <Suspense fallback={<Bat />}>
-      <MDX components={{ a: FancyLink, code: FancyCode, img: FancyImage }} />
+      <div className={styles["fade-in"]}>
+        <MDX components={{ a: FancyLink, code: FancyCode, img: FancyImage }} />
+      </div>
     </Suspense>
   );
 }
