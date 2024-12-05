@@ -11,10 +11,12 @@ import Bat from "../loading/bat/Bat";
 function dynamicImportMDX(type: PostType, fileName: string) {
   const modules = (() => {
     switch (type) {
-      case "Writing":
-        return import.meta.glob("../../statics/writing/*.mdx");
+      case "Development":
+        return import.meta.glob("../../statics/development/*.mdx");
       case "Reading":
         return import.meta.glob("../../statics/reading/*.mdx");
+      case "Insights":
+        return import.meta.glob("../../statics/insights/*.mdx");
     }
   })() as Record<string, () => Promise<{ default: ComponentType<MDXComponents> }>>;
 

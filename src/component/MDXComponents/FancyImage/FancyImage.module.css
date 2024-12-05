@@ -5,8 +5,8 @@
 }
 
 .responsive-image {
-  max-height: calc(80vh);
-  height: 400px;
+  max-height: calc(50vh);
+  height: 360px;
   max-width: 100%;
   width: auto;
   object-fit: contain;
