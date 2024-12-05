@@ -12,14 +12,14 @@ export default function FancyImage(props: FancyImageProps) {
 
   return (
     isError || (
-      <div className={styles["image-container"]}>
+      <span className={styles["image-container"]}>
         <img
           className={`${styles["responsive-image"]} ${isLoading && styles["image-loading"]}`}
           onLoad={() => setIsLoading(false)}
           onError={() => setIsError(true)}
           {...props}
         />
-      </div>
+      </span>
     )
   );
 }
