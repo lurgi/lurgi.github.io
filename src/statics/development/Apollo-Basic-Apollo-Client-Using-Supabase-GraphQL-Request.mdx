@@ -1,0 +1,326 @@
+# [Apollo Basic] Apollo Client를 이용하여 Supabase GraphQL 요청 보내기
+
+![thumb](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FRi9lm%2FbtsKX68yrKC%2FLK1nEtDOCkRbSLQB3qeyS0%2Fimg.jpg)
+
+이전 아티클에서는 Supabase와 Apollo Client의 기본적인 Setting에 대한 글을 작성하였습니다.
+
+이번 아티클과 내용이 이어집니다!! 참고하실 분들은 아래 링크를! ⤵️
+
+[[Settings] GraphQL과 Supabase, Apollo Client 설정](https://lurgi.tistory.com/209)
+
+본격적으로 Apollo Client를 이용하여 query하고 mutate하는 방법을 소개하도록 하겠습니다.
+
+이번 예제 코드는 모두 Supabase DB를 사용하고, Supabase에서 제공하는 GraphQL API를 사용하였습니다.
+
+[GraphQL | Supabase Docs](https://supabase.com/docs/guides/graphql)
+
+❗️우선 Supabase에서 Test라는 Table을 만들었고, 몇가지 Test 데이터를 추가한 상태임을 알려드려요!
+
+❗️추가적으로 Supabase에서는 GraphQL Playground인 GraphiQL기능을 제공합니다. 여기서 쿼리들을 실험해볼 수 있기 때문에, 우선적으로 코드를 작성하고 복붙하는 방식을 취했습니다!
+
+```bash
+Supabase Dashbaord -> Project -> API Docs (사이드바) -> GraphiQL
+```
+
+Supabase의 GraphQL구조는 특이합니다. 이는 Relay-Style Connections을 따르는 것입니다.
+
+[Relay-Style Connections and Pagination](https://www.apollographql.com/docs/graphos/schema-design/guides/relay-style-connections)
+
+쿼리를 작성하면서 나오는 `-Collection`, `edges`, `node` 등은 이 컨벤션을 따르는 것입니다.
+
+## 1️⃣ Apollo Client의 useQuery
+
+GraphQL을 이용해 query하는 로직을 작성해보도록 하겠습니다.
+
+기본적으로 Apollo Client를 통해 query하는 `useQuery` 훅은 Tanstack Query와도 유사한데요, 기본적인 방식은 다음과 같습니다.
+
+```jsx
+const { loading, error, data, refetch } = useQuery(GET_DOG_PHOTO, {
+  variables: { breed },
+  pollInterval: 500,
+});
+```
+
+[Queries](https://www.apollographql.com/docs/react/data/queries)
+
+Test라는 Table을 추가하면, 기본적으로 여러 필드를 추가적으로 정의하는데요, Test들의 집합인 testCollection을 제공합니다. 내부 edges는 node들로 구성되었는데요, 바로 이 node가 Test 입니다.
+
+```tsx
+export const GET_TEST = gql`
+  query GetTests {
+    testCollection {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+```
+
+또한 Codegen을 이용하여 받아온 타입을 이용해 Response 타입을 지정할 수 있습니다.
+
+```tsx
+import { Query } from "./graphql";
+
+// Client에서 Response를 지정함에 따라서 각 query에 타입설정을 다 해줘야 편하게 사용할 수 있다.
+export type GetTestResponse = Pick<Query, "testCollection">;
+```
+
+이렇게 만들어진 query와 useQuery를 이용하여 쉽게 데이터를 받아올 수 있습니다.
+
+```tsx
+import { useQuery } from "@apollo/client/index.js";
+import { GET_TEST, GetTestResponse } from "src/gql/queries";
+
+export default function Test() {
+  const { data, loading, error } = useQuery<GetTestResponse>(GET_TEST);
+
+  if (loading) return <div>Loading</div>;
+  if (error) return <div>Error</div>;
+
+  return (
+    <div>
+      {data?.testCollection?.edges.map(({ node }) => (
+        <div key={node.id}>{node.name}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## 2️⃣ Apollo Client의 useMutation
+
+[Mutations in Apollo Client](https://www.apollographql.com/docs/react/data/mutations)
+
+기본적으로 Supabase의 Resolver에서 제공하는 Mutate 스키마는 `insert` `delete` `update` 입니다.
+
+공식문서에서 소개하는 `useMutation`은 다음과 같습니다.
+
+```jsx
+const [mutateFunction, { data, loading, error }] = useMutation(INCREMENT_COUNTER);
+```
+
+순서대로 살펴보겠습니다.
+
+### ☑️ Insert
+
+Supabase GraphQL에서 제공하는 Insert를 통해 우선적으로 GraphQL 쿼리 구문을 만들어 줍니다.
+
+```jsx
+export const INSERT_TEST = gql`
+  mutation InsertTest($name: String!, $createdAt: Datetime!) {
+    insertIntoTestCollection(objects: { name: $name, createdAt: $createdAt }) {
+      records {
+        id
+        name
+        createdAt
+      }
+    }
+  }
+`;
+```
+
+Supabase에서는 `Test`라는 테이블을 만들면, `insertIntoTestCollection` 를 제공합니다.
+
+해당 쿼리를 이용해 `insert` 할 수 있습니다.
+
+```tsx
+import { useMutation } from "@apollo/client/index.js";
+import { INSERT_TEST, InsertTestResponse } from "src/gql/queries";
+
+// ...
+const [insertTest, { data, loading, error }] = useMutation<InsertTestResponse>(INSERT_TEST);
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    await insertTest({
+      variables: { name, createdAt: new Date().toISOString() },
+    });
+    alert("Test record inserted successfully!");
+  } catch (err) {
+    console.error("Error inserting test:", err);
+  }
+};
+```
+
+### ☑️ Delete
+
+```tsx
+export const DELETE_TEST = gql`
+  mutation DeleteTest($id: Int!) {
+    deleteFromTestCollection(filter: { id: { eq: $id } }) {
+      affectedCount
+    }
+  }
+`;
+```
+
+delete 로직은 Supabase에서 제공하는 `deleteFromTestCollection`를 사용해 작성할 수 있습니다.
+
+affectedCount는 GraphQL 스키마의 **수정된 데이터 수**를 의미합니다.
+
+```tsx
+//...
+const [deleteTest, { data, loading }] = useMutation<DeleteTestResponse>(DELETE_TEST);
+
+const handleDelete = async (id: number) => {
+  if (loading) return;
+
+  await deleteTest({ variables: { id } });
+};
+```
+
+Insert 로직과 동일한 형태로 작성할 수 있습니다.
+
+### ☑️ Update
+
+```tsx
+export const UPDATE_TEST = gql`
+  mutation UpdateTest($id: Int!, $newName: String!) {
+    updateTestCollection(filter: { id: { eq: $id } }, set: { name: $newName }) {
+      affectedCount
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
+```
+
+update역시 Supabase에서 제공하는 `updateTestCollection` 를 통해서 작성할 수 있습니다.
+
+이후 추가적 로직은 다른 mutate와 동일한 형태로 작성할 수 있습니다.
+
+GraphQL의 사용법만 알면 단순히 fetch하는 로직과 크게 다르지 않다는 것을 알 수 있습니다.
+
+## 3️⃣ Optimistic UI. 낙관적 UI
+
+Apollo Client에서 낙관적 Update는 `optimisticResponse` 와 `update` 메서드를 통해서 구현할 수 있습니다.
+
+해당 로직을 구현을 알아보기 위해서 Test라는 데이터를 Delete시 어떻게 낙관적 업데이트를 진행하는지 살펴보도록 하겠습니다.
+
+우선 아까전 Delete 로직을 그대로 가져옵시다.
+
+```tsx
+//...
+const [deleteTest, { data, loading }] = useMutation<DeleteTestResponse>(DELETE_TEST);
+
+const handleDelete = async (id: number) => {
+  if (loading) return;
+
+  await deleteTest({ variables: { id } });
+};
+```
+
+여기서 mutate 함수는 deleteTest입니다. 해당 로직대로라면 낙관적 업데이트는 이루어지지 않습니다.
+
+### ☑️ optimisticResponse
+
+`optimisticResponse` 속성을 통해 useMutation의 응답값을 예상하여 반환할 수 있는데요, 이를 살펴보겠습니다.
+
+```tsx
+//...
+const handleDelete = async (id: number) => {
+  if (loading) return;
+
+  await deleteTest({
+    variables: { id },
+    optimisticResponse: {
+      deleteFromTestCollection: {
+        __typename: "TestDeleteResponse",
+        affectedCount: Math.min(0, (data?.testCollection?.edges.length || 0) - 1),
+        records: data?.testCollection?.edges.map(({ node }) => node) || [],
+      },
+    }, // optimisticResponse를 작성해준다.
+  });
+};
+```
+
+`optimisticResponse` 값을 설정하여 `useMutation`의 응답값이 반환되기 이전 **미리 응답받은 것 처럼 동작**하게 만들 수 있습니다.
+
+만약 별도의 쿼리를 수정하지 않는다면 이 속성 하나만으로 Optimistic UI를 구현할 수 있겠습니다.
+
+### ☑️ update 메서드
+
+위 Optimistic Response값을 설정해주었지만, Test를 Get해온 데이터에는 영향을 주지 못합니다. 만약 Test가 삭제됨에 따라 새롭게 Test를 get해오기 위해선 다음 속성을 사용할 수 있습니다.
+
+```tsx
+await deleteTest({
+  variables: { id },
+  refetchQueries: [{ query: GET_TEST }],
+});
+```
+
+하지만 refetch를 통해 별도의 API를 수정하는 것이 아닌, `Mutatation` 응답값에 따라서 캐시 데이터를 업데이트할 수 있습니다.
+
+```tsx
+await deleteTest({
+  variables: { id },
+  update(cache) {
+    const existingData = cache.readQuery<GetTestResponse>({
+      query: GET_TEST,
+    });
+
+    if (existingData?.testCollection) {
+      const updatedEdges = existingData.testCollection.edges.filter((edge) => edge.node.id !== id);
+
+      cache.writeQuery({
+        query: GET_TEST,
+        data: {
+          testCollection: {
+            ...existingData.testCollection,
+            edges: updatedEdges,
+          },
+        },
+      });
+    }
+  },
+});
+```
+
+`GET_TEST` 에 해당하는 쿼리에 해당하는 캐시를 수정할 수 있습니다.
+
+하지만 위 update메서드 하나만으론 Optimistic UI를 구현할 수 없습니다.
+
+해당 메서드는 mutation이 완료된 이후 실행되는 메서드이기 때문입니다. 따라서 `optimisticResponse` 속성값과 함께 사용하여, 낙관적 응답값을 생성해줆으로써 Optimistic UI를 구현할 수 있습니다.
+
+```tsx
+await deleteTest({
+  variables: { id },
+  refetchQueries: [{ query: GET_TEST }],
+  optimisticResponse: {
+    deleteFromTestCollection: {
+      __typename: "TestDeleteResponse",
+      affectedCount: Math.min(0, (data?.testCollection?.edges.length || 0) - 1),
+      records: data?.testCollection?.edges.map(({ node }) => node) || [],
+    },
+  },
+  update(cache) {
+    const existingData = cache.readQuery<GetTestResponse>({
+      query: GET_TEST,
+    });
+
+    if (existingData?.testCollection) {
+      const updatedEdges = existingData.testCollection.edges.filter((edge) => edge.node.id !== id);
+
+      cache.writeQuery({
+        query: GET_TEST,
+        data: {
+          testCollection: {
+            ...existingData.testCollection,
+            edges: updatedEdges,
+          },
+        },
+      });
+    }
+  },
+});
+```
+
+여기까지 Apollo Client를 이용하여 query를 get, insert, update, delete하는 기본적은 CRUD하는 로직들을 살펴봤습니다.
