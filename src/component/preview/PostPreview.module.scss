@@ -1,0 +1,23 @@
+.postPreview {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+
+  & > a {
+    width: 75%;
+  }
+}
+
+.preview-title {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-date {
+  color: #666;
+  font-size: 1rem;
+}

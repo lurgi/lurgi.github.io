@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import styles from "./PostPreview.module.css";
+import styles from "./PostPreview.module.scss";
 
 interface PostPreviewProps {
   url: string;
@@ -11,9 +11,10 @@ export default function PostPreview({ url, title, date }: PostPreviewProps) {
   return (
     <div className={styles.postPreview}>
       <Link to={url}>
-        <h3>{title}</h3>
+        <div className={styles["preview-title"]}>{title}</div>
       </Link>
-      <p>{date}</p>
+
+      <small className={styles["preview-date"]}>{date}</small>
     </div>
   );
 }
