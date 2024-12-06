@@ -1,3 +1,7 @@
+.loading-container {
+  margin-top: 30vh;
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0.01;

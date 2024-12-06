@@ -32,7 +32,13 @@ export default function PostDetail() {
   const MDX = dynamicImportMDX(postType, postFileName);
 
   return (
-    <Suspense fallback={<Bat />}>
+    <Suspense
+      fallback={
+        <div className={styles["loading-container"]}>
+          <Bat />
+        </div>
+      }
+    >
       <div className={styles["fade-in"]}>
         <MDX components={{ a: FancyLink, code: FancyCode, img: FancyImage }} />
       </div>
