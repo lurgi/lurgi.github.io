@@ -19,3 +19,19 @@
   margin-bottom: 1rem;
   font-size: 1rem;
 }
+
+.hyper-link-container {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hyper-link {
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.99;
+  }
+}
