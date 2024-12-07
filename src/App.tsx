@@ -6,23 +6,28 @@ import PostDetail from "./component/postDetail/PostDetail";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
-  const router = createHashRouter([
+  const router = createHashRouter(
+    [
+      {
+        path: "/",
+        element: <Layout />,
+        children: [
+          { path: "/", element: <Home /> },
+          {
+            path: "/:postType",
+            element: <PostList />,
+          },
+          {
+            path: "/:postType/:postFileName",
+            element: <PostDetail />,
+          },
+        ],
+      },
+    ],
     {
-      path: "/",
-      element: <Layout />,
-      children: [
-        { path: "/", element: <Home /> },
-        {
-          path: "/:postType",
-          element: <PostList />,
-        },
-        {
-          path: "/:postType/:postFileName",
-          element: <PostDetail />,
-        },
-      ],
-    },
-  ]);
+      basename: import.meta.env.BASE_URL,
+    }
+  );
 
   return (
     <QueryClientProvider client={new QueryClient()}>
