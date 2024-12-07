@@ -1,0 +1,44 @@
+.photoPartList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.photoPartList h2 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.photo_wrapper {
+  object-fit: contain;
+}
+
+.bat_container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.photo {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .photos_container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 769px) {
+  .photos_container {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.photos_container {
+  width: 100%;
+  display: grid;
+  gap: 0.4rem;
+}

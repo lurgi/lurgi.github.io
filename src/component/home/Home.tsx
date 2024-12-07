@@ -3,6 +3,9 @@ import { posts, postTypes } from "../../data";
 import PostPreview from "../preview/PostPreview";
 import Introduce from "../introduce/Introduce";
 import { Link } from "react-router";
+import PhotoList from "../photoList/PhotoList";
+import { Suspense } from "react";
+import Bat from "../loading/bat/Bat";
 
 interface PostListPart {
   type: PostType;
@@ -31,6 +34,10 @@ export default function Home() {
         {postTypes.map((key) => (
           <PostPartList type={key} key={key} posts={posts[key].slice(0, 5)} />
         ))}
+
+        <Suspense fallback={<Bat />}>
+          <PhotoList />
+        </Suspense>
       </div>
     </>
   );
