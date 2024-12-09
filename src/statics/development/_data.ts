@@ -1,6 +1,12 @@
 const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
+    title: "Zero Run Time CSS 도구들은 왜 컴포넌트 선언 형식이 아닐까?",
+    fileName: "Why-Are-Zero-Run-Time-CSS-Tools-Not-Component-Based",
+    date: "2024-12-09",
+  },
+  {
+    type: "Development",
     title: "Paint 이전 Macro Task가 실행될 가능성과 React의 useEffect",
     fileName: "Possibility-of-Macro-Tasks-Being-Executed-Before-Paint-and-React-useEffect",
     date: "2024-11-28",
