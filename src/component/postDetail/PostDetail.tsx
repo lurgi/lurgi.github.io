@@ -7,6 +7,7 @@ import FancyLink from "../MDXComponents/FancyLink/FancyLink";
 import FancyCode from "../MDXComponents/FancyCode/FancyCode";
 import FancyImage from "../MDXComponents/FancyImage/FancyImage";
 import Bat from "../loading/bat/Bat";
+import CustomGiscus from "../customGiscus/CustomGiscus";
 
 function dynamicImportMDX(type: PostType, fileName: string) {
   const modules = (() => {
@@ -32,16 +33,19 @@ export default function PostDetail() {
   const MDX = dynamicImportMDX(postType, postFileName);
 
   return (
-    <Suspense
-      fallback={
-        <div className={styles["loading-container"]}>
-          <Bat />
+    <div className={styles.postDetailContainer}>
+      <Suspense
+        fallback={
+          <div className={styles["loading-container"]}>
+            <Bat />
+          </div>
+        }
+      >
+        <div className={styles["fade-in"]}>
+          <MDX components={{ a: FancyLink, code: FancyCode, img: FancyImage }} />
         </div>
-      }
-    >
-      <div className={styles["fade-in"]}>
-        <MDX components={{ a: FancyLink, code: FancyCode, img: FancyImage }} />
-      </div>
-    </Suspense>
+      </Suspense>
+      <CustomGiscus />
+    </div>
   );
 }
