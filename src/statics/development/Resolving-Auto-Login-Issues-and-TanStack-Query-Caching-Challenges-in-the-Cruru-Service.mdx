@@ -1,0 +1,72 @@
+# 크루루 서비스의 자동 로그인 문제와 Tanstack Query 캐싱 이슈 해결기
+
+![thumb](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcBndZa%2FbtsKQHvyhGg%2FjAZGiEaWdbFwFe7gHzVqS1%2Fimg.jpg)
+
+이번 스프린트에서 크루루 서비스는 자동 로그인 기능을 구현했습니다. 하지만 정상적으로 동작하지 않았고, 정확한 원인을 파악하기 어려운 상황이었습니다. 클라이언트 측에서 에러가 던져졌으나, 네트워크 요청은 200 응답을 보이는 이상한 현상이 발생했습니다. 서버와 클라이언트 중 어디서 문제가 발생했는지 알 수 없었기 때문에, 여러 방법을 통해 디버깅을 진행했습니다.
+
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fc6mdLw%2FbtsKR4xoFAK%2FiIGxPqk63LCO3UkJwIKLb1%2Fimg.png)
+서버에서 내려주는 에러를 APIClient를 통해서 에러를 발생한다.
+
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbpGS1R%2FbtsKTAByeuj%2FJBWxW9jCT3CgGhvfo6eKpk%2Fimg.png)
+디버깅을 위해 APIClient에서 console.log()를 사용하여 디버깅
+
+![image](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbWyPQ8%2FbtsKRSYaVG1%2FRHuMS019CeJviA1GfrZYHk%2Fimg.png)
+에러를 던지지만 console이 찍히지 않는다.
+
+APIClient를 직접 점검했지만, 별다른 문제는 보이지 않았고, 심지어 에러를 throw하는 코드 주변에 `console.log`를 추가해도 아무것도 찍히지 않았습니다. 이처럼 이상한 증상을 기반으로 저는 Tanstack Query의 캐싱 메커니즘이 원인이 아닐까 생각했고, Tanstack Query Dev Tool을 활용해 확인한 결과, 예상대로 에러 **데이터를 캐싱하고 이후에도 해당 데이터를 재사용하는 것이 문제임을 발견**했습니다.
+
+---
+
+## Stale Time을 0으로 설정했는데도 문제가 발생한 이유
+
+크루루 서비스는 ATS(지원자 관리 시스템) 특성상 지원자의 변경사항이 실시간으로 반영되어야 하므로, 백오피스 화면의 Stale Time을 0으로 설정했습니다. 이렇게 하면 캐싱된 데이터가 있더라도 항상 최신 데이터를 요청하게 되어 실시간 업데이트가 보장됩니다. 그러나 **Tanstack Query가 에러까지 캐싱하여 이후 요청에서도 동일한 에러 데이터를 사용하는 방식이 낯설게 다가왔습니다.**
+
+---
+
+## Tanstack Query가 에러 데이터를 캐싱하는 이유는? 그리고 멱등성과의 관계
+
+초기에는 이 문제가 멱등성(idempotency)과 관련이 있다고 생각했습니다. 멱등성은 동일한 요청을 여러 번 보내더라도 서버의 상태에 변화가 없고, 같은 효과를 얻는 성질을 의미합니다. 동일한 엔드포인트에 같은 요청을 반복해서 보내므로 멱등성을 지키기 위해 캐싱을 하는 것이라 생각했습니다.
+
+하지만 멱등성에 대해 더 깊이 공부해보니, 멱등성은 반드시 **동일한 응답 값을 반환해야 한다는 뜻이 아니라**, 서버 상태가 요청으로 인해 변화하지 않아야 한다는 것을 의미한다는 것을 알게 되었습니다. 예를 들어, 멱등성을 갖는 GET 요청이 서버 상태에 따라 응답 데이터를 갱신할 수는 있지만, 요청 자체가 서버의 상태를 변경해서는 안 됩니다.
+
+지금 상황에서는 토큰 만료 여부에 따라 데이터가 달라질 수 있으므로, 서버 상태 변화가 아닌 인증 상태에 따른 응답 차이일 뿐임을 확인했습니다.
+
+---
+
+### 그렇다면, 이 문제의 핵심 원인은 무엇일까?
+
+### 문제의 흐름을 도식화하면 다음과 같습니다.
+
+![image.png](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F0aOOE%2FbtsKGH9asjk%2FoceAo5adoMtqk9s2Ay0jX0%2Fimg.png)
+
+1. 현재 크루루 서비스는 자동 로그인 시 별다른 인증 확인 절차 없이 메인 페이지로 이동하게 되어 있습니다. 토큰이 만료된 상태에서도 get 요청이 발생하면 서버는 만료된 토큰에 대해 에러를 반환합니다.
+
+   ![image.png](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FOv0Oi%2FbtsKHI64Jgc%2F2r4NCt7qzeUNrnPURk1vc0%2Fimg.png)
+
+2. 이후 로그인 시 정상적인 요청과 응답이 있음에도, 캐싱된 에러 데이터를 재사용함으로 인해 다시 메인 페이지로 리디렉션되는 문제가 발생합니다.
+
+   ![image.png](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FPLNpP%2FbtsKHxLspxI%2FYJUhQl6UTWsLSnr1m1R8ck%2Fimg.png)
+
+3. Tanstack Query가 새로운 응답을 기다리는 동안 기존 캐싱된 데이터를 표시해 사용자 경험을 향상하려는 의도로 동작하지만, 이로 인해 자동 로그인 시 버그가 발생하게 된 것입니다.
+
+---
+
+### 문제 해결 방법: 다양한 접근 시도와 최적 해결책
+
+1. **gcTime을 0으로 설정하기**
+   - 버그를 파악한 후, gcTime을 0으로 설정하여 캐싱된 데이터를 즉시 삭제하도록 설정했습니다. 그러나 이는 Tanstack Query의 강력한 캐싱 기능을 포기하는 것이기에, 사용자 경험에 부정적인 영향을 줄 수 있어 적합한 선택이라 보지 않았습니다.
+2. **페이지 간 분리 구현**
+   - 로그인 전후 페이지를 분리된 것처럼 동작하도록 구현하려 했으나, 이는 CSR 환경에서 리소스를 불필요하게 중복 요청하는 문제를 유발했습니다. 동일한 리소스를 새로 요청하면서 불필요한 로딩이 발생해 최적의 선택이 아니라고 판단했습니다.
+3. **캐싱된 데이터를 적절히 삭제하기**
+   - 가장 수동적인 방식이었지만, 로그인 상태 변경 시 캐시를 적절히 삭제해주는 방법이 가장 효과적이었습니다. 로그아웃 시 또는 에러 페이지를 통해 홈으로 이동할 때마다 캐시 데이터를 삭제해, 문제를 간단히 해결할 수 있었습니다.
+     ```jsx
+     const queryClient = useQueryClient();
+     queryClient.clear();
+     ```
+   - 사실상 클라이언트 측에서는 이 방법이 최선이었습니다. 보안을 위해 HTTPOnly 쿠키를 사용하고 있으므로, 토큰 유효성은 서버에서만 검증할 수 있습니다. 장기적으로는 인증 관련 엔드포인트를 통해 안정성을 강화하는 방향이 필요하겠지만, 추가적인 문제 발생 전까지는 이 방식으로 충분히 안정적으로 운영할 수 있을 것으로 보입니다.
+
+---
+
+### 결론
+
+이번 문제를 해결하면서 라이브러리의 작동 원리를 충분히 이해하지 않으면 디버깅에 큰 비용이 들 수 있음을 깨달았습니다. 단순히 라이브러리가 제공하는 기능을 사용하는 데 그치지 않고, **라이브러리가 문제를 해결하는 방식과 의도까지 파악하는 것**이 중요하다는 것을 배웠습니다. 이러한 경험을 바탕으로 앞으로는 더 깊이 있는 이해를 바탕으로 라이브러리를 사용할 계획입니다.

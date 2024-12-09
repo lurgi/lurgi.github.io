@@ -1,0 +1,384 @@
+# Tanstack Query의 useQuery 캐싱 매커니즘 분석하기
+
+크루루 서비스에서 알 수 없는 에러가 발생했습니다. 조사 결과, 원인은 TanStack Query의 **Error 데이터 캐싱**으로 판단되었습니다. 이 과정에서 몇 가지 의문이 들었고, 이를 탐구하면서 알게 된 내용을 공유하고자 합니다.
+
+## **❗️ 문제 상황**
+
+우리 서비스는 TanStack Query의 `staleTime`을 `0`으로 설정하여 사용하고 있었습니다. 그러나, 에러가 발생했을 때 여전히 **캐싱된 에러 데이터**를 사용하고 있었고, 이를 다시 `throw`하는 동작을 관찰할 수 있었습니다.
+
+`staleTime`이 `0`이라면 데이터가 즉시 "stale" 상태로 간주되어야 하므로, 새로운 데이터를 요청해야 한다고 생각했지만, 실제 동작은 다르게 이루어졌습니다.
+
+## **❓ 왜 TanStack Query는 Error 데이터를 캐싱할까?**
+
+TanStack Query가 **Error 데이터를 캐싱**하는 것은 기본적인 동작입니다. 이를 통해 얻을 수 있는 이점은 다음과 같습니다.
+
+1. **데이터 응답 캐싱**
+   - TanStack Query는 서버 상태를 캐싱하여 데이터를 재사용하고, 불필요한 네트워크 요청을 줄이는 데 중점을 둔 라이브러리입니다.
+   - 이는 단순히 성공적인 데이터 응답뿐만 아니라, 에러 응답도 동일하게 적용됩니다.
+2. **사용자 경험(UX) 향상**
+   - Optimistic UI를 제공하여 \***\*사용자가 요청 상태를 빠르게 확인하고, 새로고침이나 반복 요청 없이 **빠른 피드백\*\*을 받을 수 있도록 돕습니다.
+   - Optimistic UI란 캐싱된 데이터를 활용하면 화면 전환이나 재요청 시 **빠른 초기 로딩 속도**를 제공하는 것입니다.
+   - 에러 데이터도 캐싱되어 **현재 상태를 즉시 표시**할 수 있습니다.
+3. **불필요한 네트워크 요청 감소**
+   - 에러 발생 시 반복적으로 동일한 요청을 수행하지 않도록 설계되어, 네트워크 자원을 절약합니다.
+
+---
+
+## **❓문제의 핵심, `staleTime`이 `0`인데도 캐싱된 데이터를 사용하는 이유**
+
+문제를 해결하기 위해 TanStack Query의 `staleTime`과 `gcTime`의 동작 원리를 이해해야 합니다.
+
+1. `staleTime`과 캐싱 데이터
+   - `staleTime: 0`은 쿼리 데이터가 "항상 stale" 상태로 간주된다는 것을 의미합니다.
+   - 하지만 stale 상태는 **데이터를 캐시에서 제거하는 기준**이 아닙니다. 데이터를 캐시에서 읽어오고, 동시에 새로운 데이터를 fetch하도록 작동합니다.
+2. `gcTime`과 캐시 제거
+
+   - 쿼리가 구독되지 않는 상태에서 `gcTime`(기본값: 5분)이 지나야 데이터가 캐시에서 제거됩니다.
+   - 즉, 구독 중인 쿼리의 데이터는 stale 상태라도 여전히 캐시에서 유지됩니다.
+   - gc에 대해서 더 자세히 알고 싶다면 ⤵️
+
+   [가비지 컬렉션 정리](https://lurgi.tistory.com/205)
+
+3. Optimistic UI와 캐싱된 에러 데이터
+   - TanStack Query는 stale 상태에서도 캐싱된 데이터를 사용합니다. 이는 네트워크 요청을 최적화하고, 사용자 경험을 개선하려는 라이브러리의 설계 철학에서 비롯됩니다.
+   - 따라서, 에러가 발생한 후에도 캐싱된 에러 데이터가 즉시 사용되며, 이를 `throw`하는 동작이 이어질 수 있습니다.
+
+### 🚀 useQuery의 Optimistic UI 로직 매커니즘을 직접 코드를 뜯어보면서 이해하기
+
+### 1️⃣ useQuery의 기본 동작
+
+기본적인 useQuery의 결과 값은 다음과 같습니다.
+
+```tsx
+export function useBaseQuery<TQueryFnData, TError, TData, TQueryData, TQueryKey extends QueryKey>(
+  options: UseBaseQueryOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>,
+  Observer: typeof QueryObserver,
+  queryClient?: QueryClient
+): QueryObserverResult<TData, TError> {
+  //...
+
+  const [observer] = React.useState(
+    () => new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(client, defaultedOptions)
+  );
+
+  const result = observer.getOptimisticResult(defaultedOptions);
+
+  React.useSyncExternalStore(
+    React.useCallback(
+      (onStoreChange) => {
+        const unsubscribe = isRestoring ? noop : observer.subscribe(notifyManager.batchCalls(onStoreChange));
+
+        // Update result to make sure we did not miss any query updates
+        // between creating the observer and subscribing to it.
+        observer.updateResult();
+
+        return unsubscribe;
+      },
+      [observer, isRestoring]
+    ),
+    () => observer.getCurrentResult(),
+    () => observer.getCurrentResult()
+  );
+  //...
+  if (
+    getHasError({
+      result,
+      errorResetBoundary,
+      throwOnError: defaultedOptions.throwOnError,
+      query: client.getQueryCache().get<TQueryFnData, TError, TQueryData, TQueryKey>(defaultedOptions.queryHash),
+    })
+  ) {
+    throw result.error;
+  }
+  //...
+
+  return !defaultedOptions.notifyOnChangeProps ? observer.trackResult(result) : result;
+}
+```
+
+핵심이 되는 코드를 간추려 보았습니다.
+
+1. observer는 useQuery의 기초가 되는 useBaseQuery의 상태값으로 관리됩니다.
+2. result값은 observer 상태의 getOptimisticResult값을 가집니다.
+3. useSyncExternalStore에 의해 옵저버의 상태 변경을 감지하고 React 컴포넌트를 다시 렌더링하여 result값의 최신 상태를 반영합니다.
+4. getHasError가 있는 경우 결과적으로 result.error를 Throw합니다.
+5. 아니라면 defaultedOptions에 따라 observer.trackResult() 혹은 result를 return합니다.
+
+   (v4버전부터 notifyOnChangeProps 기본값은 “tracked”라는 truthy 값이므로, 우리가 받는 값은 result값입니다.)
+
+### 2️⃣ 그러면 result값은 뭘까요?
+
+```tsx
+const [observer] = React.useState(
+  () => new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(client, defaultedOptions)
+);
+
+const result = observer.getOptimisticResult(defaultedOptions);
+```
+
+result는 observer의 getOptimisticResult메서드의 결과값입니다. 따라서 QueryObserver를 뜯어보도록하겠습니다.
+
+https://github.com/TanStack/query/blob/main/packages/query-core/src/queryObserver.ts
+
+```tsx
+getOptimisticResult(
+    options: DefaultedQueryObserverOptions<
+      TQueryFnData,
+      TError,
+      TData,
+      TQueryData,
+      TQueryKey
+    >,
+  ): QueryObserverResult<TData, TError> {
+    const query = this.#client.getQueryCache().build(this.#client, options)
+
+    const result = this.createResult(query, options)
+//...
+```
+
+getOptimisticResult의 결과값은 createResult
+
+기본적으로 creteResult 함수의 반환값은 다음과 같습니다.
+
+```tsx
+const result: QueryObserverBaseResult<TData, TError> = {
+  status,
+  fetchStatus: newState.fetchStatus,
+  isPending,
+  isSuccess: status === "success",
+  isError,
+  isInitialLoading: isLoading,
+  isLoading,
+  data,
+  dataUpdatedAt: newState.dataUpdatedAt,
+  error,
+  errorUpdatedAt,
+  failureCount: newState.fetchFailureCount,
+  failureReason: newState.fetchFailureReason,
+  errorUpdateCount: newState.errorUpdateCount,
+  isFetched: newState.dataUpdateCount > 0 || newState.errorUpdateCount > 0,
+  isFetchedAfterMount:
+    newState.dataUpdateCount > queryInitialState.dataUpdateCount ||
+    newState.errorUpdateCount > queryInitialState.errorUpdateCount,
+  isFetching,
+  isRefetching: isFetching && !isPending,
+  isLoadingError: isError && !hasData,
+  isPaused: newState.fetchStatus === "paused",
+  isPlaceholderData,
+  isRefetchError: isError && hasData,
+  isStale: isStale(query, options),
+  refetch: this.refetch,
+  promise: this.#currentThenable,
+};
+
+//...
+
+const nextResult = result as QueryObserverResult<TData, TError>;
+//...
+return nextResult;
+```
+
+createReult의 코드를 살펴보면 다음과 같습니다.
+
+```tsx
+//...
+const { state } = query;
+let newState = { ...state };
+let isPlaceholderData = false;
+let data: TData | undefined;
+
+if (options._optimisticResults) {
+  const mounted = this.hasListeners();
+
+  const fetchOnMount = !mounted && shouldFetchOnMount(query, options);
+
+  const fetchOptionally = mounted && shouldFetchOptionally(query, prevQuery, options, prevOptions);
+
+  if (fetchOnMount || fetchOptionally) {
+    newState = {
+      ...newState,
+      ...fetchState(state.data, query.options),
+    };
+  }
+  if (options._optimisticResults === "isRestoring") {
+    newState.fetchStatus = "idle";
+  }
+}
+//...
+```
+
+해당 로직을 살펴보면, 마운트가 된 이후 새로 fetch를 받아온 데이터를 newState에 추가하는 로직을 확인할 수 있습니다.
+
+1. fetchState를 통해 기존 Observerd에서 fetchState를 변경하여 제공하는 구조
+2. 이렇게 Optimistic 상태 정보를 제공하는 합니다. 즉 기존 캐시된 데이터가 있고, 이 데이터에 대한 fetch를 진행했다면, 기존 Query에 state만 변경하여 newState를 제공하는 형식을 예상할 수 있었습니다.
+
+### 3️⃣ staleTime과 gcTime에 따라서는 어떻게 작동할까?
+
+Tanstack Query의 기본 옵션 값은은 staleTime의 경우 0, gcTime의 경우 5분입니다.
+
+Tanstack Query의 Query는 Removable이란 객체를 통해 만들어져있습니다.
+
+Removable은 gcTime을 관리하는 객체인데요, 다음과 같습니다.
+
+https://github.com/TanStack/query/blob/main/packages/query-core/src/removable.ts
+
+```tsx
+import { isServer, isValidTimeout } from "./utils";
+
+export abstract class Removable {
+  gcTime!: number;
+  #gcTimeout?: ReturnType<typeof setTimeout>;
+
+  destroy(): void {
+    this.clearGcTimeout();
+  }
+
+  protected scheduleGc(): void {
+    this.clearGcTimeout();
+
+    if (isValidTimeout(this.gcTime)) {
+      this.#gcTimeout = setTimeout(() => {
+        this.optionalRemove();
+      }, this.gcTime);
+    }
+  }
+
+  protected updateGcTime(newGcTime: number | undefined): void {
+    // Default to 5 minutes (Infinity for server-side) if no gcTime is set
+    this.gcTime = Math.max(this.gcTime || 0, newGcTime ?? (isServer ? Infinity : 5 * 60 * 1000));
+  }
+
+  protected clearGcTimeout() {
+    if (this.#gcTimeout) {
+      clearTimeout(this.#gcTimeout);
+      this.#gcTimeout = undefined;
+    }
+  }
+
+  protected abstract optionalRemove(): void;
+}
+```
+
+setTimeout와 optionalRemove 메서드를 통해서 가비지 컬렉팅을 하는 모습을 볼 수 있는데요, optionalRemove메서드는 Query 클래스에서 오버라이딩을 통해 구현한 모습을 볼 수 있습니다.
+
+```tsx
+//...
+  protected optionalRemove() {
+    if (!this.observers.length && this.state.fetchStatus === 'idle') {
+      this.#cache.remove(this)
+    }
+  }
+```
+
+해당 쿼리의 옵저버가 존재하지 않고, fetchStatus가 “idle”인 경우, gcTime을 통해 cache를 삭제하는 걸 볼 수 있습니다.
+
+- 쿼리의 옵저버가 존재하지 않는다는 것은 해당 쿼리를 구독하는 컴포넌트가 존재하지 않는다는 것입니다.
+- fetchStatus가 idle상태란 것은 네트워크 요청(fetching)중이 아닌 안정된 쿼리라는 것입니다.
+
+지금까지 내용으로 gcTime을 통해 쿼리가 어떻게 캐시를 삭제하는지 알았습니다.
+
+staleTime은 cache의 상태를 건들지 않습니다. 단순히 fetchState를 변경함으로써 fetch의 실행 여부를 선택할 뿐입니다.
+
+1. query.ts의 쿼리가 stale 상태인지 판단하는 메서드를 확인할 수 있습니다.
+
+```tsx
+// Query.ts
+// ...
+isStale(): boolean {
+    if (this.state.isInvalidated) {
+      return true
+    }
+
+    if (this.getObserversCount() > 0) {
+      return this.observers.some(
+        (observer) => observer.getCurrentResult().isStale,
+      )
+    }
+
+    return this.state.data === undefined
+  }
+
+  isStaleByTime(staleTime = 0): boolean {
+    return (
+      this.state.isInvalidated ||
+      this.state.data === undefined ||
+      !timeUntilStale(this.state.dataUpdatedAt, staleTime)
+    )
+  }
+
+```
+
+1. shouldFetchOnMount메서드와 shouldFetchOn내부에서 stale값을 통해 fetch 여부를 파악하게 됩니다.
+
+```tsx
+// QueryObserver.ts
+//...
+function shouldFetchOnMount(
+  query: Query<any, any, any, any>,
+  options: QueryObserverOptions<any, any, any, any, any>
+): boolean {
+  return (
+    shouldLoadOnMount(query, options) ||
+    (query.state.data !== undefined && shouldFetchOn(query, options, options.refetchOnMount))
+  );
+}
+
+function shouldFetchOn(
+  query: Query<any, any, any, any>,
+  options: QueryObserverOptions<any, any, any, any, any>,
+  field: (typeof options)["refetchOnMount"] &
+    (typeof options)["refetchOnWindowFocus"] &
+    (typeof options)["refetchOnReconnect"]
+) {
+  if (resolveEnabled(options.enabled, query) !== false) {
+    const value = typeof field === "function" ? field(query) : field;
+
+    return value === "always" || (value !== false && isStale(query, options));
+  }
+  return false;
+}
+```
+
+1. onSubscribe 함수 내부에선 stale값을 통해 fetch여부를 결정하게 됩니다.
+
+```tsx
+protected onSubscribe(): void {
+    if (this.listeners.size === 1) {
+      this.#currentQuery.addObserver(this)
+
+      if (shouldFetchOnMount(this.#currentQuery, this.options)) {
+        this.#executeFetch()
+      } else {
+        this.updateResult()
+      }
+
+      this.#updateTimers()
+    }
+}
+```
+
+## ❗️그래서 문제가 일어난 이유.
+
+staleTime을 0으로 지정하더라도, stale한 값이 사라지는 건 아닙니다. Optimistic UI를 구현하기 위해서 Tanstack Query는 우선적으로 이전의 캐싱 값을 사용하게 됩니다. 이 값이 stale한 값이어도 사용하게 됩니다. 따라서 메모리를 완전히 삭제해주는 gc를 이용해 삭제를 하는 것이 아닌 이상 해당 값을 사용하게 되는 것입니다.
+
+## 결론
+
+Tanstack Query를 직접 까보면서, 내부 동작을 이해해봤습니다! 사실 이전에 Observer 패턴에 대해서 공부하며 한번 분석한 적이 있었는데요, 이는 이전 글에서 확인하실 수 있습니다!
+
+[옵저버 패턴(Observer Pattern)과 React Query](https://lurgi.tistory.com/170)
+
+이번 분석을 통해서 Tanstack Query의 캐싱 매커니즘에 대해서 이해도가 높아졌습니다.
+
+분석하면서 느낀건 코드를 어떻게 작성할지에 대해서 조금 더 깊이감 있게 공부하면 좋을 것 같단 생각이 들었는데요, 특히나 클라이언트와 직접 맞닿지 않는 라이브러리와 같은 영역에선 중요할 것이라 생각이 들었어요
+
+예를들어,
+
+```tsx
+const defaultedOptions = client.defaultQueryOptions(options);
+
+(client.getDefaultOptions().queries as any)?._experimental_beforeQuery?.(defaultedOptions);
+```
+
+이렇게 코드를 작성하는데 세미콜론이 왜 저기있지? 와 같은 의문이 종종 들었습니다.
+
+ASI(Automatic Semicolon Insertion)의 의도치 않은 동작을 예방하기 위해서라고 하고, 이런 것들을 알아가면 조금 더 클린한 코드를 작성하는데 도움이 될 것이라 생각이 들었습니다~!
