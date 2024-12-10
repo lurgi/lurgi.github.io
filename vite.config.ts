@@ -7,4 +7,12 @@ import remarkGfm from "remark-gfm";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), mdx({ remarkPlugins: [remarkGfm] }), svgr()],
+  build: {
+    assetsInlineLimit: 0,
+    rollupOptions: {
+      output: {
+        inlineDynamicImports: false,
+      },
+    },
+  },
 });
