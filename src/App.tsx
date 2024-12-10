@@ -1,4 +1,4 @@
-import { createHashRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import Layout from "./component/layout/Layout";
 import Home from "./component/home/Home";
 import PostList from "./component/postList/PostList";
@@ -6,7 +6,7 @@ import PostDetail from "./component/postDetail/PostDetail";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function App() {
-  const router = createHashRouter(
+  const router = createBrowserRouter(
     [
       {
         path: "/",
