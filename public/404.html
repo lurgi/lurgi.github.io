@@ -4,13 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redirecting...</title>
-    <script>
-      const redirectTo = window.location.pathname + window.location.search + window.location.hash;
-      window.location.replace("/" + redirectTo);
-    </script>
   </head>
   <body>
-    <h1>Redirecting...</h1>
-    <p>If you are not redirected automatically, <a href="/">click here</a>.</p>
+    <script>
+      const path = window.location.pathname + window.location.search + window.location.hash;
+
+      window.history.replaceState(null, null, path);
+
+      fetch("/index.html")
+        .then((response) => response.text())
+        .then((html) => {
+          document.open();
+          document.write(html);
+          document.close();
+        })
+        .catch((err) => console.error("Failed to load index.html", err));
+    </script>
   </body>
 </html>
