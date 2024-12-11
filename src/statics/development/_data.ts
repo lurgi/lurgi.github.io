@@ -43,6 +43,12 @@ const DEVELOPMENT: PostPreview[] = [
   },
   {
     type: "Development",
+    title: "디자인 시스템에 아토믹 디자인 패턴 도입하기",
+    fileName: "Adopting-Atomic-Design-Pattern-in-a-Design-System",
+    date: "2024-09-15",
+  },
+  {
+    type: "Development",
     title: "옵저버 패턴과 Tanstack Query에서의 옵저버 패턴",
     fileName: "Observer-Pattern-and-the-Use-of-Observer-Pattern-in-TanStack-Query",
     date: "2024-04-08",
