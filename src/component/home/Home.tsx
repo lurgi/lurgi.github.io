@@ -19,7 +19,7 @@ function PostPartList({ type, posts }: PostListPart) {
         <h2>{type}</h2>
       </Link>
       {posts.map((post) => (
-        <PostPreview url={`/${post.type}/${post.fileName}`} key={post.fileName} title={post.title} date={post.date} />
+        <PostPreview url={`/${post.type}/${post.fileName}`} key={post.fileName} post={post} />
       ))}
     </div>
   );

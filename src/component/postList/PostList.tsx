@@ -10,7 +10,7 @@ export default function PostList() {
     <div className={styles.postPartList}>
       <h1>{postType}</h1>
       {posts[postType]?.map((post) => (
-        <PostPreview url={`/${post.type}/${post.fileName}`} key={post.fileName} title={post.title} date={post.date} />
+        <PostPreview url={`/${post.type}/${post.fileName}`} key={post.fileName} post={post} />
       ))}
     </div>
   );
