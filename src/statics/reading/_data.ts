@@ -22,6 +22,13 @@ const READING: PostPreview[] = [
   },
   {
     type: "Reading",
+    title: "커뮤니티는 어떻게 브랜드의 무기가 되는가",
+    author: "이승윤",
+    fileName: "How-Does-a-Community-Become-a-Brands-Weapon",
+    date: "2023-12-03",
+  },
+  {
+    type: "Reading",
     title: "굿 퀘스천",
     author: "이와즈 교이치",
     fileName: "Good-Question",
