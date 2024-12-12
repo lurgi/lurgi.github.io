@@ -22,6 +22,13 @@ const READING: PostPreview[] = [
   },
   {
     type: "Reading",
+    title: "트렌드 코리아 2024",
+    author: "김난도",
+    fileName: "Trend-Korea-2024",
+    date: "2023-12-26",
+  },
+  {
+    type: "Reading",
     title: "키워드로 읽는 불평등 사회",
     author: "조형근",
     fileName: "Reading-Inequality-Through-Keywords",
