@@ -22,6 +22,13 @@ const READING: PostPreview[] = [
   },
   {
     type: "Reading",
+    title: "굿 퀘스천",
+    author: "이와즈 교이치",
+    fileName: "Good-Question",
+    date: "2023-11-23",
+  },
+  {
+    type: "Reading",
     title: "프루스트를 좋아하세요",
     author: "알랭 드 보통",
     fileName: "How-Proust-Can-Change-Your-Life",
