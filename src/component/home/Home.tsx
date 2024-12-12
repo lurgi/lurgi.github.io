@@ -32,7 +32,7 @@ export default function Home() {
 
       <div className={styles.postList}>
         {postTypes.map((key) => (
-          <PostPartList type={key} key={key} posts={posts[key].slice(0, 5)} />
+          <PostPartList type={key} key={key} posts={posts[key].contents.slice(0, 5)} />
         ))}
 
         <Suspense fallback={<Bat />}>

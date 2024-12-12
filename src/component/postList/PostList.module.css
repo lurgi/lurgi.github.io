@@ -9,3 +9,10 @@
   flex-direction: column;
   gap: 0.8rem;
 }
+
+.description {
+  margin-top: -1.2rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  color: #666;
+}
