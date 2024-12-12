@@ -22,6 +22,13 @@ const READING: PostPreview[] = [
   },
   {
     type: "Reading",
+    title: "영혼의 미술관",
+    author: "알랭 드 보통",
+    fileName: "Art-as-Therapy",
+    date: "2024-03-26",
+  },
+  {
+    type: "Reading",
     title: "창조적 행위: 존재의 방식",
     author: "릭 루빈",
     fileName: "The-Creative-ACT",
