@@ -22,6 +22,13 @@ const READING: PostPreview[] = [
   },
   {
     type: "Reading",
+    title: "키워드로 읽는 불평등 사회",
+    author: "조형근",
+    fileName: "Reading-Inequality-Through-Keywords",
+    date: "2023-12-12",
+  },
+  {
+    type: "Reading",
     title: "커뮤니티는 어떻게 브랜드의 무기가 되는가",
     author: "이승윤",
     fileName: "How-Does-a-Community-Become-a-Brands-Weapon",
