@@ -22,6 +22,13 @@ const READING: PostPreview[] = [
   },
   {
     type: "Reading",
+    title: "창조적 행위: 존재의 방식",
+    author: "릭 루빈",
+    fileName: "The-Creative-ACT",
+    date: "2024-01-03",
+  },
+  {
+    type: "Reading",
     title: "트렌드 코리아 2024",
     author: "김난도",
     fileName: "Trend-Korea-2024",
