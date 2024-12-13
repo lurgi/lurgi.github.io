@@ -1,8 +1,10 @@
 import styles from "./PhotoList.module.css";
-import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { QueryErrorResetBoundary, useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { getMediaDetail, getMediaIds } from "../../api/instagram";
 import { Suspense } from "react";
 import Bat from "../loading/bat/Bat";
+import { MdErrorOutline } from "react-icons/md";
+import { ErrorBoundary } from "react-error-boundary";
 
 function Photos() {
   const { data } = useSuspenseQuery({ queryFn: getMediaIds, queryKey: ["instagram-photos"] });
@@ -36,17 +38,33 @@ export default function PhotoList() {
     <div className={styles.photoPartList}>
       <h2>Photos</h2>
 
-      <Suspense
-        fallback={
-          <div className={styles["bat_container"]}>
-            <Bat />
-          </div>
-        }
-      >
-        <div className={styles["photos_container"]}>
-          <Photos />
-        </div>
-      </Suspense>
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary
+            onReset={reset}
+            fallbackRender={({ resetErrorBoundary, error }) => (
+              <div className={styles["error_fallback"]}>
+                <MdErrorOutline size={80} />
+
+                <div>{error.message}</div>
+                <button onClick={() => resetErrorBoundary()}>다시 시도하기</button>
+              </div>
+            )}
+          >
+            <Suspense
+              fallback={
+                <div className={styles["bat_container"]}>
+                  <Bat />
+                </div>
+              }
+            >
+              <div className={styles["photos_container"]}>
+                <Photos />
+              </div>
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
     </div>
   );
 }

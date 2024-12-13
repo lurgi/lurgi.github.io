@@ -30,7 +30,17 @@ function App() {
   );
 
   return (
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider
+      client={
+        new QueryClient({
+          defaultOptions: {
+            queries: {
+              throwOnError: true,
+            },
+          },
+        })
+      }
+    >
       <RouterProvider router={router} />
     </QueryClientProvider>
   );

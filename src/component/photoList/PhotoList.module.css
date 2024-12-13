@@ -42,3 +42,11 @@
   display: grid;
   gap: 0.4rem;
 }
+
+.error_fallback {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
