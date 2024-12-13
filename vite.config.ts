@@ -11,7 +11,7 @@ const generateDynamicRoutes = async () => {
   const { posts } = await import("./src/data");
 
   const routes: { url: string; lastmod: string }[] = [];
-  Object.entries(posts).forEach(([type, postList]) => {
+  Object.entries(posts).forEach(([type, { contents: postList }]) => {
     postList.forEach((post) => {
       routes.push({
         url: `/post/${type}/${post.fileName}`,
