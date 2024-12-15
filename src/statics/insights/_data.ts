@@ -1,6 +1,12 @@
 const INSIGHTS: PostPreview[] = [
   {
     type: "Insights",
+    title: "신입 개발자가 갖추어야 할 역량, 기민함(Agility)",
+    fileName: "Junior-Developer-Essential-Agility",
+    date: "2024-12-15",
+  },
+  {
+    type: "Insights",
     title: "용서할 줄 안다는 것",
     fileName: "Knowing-How-to-Forgive",
     date: "2024-08-12",
