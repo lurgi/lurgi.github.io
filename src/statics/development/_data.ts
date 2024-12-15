@@ -31,6 +31,12 @@ const DEVELOPMENT: PostPreview[] = [
   },
   {
     type: "Development",
+    title: "PopoverMenu 컴포넌트의 createPortal과 합성 이벤트 문제 해결 및 자식 요소 컴포넌트 렌더러 만들기",
+    fileName: "Popover-Menu-Create-Portal-Event-Fix-and-Child-Renderer",
+    date: "2024-11-16",
+  },
+  {
+    type: "Development",
     title: "크루루 서비스의 자동 로그인 문제와 Tanstack Query 캐싱 이슈 해결기",
     fileName: "Resolving-Auto-Login-Issues-and-TanStack-Query-Caching-Challenges-in-the-Cruru-Service",
     date: "2024-11-13",
