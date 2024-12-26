@@ -57,7 +57,7 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     return { notFound: true };
   }
 
-  const filePath = path.join(process.cwd(), "src", "statics", postType, `${postFileName}.mdx`);
+  const filePath = path.join(process.cwd(), "src", "statics", postType.toLowerCase(), `${postFileName}.mdx`);
   const fileContents = fs.readFileSync(filePath, "utf-8");
 
   if (!fileContents) {
