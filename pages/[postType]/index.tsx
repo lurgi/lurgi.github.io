@@ -3,12 +3,13 @@ import PostPreview from "@/components/preview/PostPreview";
 
 import { posts } from "@/src/data";
 import { GetStaticProps } from "next";
+import clsx from "clsx";
 
 export default function PostListPage({ postType }: { postType: PostType }) {
   const postData = posts[postType];
 
   return (
-    <div className={styles.postPartList}>
+    <div className={clsx(styles.postPartList, "fade-in")}>
       <h1>{postType}</h1>
       <small className={styles.description}>{postData?.description}</small>
       <ul className={styles.postPartList}>

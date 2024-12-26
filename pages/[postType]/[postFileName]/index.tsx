@@ -12,6 +12,7 @@ import FancyImage from "@/components/MDXComponents/FancyImage/FancyImage";
 
 import fs from "fs";
 import path from "path";
+import clsx from "clsx";
 
 interface PostProps {
   mdxSource: MDXRemoteSerializeResult;
@@ -21,8 +22,8 @@ interface PostProps {
 
 export default function PostDetailPage({ mdxSource, postFileName }: PostProps) {
   return (
-    <div className={styles.postDetailContainer}>
-      <div className={styles["fade-in"]}>
+    <div className={clsx(styles.postDetailContainer, "fade-in")}>
+      <div>
         <MDXRemote
           {...mdxSource}
           components={{

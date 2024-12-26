@@ -7,16 +7,3 @@
 .loading-container {
   margin-top: 30vh;
 }
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0.01;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.8s ease;
-}

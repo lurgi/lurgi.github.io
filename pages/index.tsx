@@ -13,7 +13,7 @@ interface PostListPart {
 
 export default function Home() {
   return (
-    <>
+    <div className="fade-in">
       <Introduce />
 
       <div className={styles.postList}>
@@ -23,7 +23,7 @@ export default function Home() {
 
         <PhotoList />
       </div>
-    </>
+    </div>
   );
 }
 
