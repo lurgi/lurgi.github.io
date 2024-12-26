@@ -1,6 +1,26 @@
 const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
+    title: "웹 표준의 미래. WebNN으로 만나는 웹 AI",
+    fileName: "Future-of-Web-Standards-Exploring-Web-AI-with-WebNN",
+    date: "2024-12-27",
+    description:
+      "WebNN API를 활용해 브라우저에서 고성능 머신러닝 모델을 실행할 수 있는 방법과 WebAI 시대의 변화를 소개합니다. 최신 웹 표준을 통해 사용자 경험을 혁신하고 클라우드 의존성을 줄이는 WebNN의 가능성을 확인해보세요.",
+    keywords: [
+      "WebNN",
+      "WebAI",
+      "Frontend Development",
+      "브라우저 머신러닝",
+      "WebAI Summit",
+      "웹 표준",
+      "하드웨어 가속",
+      "WebNN API",
+      "온디바이스 AI",
+      "WebAI 기술",
+    ],
+  },
+  {
+    type: "Development",
     title: "Zero Run Time CSS 도구들은 왜 컴포넌트 선언 형식이 아닐까?",
     fileName: "Why-Are-Zero-Run-Time-CSS-Tools-Not-Component-Based",
     date: "2024-12-09",
