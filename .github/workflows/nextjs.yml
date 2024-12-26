@@ -28,11 +28,15 @@ jobs:
         run: echo "NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN=${{ secrets.INSTAGRAM_ACCESS_TOKEN }}" > .env
       - name: Install dependencies
         run: npm install
+
+      - name: List files in src/statics
+        run: find ./src/statics
+      - name: Check Development/_data file
+        run: ls -l ./src/statics/Development/_data.ts || echo "File not found!"
+
       - name: Clear Cache
         run: rm -rf .next/cache
       - name: Build with Next.js
-        env:
-          NODE_PATH: ./src
         run: NODE_ENV=production npm run build
       - name: Add .nojekyll file
         run: echo > ./out/.nojekyll
