@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import styles from "@/styles/PostDetailPage.module.css";
 
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
@@ -13,28 +14,58 @@ import FancyImage from "@/components/MDXComponents/FancyImage/FancyImage";
 import fs from "fs";
 import path from "path";
 import clsx from "clsx";
+import Head from "next/head";
+
+interface MetaInfo {
+  title: string;
+  description?: string;
+  keywords?: string;
+  url: string;
+}
+
+function CustomHead({ title, description, keywords, url }: MetaInfo) {
+  return (
+    <Head>
+      <title>{title}</title>
+
+      {description && <meta name="description" content={description} />}
+      {keywords?.length && <meta name="keywords" content={keywords} />}
+      <meta name="author" content="lurgi" />
+      <meta name="robots" content="index, follow" />
+
+      {title && <meta property="og:title" content={title} />}
+      {description && <meta property="og:description" content={description} />}
+      <meta property="og:type" content="article" />
+      <meta property="og:url" content={url} />
+      <meta property="og:site_name" content="Lurgi's blog" />
+    </Head>
+  );
+}
 
 interface PostProps {
   mdxSource: MDXRemoteSerializeResult;
   postFileName: string;
-  postType: PostType;
+  metaInfo: MetaInfo;
 }
 
-export default function PostDetailPage({ mdxSource, postFileName }: PostProps) {
+export default function PostDetailPage({ mdxSource, postFileName, metaInfo }: PostProps) {
   return (
-    <div className={clsx(styles.postDetailContainer, "fade-in")}>
-      <div>
-        <MDXRemote
-          {...mdxSource}
-          components={{
-            a: FancyLink,
-            code: FancyCode,
-            img: FancyImage,
-          }}
-        />
+    <>
+      <CustomHead {...metaInfo} />
+      <div className={clsx(styles.postDetailContainer, "fade-in")}>
+        <div>
+          <MDXRemote
+            {...mdxSource}
+            components={{
+              a: FancyLink,
+              code: FancyCode,
+              img: FancyImage,
+            }}
+          />
+        </div>
+        <Giscus postFileName={postFileName} />
       </div>
-      <Giscus postFileName={postFileName} />
-    </div>
+    </>
   );
 }
 
@@ -52,22 +83,32 @@ export function getStaticPaths() {
 }
 
 export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
-  const { postType, postFileName } = context.params as { postType: string; postFileName: string };
-
+  const { postType, postFileName } = context.params as { postType: PostType; postFileName: string };
   if (!postType || !postFileName) {
     return { notFound: true };
   }
 
   const filePath = path.join(process.cwd(), "src", "statics", postType.toLowerCase(), `${postFileName}.mdx`);
   const fileContents = fs.readFileSync(filePath, "utf-8");
-
   if (!fileContents) {
     return { notFound: true };
   }
 
   const mdxSource = await serialize(fileContents);
 
+  const articleData = posts[postType].contents.find(({ fileName }) => fileName === postFileName);
+  if (!articleData) {
+    return { notFound: true };
+  }
+
+  const metaInfo: MetaInfo = {
+    title: articleData.title,
+    description: articleData?.description,
+    keywords: articleData.keywords?.join(", "),
+    url: `https://lurgi.github.io/${postType}/${postFileName}`,
+  };
+
   return {
-    props: { mdxSource, postFileName, postType },
+    props: { mdxSource, postFileName, metaInfo },
   };
 }
