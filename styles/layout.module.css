@@ -1,0 +1,21 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  height: 100vh;
+}
+
+@media (min-width: 1024px) {
+  .main {
+    margin-left: 2rem;
+  }
+}
+
+.main {
+  box-sizing: border-box;
+  padding: 1rem;
+  padding-bottom: 4rem;
+  max-width: 42rem;
+  width: 100vw;
+}
