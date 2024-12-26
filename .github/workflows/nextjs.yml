@@ -26,11 +26,16 @@ jobs:
           node-version: "20"
       - name: Set up .env file
         run: echo "NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN=${{ secrets.INSTAGRAM_ACCESS_TOKEN }}" > .env
+
+      - name: Debug .env location
+        run: cat .env || echo ".env file not found!"
+
       - name: Install dependencies
         run: npm install
 
       - name: List files in src/statics
         run: find ./src/statics
+
       - name: Check Development/_data file
         run: ls -l ./src/statics/development/_data.ts || echo "File not found!"
 
@@ -42,6 +47,7 @@ jobs:
 
       - name: Add .nojekyll file
         run: echo > ./out/.nojekyll
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
