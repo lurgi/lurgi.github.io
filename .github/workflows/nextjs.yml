@@ -38,7 +38,7 @@ jobs:
         run: rm -rf .next/cache
 
       - name: Build with Next.js
-        run: NODE_ENV=production npm run build
+        run: npm run build
 
       - name: Add .nojekyll file
         run: echo > ./out/.nojekyll
