@@ -18,8 +18,8 @@ import Head from "next/head";
 
 interface MetaInfo {
   title: string;
-  description?: string;
-  keywords?: string;
+  description: string;
+  keywords: string;
   url: string;
 }
 
@@ -103,8 +103,8 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
 
   const metaInfo: MetaInfo = {
     title: articleData.title,
-    description: articleData?.description,
-    keywords: articleData.keywords?.join(", "),
+    description: articleData?.description || "",
+    keywords: articleData.keywords?.join(", ") || "",
     url: `https://lurgi.github.io/${postType}/${postFileName}`,
   };
 
