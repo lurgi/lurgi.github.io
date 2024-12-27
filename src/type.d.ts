@@ -4,6 +4,7 @@ type PostPreview = {
   fileName: string;
   title: string;
   date: string;
+  author?: string;
   description?: string;
   keywords?: string[];
 };

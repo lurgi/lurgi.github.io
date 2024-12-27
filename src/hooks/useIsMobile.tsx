@@ -5,7 +5,7 @@ export default function useIsMobile() {
 
   useLayoutEffect(() => {
     function updateIsMobile() {
-      setIsMobile(window.innerWidth <= 450);
+      setIsMobile(window.innerWidth <= 493);
     }
 
     window.addEventListener("resize", updateIsMobile);
