@@ -15,6 +15,13 @@ const READING: PostPreview[] = [
   },
   {
     type: "Reading",
+    title: "우리가 빛의 속도로 갈 수 없다면",
+    author: "김초엽",
+    fileName: "If-We-Cant-Go-at-the-Speed-of-Light",
+    date: "2024-05-12",
+  },
+  {
+    type: "Reading",
     title: "이펙추에이션",
     author: "사라스 사라스바티",
     fileName: "Effectuation-Elements-of-Entrepreneurial-Expertise",
