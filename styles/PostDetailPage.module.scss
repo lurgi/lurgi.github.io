@@ -1,0 +1,24 @@
+.postDetailContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.loading-container {
+  margin-top: 30vh;
+}
+
+.mdx {
+  ul,
+  ol {
+    list-style: disc;
+    margin-left: 0.8rem;
+    padding-left: 0.8rem;
+  }
+
+  ul ul,
+  ol ol {
+    list-style: circle;
+    margin-left: 0.4rem;
+  }
+}

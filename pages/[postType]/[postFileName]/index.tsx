@@ -1,9 +1,9 @@
-/* eslint-disable react/no-unescaped-entities */
-import styles from "@/styles/PostDetailPage.module.css";
+import styles from "@/styles/PostDetailPage.module.scss";
 
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import { GetStaticProps } from "next";
+import remarkGfm from "remark-gfm";
 
 import { posts } from "@/src/data";
 import Giscus from "@/components/customGiscus/CustomGiscus";
@@ -53,7 +53,7 @@ export default function PostDetailPage({ mdxSource, postFileName, metaInfo }: Po
     <>
       <CustomHead {...metaInfo} />
       <div className={clsx(styles.postDetailContainer, "fade-in")}>
-        <div>
+        <div className={styles.mdx}>
           <MDXRemote
             {...mdxSource}
             components={{
@@ -94,7 +94,11 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     return { notFound: true };
   }
 
-  const mdxSource = await serialize(fileContents);
+  const mdxSource = await serialize(fileContents, {
+    mdxOptions: {
+      remarkPlugins: [remarkGfm],
+    },
+  });
 
   const articleData = posts[postType].contents.find(({ fileName }) => fileName === postFileName);
   if (!articleData) {
