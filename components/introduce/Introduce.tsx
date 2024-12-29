@@ -1,4 +1,3 @@
-import Bat from "../loadingBat/Bat";
 import styles from "./Introduce.module.scss";
 
 export default function Introduce() {
@@ -7,10 +6,6 @@ export default function Introduce() {
       <picture>
         <img src="lurgi.webp" alt="lurgi" width={230} />
       </picture>
-
-      <div className={styles["webp-fallback"]}>
-        <Bat />
-      </div>
 
       <p className={styles.p}>
         📖 ☕️

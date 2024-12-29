@@ -10,14 +10,3 @@
   text-align: center;
   line-height: 1.5rem;
 }
-
-.webp-fallback {
-  display: none;
-}
-
-@supports not (image-rendering: -webkit-optimize-contrast) {
-  .webp-fallback {
-    padding-top: 1rem;
-    display: block;
-  }
-}
