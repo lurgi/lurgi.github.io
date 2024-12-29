@@ -4,7 +4,7 @@ export default function Introduce() {
   return (
     <div className={styles["introduce-container"]}>
       <picture>
-        <img src="lurgi.webp" alt="lurgi" width={230} />
+        <img src="lurgi.webp" alt="lurgi" width={230} height={329} />
       </picture>
 
       <p className={styles.p}>
