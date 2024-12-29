@@ -1,6 +1,32 @@
 const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
+    title: "SSR로 사용자 경험 향상시키기",
+    fileName: "Enhancing-UX-with-SSR",
+    date: "2024-12-29",
+    description:
+      "Server-Side Rendering(SSR)을 활용해 웹사이트의 SEO, 초기 로드 속도, 사용자 경험을 한 단계 끌어올리는 방법을 소개합니다. CSR과 SSR의 차이, 성능 실험 결과, 효율적인 혼합 전략 및 React와 최신 웹 기술을 활용한 최적화 사례까지, 실무에 바로 적용 가능한 인사이트를 제공합니다.",
+    keywords: [
+      "SSR",
+      "Server-Side Rendering",
+      "CSR",
+      "Client-Side Rendering",
+      "웹 성능 최적화",
+      "SEO 강화",
+      "초기 로드 속도",
+      "FCP 단축",
+      "LCP 개선",
+      "TTFB 최적화",
+      "React Streaming SSR",
+      "웹 캐싱 전략",
+      "사용자 경험 향상",
+      "SEO 친화적 웹사이트",
+      "실무 적용 사례",
+      "최신 웹 기술",
+    ],
+  },
+  {
+    type: "Development",
     title: "웹 표준의 미래. WebNN으로 만나는 웹 AI",
     fileName: "Future-of-Web-Standards-Exploring-Web-AI-with-WebNN",
     date: "2024-12-27",

@@ -1,0 +1,148 @@
+# SSR로 사용자 경험 향상시키기
+
+## ❓SSR은 무엇일까요?
+
+**SSR**(Server-Side Rendering)은 서버에서 HTML을 생성하여 클라이언트에 전달하는 렌더링 방식입니다. 이는 브라우저가 자바스크립트를 실행하기 전에 사용자가 완전한 HTML 문서를 받을 수 있도록 도와줍니다.
+
+---
+
+### 기존 CSR의 문제점
+
+**CSR**(Client-Side Rendering)은 자바스크립트가 클라이언트에서 실행되기 전까지 빈 HTML 파일이 로드되는 방식입니다. 이로 인해 발생하는 주요 문제는 다음과 같습니다:
+
+1. **SEO 문제**
+   - 검색 엔진 크롤러는 자바스크립트를 실행하지 못하는 경우가 많아, CSR에서는 빈 페이지를 읽게 됩니다.
+   - 이로 인해 SEO 최적화가 어려워질 수 있습니다.
+2. **느린 초기 로드(FCP)**
+   - 클라이언트가 화면에 콘텐츠를 표시하기 전에 자바스크립트 번들을 다운로드하고 실행해야 하므로 초기 렌더링 시간이 길어집니다.
+   - **FCP**(First Contentful Paint)는 웹페이지 로드 과정에서 사용자가 처음으로 화면에 콘텐츠(텍스트, 이미지, SVG 등)를 볼 수 있게 되는 시점을 측정하는 성능 지표입니다.
+3. **사용자 경험 저하**
+   - 콘텐츠가 늦게 나타나거나 로딩 중 애니메이션만 보여지는 경우 사용자가 불편함을 느낄 수 있습니다.
+
+---
+
+### 어떤 과정으로 해결해주나요?
+
+1. **HTML 생성 및 전달**
+   - 서버에서 초기 HTML을 생성하여 클라이언트에 전달합니다.
+   - 브라우저는 즉시 콘텐츠를 렌더링할 수 있어 **FCP(First Contentful Paint)**시간이 단축됩니다.
+2. **자바스크립트 하이드레이션**
+   - 클라이언트는 HTML을 렌더링한 후, 자바스크립트를 로드하고 상호작용을 활성화합니다.
+
+### 요약한다면,
+
+기존 CSR방식에선 사용자는 하이드레이션 이후 첫 컨텐츠를 만날 수 있지만, SSR방식에선 하이드레이션 이전 컨텐츠를 만날 수 있기 때문에, 사용성이 더욱 좋은 것입니다.
+
+---
+
+### Server에서 fetch 지연이 발생한다면 FCP 시간이 더 소요될 것 같은데요?
+
+서버에서 fetch 지연이 발생하면 **TTFB**(Time to First Byte)가 증가할 가능성이 높습니다. TTFB는 서버가 첫 번째 바이트를 클라이언트로 응답하는 데 걸리는 시간을 측정하는 지표로, **HTML 생성 과정과 데이터 fetch 시간**이 큰 영향을 미칩니다.
+
+특히, 서버가 외부 API 호출이나 데이터베이스 쿼리에 의존하는 경우, 이 작업들이 지연되면 TTFB가 길어질 수 있습니다.하지만 서버가 HTML을 생성해 클라이언트에 전달하는 동안 브라우저는 HTML을 즉시 처리하여 콘텐츠를 렌더링할 수 있으므로, 실제 **사용자 경험 측면에서는 FCP(First Contentful Paint) 시간이 단축**되는 장점이 있습니다.
+
+다만, 데이터 fetch 시간이 길어질 경우 **CSR**(Client-Side Rendering)에서는 로딩 화면이나 대체 콘텐츠를 쉽게 표시할 수 있는 반면, **SSR**(Server-Side Rendering)에서는 데이터가 준비되지 않으면 빈 화면이 노출될 가능성이 있습니다. 이를 방지하려면 서버 측에서 스켈레톤 UI를 렌더링하거나, 데이터 준비 여부에 따라 점진적으로 콘텐츠를 제공하는 **Streaming SSR**과 같은 기술을 도입하는 것이 중요합니다.
+
+### 데이터 스트리밍(React Streaming SSR)
+
+React 18 이상에서는 **Streaming SSR**을 사용하여 서버가 데이터를 모두 준비하지 않아도 점진적으로 HTML을 스트리밍할 수 있습니다.
+
+- 데이터를 먼저 준비하지 않아도, 기본적인 UI를 먼저 렌더링하고 데이터가 준비되는 대로 나머지 콘텐츠를 점진적으로 채웁니다.
+
+---
+
+### SSR의 장단점
+
+**장점**
+
+- **빠른 초기 렌더링:** 초기 콘텐츠가 빠르게 로드됩니다.
+- **SEO 친화적:** HTML이 서버에서 완성된 상태로 제공되므로 검색 엔진 크롤러가 콘텐츠를 쉽게 인식할 수 있습니다.
+
+**단점**
+
+- **서버 부하 증가:** 모든 요청에 대해 서버가 HTML을 생성해야 하므로 서버 리소스가 많이 필요합니다.
+- **복잡성 증가:** 클라이언트와 서버에서 상태 관리 및 동기화가 필요합니다.
+- **네트워크 지연:** 클라이언트와 서버 간 통신 시간이 추가로 소요될 수 있습니다.
+
+즉 SSR은 CSR의 주요 단점을 해결하면서도 초기 로드 성능과 SEO를 향상시킬 수 있는 강력한 도구입니다. 그러나 서버 부하와 복잡성 증가를 고려하여 프로젝트의 요구사항에 따라 적합한 방식을 선택해야 합니다.
+
+---
+
+## 📏 SSR을 직접 구현하여 정량 지표를 비교해봅시다.
+
+해당 환경은 **API통신이 비정상적으로 지연**되는 경우를 구성하여 실험하였습니다.
+
+### 1️⃣ CSR 환경에서 지표
+
+![CSR TTFB](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FLP9Fd%2FbtsLyvusRwp%2FIHEr5BRISXp0mp4xdxO3TK%2Fimg.png)
+
+![CSR FCP](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Ft45b4%2FbtsLzY3Qzk4%2F4y3slOtDPgmRwPa1Wer0H0%2Fimg.png)
+
+![CSR LCP](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcWv1tO%2FbtsLBWQZorW%2F8YLOA3R91okikupkVPekkk%2Fimg.png)
+
+- **TTFB: 570ms**
+  CSR에서는 서버가 HTML 셸(기본적인 HTML 구조)만 반환하므로, TTFB가 빠릅니다. 서버는 렌더링 작업 없이 단순히 HTML과 JavaScript 파일을 반환하기 때문에 서버 부하가 적습니다.
+- **FCP: 1.6s**
+  CSR에서는 브라우저가 HTML을 받은 후, JavaScript 파일을 다운로드하고 실행해야 콘텐츠가 렌더링됩니다. 지표 상으로는 SSR과 큰 차이가 없지만, **JavaScript 번들 크기가 커질수록 FCP가 느려질 가능성**이 있습니다. 이는 브라우저가 번들 파일을 처리하는 데 시간이 걸리기 때문입니다.
+- **LCP: 5.9s**
+  CSR에서는 주요 콘텐츠가 JavaScript 실행 이후 데이터 fetch와 렌더링 과정을 거치므로 LCP가 길어질 수밖에 없습니다. 특히, API 호출과 클라이언트 렌더링 과정이 복잡할수록 LCP가 더욱 느려질 수 있습니다.
+
+### **장점**
+
+- **짧은 TTFB**
+- **상태 관리와 상호작용에 유리**
+- **서버 부하 감소**
+
+### **단점**
+
+- **느린 FCP와 LCP**
+- **JavaScript 의존성**
+
+### 2️⃣ SSR 환경에서의 로드 화면
+
+![CSR TTFB](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcvY047%2FbtsLBhIhHEF%2FONw6AAylKzXNK7rVqANvH0%2Fimg.png)
+
+![CSR FCP](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FW0AS7%2FbtsLB2Q9Mkn%2F5LyGHCyb2yhM9N6KtiOfKK%2Fimg.png)
+
+![CSR LCP](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fef8f8S%2FbtsLzXRnN3Y%2FBXxkHfebck07g83hp68T10%2Fimg.png)
+
+- **TTFB: 3.29s**
+  SSR에서는 서버가 HTML을 완전히 렌더링한 후 클라이언트로 반환하므로, TTFB가 CSR보다 길어집니다. 특히 데이터베이스 쿼리나 외부 API 호출 등 추가 작업이 많을 경우 더욱 느려질 수 있습니다.
+- **FCP: 1.9s**
+  SSR은 서버에서 렌더링된 HTML을 브라우저가 수신하면, 브라우저가 바로 콘텐츠를 렌더링할 수 있으므로 FCP가 빠릅니다. 초기 콘텐츠가 이미 포함되어 있으므로 사용자 경험이 개선됩니다.
+- **LCP: 1.5s**
+  SSR에서는 주요 콘텐츠가 HTML에 포함되어 있어 브라우저가 이를 즉시 렌더링할 수 있습니다.
+
+### **장점**
+
+1. **빠른 FCP와 LCP**
+2. **SEO에 유리**
+3. **초기 로딩 최적화**
+
+### **단점**
+
+1. **긴 TTFB**
+2. **서버 부하 증가**
+3. **복잡한 구현**
+
+### ❗️ 종합적인 접근법
+
+CSR과 SSR의 장단점을 활용하기 위해 **혼합 전략**을 사용하는 것이 가장 적합합니다.
+
+- **SSR**로 초기 HTML을 생성해 **빠른 LCP와 SEO**를 확보하고,
+- **CSR**로 동적 상호작용과 상태 관리를 처리하여 **사용자 경험을 극대화**합니다.
+
+또한, **적절한 캐싱 전략**을 활용하면 SSR의 **TTFB를 크게 향상**시킬 수 있습니다.
+
+- 서버 단에서 **HTTP 캐시**(예: Cache-Control, ETag)를 설정하거나, **CDN**(Content Delivery Network)을 사용해 자주 요청되는 HTML과 정적 파일을 캐싱함으로써 서버 부하를 줄이고 TTFB를 개선할 수 있습니다.
+- API 요청에서도 **응답 데이터 캐싱**을 활용하면 서버-클라이언트 간 데이터 통신 시간을 줄일 수 있습니다.
+
+이와 함께, **Streaming SSR**, **Incremental Static Regeneration(ISR)**, **JavaScript 번들 최적화**와 같은 기술을 도입하면 성능과 동적 기능을 동시에 개선할 수 있습니다. 이러한 혼합 전략을 통해 **성능**, **확장성**, **사용자 경험**을 모두 만족시킬 수 있습니다.
+
+---
+
+### 마무리
+
+SSR은 초기 로드 성능과 SEO 개선의 강력한 도구로, 사용자 경험을 크게 향상시킬 수 있습니다. 그러나 서버 부하와 구현 복잡성을 고려하여 프로젝트의 요구사항에 따라 적절히 사용해야 합니다. Remix와 같은 SSR 친화적인 프레임워크는 이러한 과정을 단순화하며, 강력한 도구를 제공합니다.
+
+이처럼 CSR과 SSR의 장단점을 균형 있게 활용하고, 적절한 최적화 전략과 캐싱 기술을 적용한다면, 더 빠르고 효율적인 웹 경험을 사용자에게 제공할 수 있습니다. 이제 여러분의 프로젝트에서는 어떤 전략이 가장 적합할지 고민해 보세요.
