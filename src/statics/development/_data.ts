@@ -27,7 +27,7 @@ const DEVELOPMENT: PostPreview[] = [
   },
   {
     type: "Development",
-    title: "웹 표준의 미래. WebNN으로 만나는 웹 AI",
+    title: "웹 표준의 미래, WebNN으로 만나는 웹 AI",
     fileName: "Future-of-Web-Standards-Exploring-Web-AI-with-WebNN",
     date: "2024-12-27",
     description:
