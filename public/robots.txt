@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://lurgi.github.io
+
+# Sitemaps
+Sitemap: https://lurgi.github.io/sitemap.xml
