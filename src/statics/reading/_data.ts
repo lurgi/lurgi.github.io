@@ -1,6 +1,13 @@
 const READING: PostPreview[] = [
   {
     type: "Reading",
+    title: "정상 과로",
+    author: "에린 L 켈리, 필리스 모엔",
+    fileName: "Overload-How-Good-Jobs-Went-Bad-and-What-We-Can-Do-About-It",
+    date: "2024-12-31",
+  },
+  {
+    type: "Reading",
     title: "자유로부터의 도피",
     author: "에리히 프롬",
     fileName: "Escape-from-Freedom",
