@@ -1,6 +1,26 @@
 const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
+    title: "CSR에서 SSG로 마이그레이션, Github  Pages로 Next.js 배포하기",
+    fileName: "Migrating-from-CSR-to-SSG-Deploying-Nextjs-on-GitHub-Pages",
+    date: "2025-01-01",
+    description:
+      "기존 CSR(Client-Side Rendering) 방식 블로그에서 SSG(Static Site Generation) 방식으로 전환한 사례를 공유합니다. Open Graph를 활용한 SNS 링크 신뢰성 향상, 비용 절감, 성능 개선 방법 등을 알아보세요.",
+    keywords: [
+      "CSR",
+      "SSG",
+      "Static Site Generation",
+      "Next.js",
+      "블로그 렌더링 방식",
+      "Open Graph",
+      "SEO",
+      "성능 개선",
+      "비용 절감",
+      "블로그 개발 사례",
+    ],
+  },
+  {
+    type: "Development",
     title: "SSR로 사용자 경험 향상시키기",
     fileName: "Enhancing-UX-with-SSR",
     date: "2024-12-29",
