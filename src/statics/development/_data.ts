@@ -1,6 +1,32 @@
 const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
+    title: "Next.js Server Action와 React useActionState 알아보기",
+    fileName: "Exploring-Nextjs-Server-Action-and-React-useActionState",
+    date: "2025-01-03",
+    description:
+      "Next.js 15 버전에서 새롭게 도입된 Server Action과 React 19의 useActionState를 활용하여 클라이언트-서버 통신을 간소화하고 상태 관리를 효율적으로 처리하는 방법을 알아보세요. Server Action과 useActionState의 사용법과 예제를 통해 최신 데이터 요청 및 mutate 방식의 변화도 살펴봅니다.",
+    keywords: [
+      "Next.js 15",
+      "Server Action",
+      "React 19",
+      "useActionState",
+      "데이터 요청 간소화",
+      "상태 관리",
+      "클라이언트-서버 통신",
+      "데이터 mutate",
+      "최신 React 생태계",
+      "Tanstack Query 대안",
+      "Next.js Server Action 사용법",
+      "React 상태 관리",
+      "Server Action 예제",
+      "useActionState 예제",
+      "로딩 상태 관리",
+      "클라이언트 상태 관리",
+    ],
+  },
+  {
+    type: "Development",
     title: "CSR에서 SSG로 마이그레이션, Github  Pages로 Next.js 배포하기",
     fileName: "Migrating-from-CSR-to-SSG-Deploying-Nextjs-on-GitHub-Pages",
     date: "2025-01-01",

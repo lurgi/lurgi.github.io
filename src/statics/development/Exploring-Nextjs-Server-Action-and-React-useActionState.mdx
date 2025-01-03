@@ -1,0 +1,301 @@
+# Next.js Server Action와 React useActionState 알아보기
+
+![useActionStateAndServerAction.png](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F8wujp%2FbtsLC6AxIjP%2F6w5pC7umJ9pZIQDOpffW00%2Fimg.png)
+
+## 🚀 Next.js 15v의 Server Action
+
+### 1. Server Action이란?
+
+Next.js 15버전에 새롭게 도입된 Server Action은 서버에서 직접 실행되는 함수로, 클라이언트와 서버 간의 복잡한 데이터 요청 흐름을 단순화하는 기능을 제공합니다. 이를 통해 서버에서 처리해야 할 작업들을 클라이언트 코드에서 분리하고, 클라이언트에서 서버 함수 호출을 간편하게 할 수 있습니다.
+
+### 2. Server Action이 해결하는 문제들
+
+- **복잡한 데이터 요청 로직**: 기존에는 클라이언트에서 데이터를 fetch하거나 서버와 통신하기 위해 여러 API 호출 코드를 작성해야 했습니다.
+- **클라이언트-서버 분리**: 클라이언트 코드에서 서버 로직을 분리함으로써 코드의 유지보수성과 가독성을 향상시킵니다.
+- **직접적인 서버 실행**: Server Action을 통해 서버에서 실행할 수 있는 로직을 클라이언트에서 간단히 호출할 수 있으므로, 번거로운 REST API나 GraphQL 설정이 필요하지 않습니다.
+
+**REST API 설정의 번거로움 예시**
+
+```jsx
+// api/handler.js
+import db from './db';
+
+export default async function handler(req, res) {
+    if (req.method === 'POST') {
+        const { userId } = req.body;
+        const user = await db.users.findOne({ id: userId });
+        res.status(200).json(user);
+    } else {
+        res.status(405).json({ error: 'Method not allowed' });
+    }
+}
+
+// 클라이언트에서 호출 코드
+import axios from 'axios';
+
+async function fetchUser(userId) {
+    const response = await axios.post('/api/handler', { userId });
+    return response.data;
+}
+
+export default function UserComponent() {
+    const handleFetch = async () => {
+        const user = await fetchUser('123');
+        console.log(user);
+    };
+
+    return <button onClick={handleFetch}>Fetch User</button>;
+}
+```
+
+**Server Action 사용 시**
+
+```jsx
+"use server";
+
+export async function fetchUser(userId) {
+  const user = await db.users.findOne({ id: userId });
+  return user;
+}
+
+("use client");
+import { fetchUser } from "./actions/fetchUser";
+
+export default function UserComponent() {
+  const handleFetch = async () => {
+    const user = await fetchUser("123");
+    console.log(user);
+  };
+
+  return <button onClick={handleFetch}>Fetch User</button>;
+}
+```
+
+이와 같이 Server Action을 사용하면 API 핸들러 작성과 클라이언트에서의 별도 HTTP 요청 코드 작성이 필요 없습니다.
+
+### 3. Server Action의 사용법
+
+Server Action은 Next.js의 특수한 파일 구조와 함께 사용됩니다. 예를 들어
+
+```jsx
+// app/actions/myAction.js
+"use server";
+
+export async function myAction(data) {
+  // 서버에서 실행될 로직
+  console.log("Received data:", data);
+  return { success: true };
+}
+```
+
+클라이언트에서 이를 호출하려면
+
+```jsx
+"use client";
+import { myAction } from "./actions/myAction";
+
+export default function MyComponent() {
+  const handleAction = async () => {
+    const result = await myAction({ key: "value" });
+    console.log(result);
+  };
+
+  return <button onClick={handleAction}>Call Action</button>;
+}
+```
+
+---
+
+## ⚛️ React 19v의 useActionState
+
+### 1. useActionState란?
+
+React 19버전에 추가된 `useActionState`는 Server Action과 함께 사용되며, Action의 상태를 관리하는 React 훅입니다. 주로 Action의 요청 상태(pending, success, error)를 추적하는 데 사용됩니다.
+
+### 2. useActionState가 해결하는 문제들
+
+- **비동기 상태 관리**: 기존에는 Action 상태를 관리하기 위해 useState와 useEffect를 조합해 작성해야 했습니다. `useActionState`는 이를 단순화합니다.
+- **로딩 상태 관리**: 요청 중 상태를 쉽게 파악할 수 있어 사용자 경험을 개선합니다.
+- **중복 로직 제거**: 요청 상태를 관리하기 위한 별도의 로직이 필요 없으므로 코드가 간결해집니다.
+
+### 3. useActionState의 사용법
+
+```jsx
+import { useActionState } from 'react';
+import { myAction } from './actions/myAction';
+
+export default function MyComponent() {
+    const [isPending, action] = useActionState(myAction);
+
+    const handleClick = async () => {
+        const result = await action({ key: 'value' });
+        console.log(result);
+    };
+
+    return (
+        <div>
+            <button onClick={handleClick} disabled={isPending}>
+                {isPending ? 'Loading...' 'Call Action'}
+            </button>
+        </div>
+    );
+}
+```
+
+---
+
+## 🛠️ Server Action과 useActionState 사용의 예시
+
+자세한 코드를 확인하시고 싶으시면 아래 링크를 참고해주세요!
+
+[https://github.com/lurgi/action-state-prac](https://github.com/lurgi/action-state-prac)
+
+### 1. Server Action 함수 만들기
+
+```tsx
+"use server";
+
+// ...
+export async function login(currentState: LoginReturn, formData: FormData): Promise<LoginReturn> {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (email !== "lurgi@gmail.com" || password !== "qwer1234") {
+    return {
+      email,
+      password,
+      message: "fail",
+      isError: true,
+    };
+  }
+
+  return {
+    email,
+    password,
+    message: "success",
+    isError: false,
+  };
+}
+```
+
+### 2. useActionState로 불러오기
+
+```tsx
+"use client";
+
+import { useActionState, useEffect, useState } from "react";
+import { login } from "./action/login";
+
+export default function Home() {
+  const [state, formAction, isPending] = useActionState(login, {
+    email: "",
+    password: "",
+    message: undefined,
+    isError: false,
+  });
+
+  const { email, password, message, isError } = state;
+
+  return (
+    <div className="grid place-items-center h-screen">
+      <form className="w-96" action={formAction}>
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Email</span>
+          </div>
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            className="input input-bordered w-full"
+            defaultValue={email}
+          />
+        </label>
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Password</span>
+          </div>
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            className="input input-bordered w-full"
+            defaultValue={password}
+          />
+        </label>
+        <div className="label">
+          <button className="btn btn-primary w-full" disabled={isPending}>
+            Login
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+```
+
+### 3. 로딩 상태(isPending) 컨트롤
+
+`isPending`을 활용해 로딩 상태를 표시하고, 사용자가 요청이 완료될 때까지 기다리도록 안내합니다. 이를 통해 더 나은 UX를 제공합니다. 아래는 `isPending`을 이용하여 `Toast` 메세지를 컨트롤 하는 예시입니다.
+
+```tsx
+export default function Home() {
+  const [state, formAction, isPending] = useActionState(login, {
+    email: "",
+    password: "",
+    message: undefined,
+    isError: false,
+  });
+
+  const [hasToast, setHasToast] = useState(false);
+  const { email, password, message, isError } = state;
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+
+    if (isPending) {
+      setHasToast(true);
+    }
+    if (!isPending) {
+      timer = setTimeout(() => setHasToast(false), 3000);
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [isPending, setHasToast]);
+
+  return (
+	  {/*...*/}
+	  <div className="toast toast-bottom toast-center">
+        {hasToast &&
+          message &&
+          (isError ? (
+            <div role="alert" className="alert alert-error">
+              <span>Error! {message}</span>
+            </div>
+          ) : (
+            <div role="alert" className="alert alert-success">
+              <span>{message}</span>
+            </div>
+          ))}
+      </div>
+	)
+}
+```
+
+---
+
+## 📝 변화하는 데이터 fetching과 mutate 생태계
+
+Next.js의 Server Action과 React의 `useActionState`는 클라이언트-서버 통신에서 발생하는 복잡성을 크게 줄여주는 도구입니다. 이 두 기능은 서버에서 실행되는 로직과 클라이언트 상태 관리를 자연스럽게 결합하여 데이터 요청과 상태 관리를 훨씬 간단하게 처리할 수 있는 방법을 제공합니다.
+
+### 기존의 mutate 방식과의 비교
+
+React 애플리케이션에서 데이터를 변형(mutate)하는 가장 일반적인 방식은 Tanstack Query의 `useMutate` 훅을 사용하는 것이었습니다. 이 방식은 강력한 캐싱과 데이터 동기화 기능을 제공하며, 대규모 애플리케이션에서도 안정적으로 사용할 수 있는 도구로 자리 잡았습니다.
+
+하지만 `useActionState`가 등장하면서 mutate 상태 관리는 이전보다 훨씬 간소화되었습니다. `useActionState`는 서버에서 실행되는 Server Action과 직접 통합되어, 데이터를 수정하는 로직과 상태 관리 로직을 한 곳에 결합합니다. 이를 통해 별도의 캐싱이나 로직 분리가 필요 없으며, 직관적인 사용 방식 덕분에 코드 작성이 간결해졌습니다.
+
+결론적으로, Next.js와 React가 제공하는 최신 도구들은 데이터 요청과 상태 관리의 방식에 큰 변화를 가져오고 있습니다. 이로 인해 Tanstack Query와 같은 라이브러리는 더 특화된 영역에서 활용될 가능성이 높아지며, React의 생태계는 점점 더 간단하고 효율적인 방향으로 발전할 것입니다.
+
+추후에 `useLoaderState`와 같은 fetching을 담당하는 API가 제공된다면, Tanstack Query와 같은 라이브러리들은 어떤 역할로 활용될까요?
