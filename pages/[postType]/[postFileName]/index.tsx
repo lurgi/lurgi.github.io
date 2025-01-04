@@ -21,9 +21,10 @@ interface MetaInfo {
   description: string;
   keywords: string;
   url: string;
+  date: string;
 }
 
-function CustomHead({ title, description, keywords, url }: MetaInfo) {
+function CustomHead({ title, description, keywords, url, date }: MetaInfo) {
   return (
     <Head>
       <title>{title}</title>
@@ -32,6 +33,7 @@ function CustomHead({ title, description, keywords, url }: MetaInfo) {
       {keywords?.length && <meta name="keywords" content={keywords} />}
       <meta name="author" content="lurgi" />
       <meta name="robots" content="index, follow" />
+      <meta name="date" content={date} />
 
       {title && <meta property="og:title" content={title} />}
       {description && <meta property="og:description" content={description} />}
@@ -109,6 +111,7 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     title: articleData.title,
     description: articleData?.description || "",
     keywords: articleData.keywords?.join(", ") || "",
+    date: articleData.date,
     url: `https://lurgi.github.io/${postType}/${postFileName}`,
   };
 
