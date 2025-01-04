@@ -1,5 +1,5 @@
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { solarizedLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 import styles from "./FancyCode.module.css";
 
@@ -32,7 +32,7 @@ export default function FancyCode({ children, className }: FancyCodeProps) {
   }
 
   return (
-    <SyntaxHighlighter language={match?.[1]} style={solarizedLight} PreTag={"div"}>
+    <SyntaxHighlighter language={match?.[1]} style={docco} PreTag={"div"}>
       {children}
     </SyntaxHighlighter>
   );
