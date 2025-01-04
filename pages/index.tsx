@@ -1,41 +1,46 @@
 import styles from "@/styles/PostPartList.module.css";
-import Introduce from "@/components/introduce/Introduce";
-// import PhotoList from "@/components/photoList/PhotoList";
-import PostPreview from "@/components/preview/PostPreview";
-
-import { posts, postTypes } from "@/src/data";
 import Link from "next/link";
 
-interface PostListPart {
-  type: PostType;
-  posts: PostPreview[];
+import Introduce from "@/components/introduce/Introduce";
+import PhotoList from "@/components/photoList/PhotoList";
+import PostPreview from "@/components/preview/PostPreview";
+
+import { getMediaDetail, getMediaIds, MediaDetail } from "@/src/api/instagram";
+import { posts, postTypes } from "@/src/data";
+
+interface HomeProps {
+  photos: MediaDetail[];
 }
 
-export default function Home() {
+export default function Home({ photos }: HomeProps) {
   return (
     <div className="fade-in">
       <Introduce />
 
       <div className={styles.postList}>
-        {postTypes.map((key) => (
-          <PostPartList type={key} key={key} posts={posts[key].contents.slice(0, 5)} />
+        {postTypes.map((type) => (
+          <div className={styles.postPartList} key={type}>
+            <Link href={`/${type}`}>
+              <h2>{type}</h2>
+            </Link>
+            {posts[type].contents.slice(0, 5).map((post) => (
+              <PostPreview url={`/${post.type}/${post.fileName}`} key={post.fileName} post={post} />
+            ))}
+          </div>
         ))}
-        {/* 임시 코드 삭제 */}
-        {/* <PhotoList /> */}
+
+        <PhotoList photos={photos} />
       </div>
     </div>
   );
 }
 
-function PostPartList({ type, posts }: PostListPart) {
-  return (
-    <div className={styles.postPartList}>
-      <Link href={`/${type}`}>
-        <h2>{type}</h2>
-      </Link>
-      {posts.map((post) => (
-        <PostPreview url={`/${post.type}/${post.fileName}`} key={post.fileName} post={post} />
-      ))}
-    </div>
-  );
+export async function getStaticProps() {
+  const mediaIds = await getMediaIds();
+  const instagramIds = mediaIds.map(({ id }) => id);
+
+  const results = await Promise.all(instagramIds.slice(0, 20).map((instagramId) => getMediaDetail({ instagramId })));
+  const photos = results.flatMap((v) => v).filter((v) => !!v);
+
+  return { props: { photos } };
 }

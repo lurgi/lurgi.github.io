@@ -10,19 +10,13 @@
   font-size: 1.2rem;
 }
 
-.photo_wrapper {
-  object-fit: contain;
-}
-
-.bat_container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.photo {
-  width: 100%;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 768px) {
@@ -41,12 +35,15 @@
   width: 100%;
   display: grid;
   gap: 0.4rem;
+  animation: fadeIn 1.6s ease-in-out;
 }
 
-.error_fallback {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
+.photo_wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.photo {
+  width: 100%;
+  object-fit: contain;
 }

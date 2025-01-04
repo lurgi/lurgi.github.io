@@ -10,7 +10,7 @@ export const getMediaIds = async (): Promise<{ id: string }[]> => {
   return data.data;
 };
 
-interface MediaDetail {
+export interface MediaDetail {
   id: string;
   media_type: string;
   media_url: string;
