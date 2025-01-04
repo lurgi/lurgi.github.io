@@ -1,6 +1,6 @@
 import styles from "@/styles/PostPartList.module.css";
 import Introduce from "@/components/introduce/Introduce";
-import PhotoList from "@/components/photoList/PhotoList";
+// import PhotoList from "@/components/photoList/PhotoList";
 import PostPreview from "@/components/preview/PostPreview";
 
 import { posts, postTypes } from "@/src/data";
@@ -20,8 +20,8 @@ export default function Home() {
         {postTypes.map((key) => (
           <PostPartList type={key} key={key} posts={posts[key].contents.slice(0, 5)} />
         ))}
-
-        <PhotoList />
+        {/* 임시 코드 삭제 */}
+        {/* <PhotoList /> */}
       </div>
     </div>
   );
