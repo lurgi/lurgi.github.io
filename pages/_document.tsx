@@ -1,12 +1,11 @@
 import { Head, Html, Main, NextScript } from "next/document";
-import Script from "next/script";
 
 export default function Document() {
   return (
     <Html lang="ko">
       <Head>
-        <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></Script>
-        <Script
+        <script defer src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script>
+        <script
           id="google-analytics"
           dangerouslySetInnerHTML={{
             __html: `
