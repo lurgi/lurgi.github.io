@@ -4,10 +4,7 @@ import Script from "next/script";
 export default function Document() {
   return (
     <Html lang="ko">
-      <Head />
-      <body>
-        <Main />
-        <NextScript />
+      <Head>
         <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></Script>
         <Script
           id="google-analytics"
@@ -20,6 +17,10 @@ export default function Document() {
           `,
           }}
         />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
       </body>
     </Html>
   );
