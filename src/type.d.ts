@@ -8,3 +8,10 @@ type PostPreview = {
   description?: string;
   keywords?: string[];
 };
+
+declare namespace NodeJS {
+  interface ProcessEnv {
+    NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN: string;
+    NEXT_PUBLIC_GA_ID: string;
+  }
+}
