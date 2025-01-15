@@ -57,6 +57,9 @@ jobs:
       - name: Build with Next.js
         run: npm run build
 
+      - name: Generate sitemap
+        run: npm run postbuild
+
       - name: Add .nojekyll file
         run: echo > ./out/.nojekyll
 
