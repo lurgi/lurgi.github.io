@@ -48,17 +48,11 @@ jobs:
       - name: List files in src/statics
         run: find ./src/statics
 
-      - name: Check Development/_data file
-        run: ls -l ./src/statics/development/_data.ts || echo "File not found!"
-
       - name: Clear Cache
         run: rm -rf .next/cache
 
       - name: Build with Next.js
         run: npm run build
-
-      - name: Generate sitemap
-        run: npm run postbuild
 
       - name: Add .nojekyll file
         run: echo > ./out/.nojekyll
@@ -67,11 +61,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
-
-      - name: Verify sitemap files
-        run: |
-          ls -la ./out
-          cat ./out/sitemap.xml
 
   deploy:
     runs-on: ubuntu-latest
