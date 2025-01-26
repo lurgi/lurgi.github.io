@@ -1,3 +1,59 @@
-.link {
+.noMetadataLink {
   color: #0984e3;
+}
+
+.link {
+  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  height: 100px;
+  overflow: hidden;
+
+  padding: 10px;
+  border: 1px solid #d1d1d1;
+  border-radius: 10px;
+}
+
+.image {
+  display: block;
+  border-radius: 10px;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+
+  & > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.textLayout {
+  flex: 1;
+  display: inline-flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.description {
+  font-size: 1rem;
+  color: #6c6c6c;
+
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

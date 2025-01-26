@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "@/styles/PostDetailPage.module.scss";
 
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
@@ -15,6 +16,8 @@ import fs from "fs";
 import path from "path";
 import clsx from "clsx";
 import Head from "next/head";
+import { extractLinksFromMDX } from "@/utils/extractLinksFromMDX";
+import { fetchMetadata } from "@/utils/fetchMetaData";
 
 interface MetaInfo {
   title: string;
@@ -48,9 +51,10 @@ interface PostProps {
   mdxSource: MDXRemoteSerializeResult;
   postFileName: string;
   metaInfo: MetaInfo;
+  linkMetadata: { url: string; metadata: { title?: string; description?: string; image?: string } }[];
 }
 
-export default function PostDetailPage({ mdxSource, postFileName, metaInfo }: PostProps) {
+export default function PostDetailPage({ mdxSource, postFileName, metaInfo, linkMetadata }: PostProps) {
   return (
     <>
       <CustomHead {...metaInfo} />
@@ -59,7 +63,9 @@ export default function PostDetailPage({ mdxSource, postFileName, metaInfo }: Po
           <MDXRemote
             {...mdxSource}
             components={{
-              a: FancyLink,
+              a: (props) => (
+                <FancyLink {...props} linkMetadata={linkMetadata.find((link) => link.url === props.href)?.metadata} />
+              ),
               code: FancyCode,
               img: FancyImage,
             }}
@@ -96,6 +102,9 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     return { notFound: true };
   }
 
+  const links = extractLinksFromMDX(fileContents);
+  const linkMetadata = await Promise.all(links.map(async (url) => ({ url, metadata: await fetchMetadata(url) })));
+
   const mdxSource = await serialize(fileContents, {
     mdxOptions: {
       remarkPlugins: [remarkGfm],
@@ -116,6 +125,6 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
   };
 
   return {
-    props: { mdxSource, postFileName, metaInfo },
+    props: { mdxSource, postFileName, metaInfo, linkMetadata },
   };
 }
