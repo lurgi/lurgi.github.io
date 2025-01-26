@@ -5,8 +5,11 @@ export async function fetchMetadata(url: string) {
     throw new Error("fetchMetadata should not be called on the client.");
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: controller.signal });
     if (!response.ok) throw new Error("Failed to fetch URL");
 
     const html = await response.text();
@@ -25,5 +28,7 @@ export async function fetchMetadata(url: string) {
   } catch (error) {
     console.error("Error fetching metadata:", error);
     return null;
+  } finally {
+    clearTimeout(timeout);
   }
 }
