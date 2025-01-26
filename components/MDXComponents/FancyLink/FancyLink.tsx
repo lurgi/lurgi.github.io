@@ -24,8 +24,8 @@ export default function FancyLink({ href, children, linkMetadata }: FancyLinkPro
         </span>
       )}
       <span className={styles.textLayout}>
-        <span className={styles.title}>{linkMetadata?.title}</span>
-        <span className={styles.description}>{linkMetadata?.description}</span>
+        {linkMetadata?.title && <span className={styles.title}>{linkMetadata?.title}</span>}
+        {linkMetadata?.description && <span className={styles.description}>{linkMetadata?.description}</span>}
       </span>
     </a>
   );

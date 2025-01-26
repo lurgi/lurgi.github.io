@@ -3,13 +3,11 @@
 }
 
 .link {
-  display: block;
   display: flex;
   align-items: center;
   gap: 10px;
 
   height: 100px;
-  overflow: hidden;
 
   padding: 10px;
   border: 1px solid #d1d1d1;
@@ -31,7 +29,7 @@
 }
 
 .textLayout {
-  flex: 1;
+  width: 80%;
   display: inline-flex;
   height: 100%;
   flex-direction: column;
