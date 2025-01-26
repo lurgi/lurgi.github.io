@@ -1,6 +1,28 @@
 const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
+    title: "Next.js Middleware, 더 간결하고 효율적으로 관리하는 방법",
+    fileName: "Making-Nextjs-Middleware-Easier-to-Use",
+    date: "2025-01-26",
+    description:
+      "next-middleware-enhancer를 통해 라우트 기반 미들웨어 관리 방식을 개선하고, 불필요한 if문을 줄이며, 유지보수를 더욱 쉽게 만드는 방법을 소개합니다.",
+    keywords: [
+      "Next.js",
+      "Middleware",
+      "Next.js 미들웨어",
+      "미들웨어 최적화",
+      "Next.js 성능 개선",
+      "라우트 기반 미들웨어",
+      "웹 개발",
+      "JavaScript",
+      "TypeScript",
+      "Next.js Enhancer",
+      "프론트엔드 최적화",
+      "미들웨어 관리",
+    ],
+  },
+  {
+    type: "Development",
     title: "Next.js Server Action와 React useActionState 알아보기",
     fileName: "Exploring-Nextjs-Server-Action-and-React-useActionState",
     date: "2025-01-03",
