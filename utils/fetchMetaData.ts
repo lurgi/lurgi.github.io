@@ -2,7 +2,8 @@ import { JSDOM } from "jsdom";
 
 export async function fetchMetadata(url: string) {
   if (typeof window !== "undefined") {
-    throw new Error("fetchMetadata should not be called on the client.");
+    console.error("fetchMetadata should not be called on the client.");
+    return;
   }
 
   const controller = new AbortController();

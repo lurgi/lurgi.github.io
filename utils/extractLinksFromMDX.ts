@@ -4,14 +4,21 @@ import { remark } from "remark";
 import remarkParse from "remark-parse";
 
 export function extractLinksFromMDX(mdxContent: string): string[] {
-  const links: string[] = [];
-  const tree = remark().use(remarkParse).parse(mdxContent);
+  try {
+    const links: string[] = [];
+    const tree = remark().use(remarkParse).parse(mdxContent);
 
-  visit(tree, "link", (node: any) => {
-    if (node.url) {
-      links.push(node.url);
+    visit(tree, "link", (node: any) => {
+      if (node.url) {
+        links.push(node.url);
+      }
+    });
+
+    return links;
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error(e.message);
     }
-  });
-
-  return links;
+    return [];
+  }
 }
