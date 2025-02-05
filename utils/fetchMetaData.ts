@@ -6,7 +6,7 @@ export async function fetchMetadata(url: string) {
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
+  const timeout = setTimeout(() => controller.abort(), 30000);
 
   try {
     const response = await fetch(url, { signal: controller.signal });
