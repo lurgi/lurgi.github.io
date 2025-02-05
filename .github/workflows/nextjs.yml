@@ -52,6 +52,7 @@ jobs:
         run: rm -rf .next
 
       - name: Build with Next.js
+        timeout-minutes: 10
         run: npm run build
 
       - name: Add .nojekyll file
