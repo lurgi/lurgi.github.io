@@ -1,6 +1,23 @@
 const INSIGHTS: PostPreview[] = [
   {
     type: "Insights",
+    title: "오늘도 설득하기에 실패하셨나요?",
+    fileName: "Did-You-Fail-to-Persuade-Again-Today",
+    date: "2025-02-05",
+    keywords: [
+      "설득",
+      "논리적 사고",
+      "유추",
+      "논리 갑질",
+      "커뮤니케이션",
+      "사고의 본질",
+      "논리적 표현",
+      "효과적인 설득",
+      "말 잘하는 방법",
+    ],
+  },
+  {
+    type: "Insights",
     title: "신입 개발자가 갖추어야 할 역량, 기민함(Agility)",
     fileName: "Junior-Developer-Essential-Agility",
     date: "2024-12-15",
