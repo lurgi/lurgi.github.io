@@ -9,8 +9,8 @@ export async function fetchMetadata(url: string) {
   const timeoutPromise = new Promise((_, reject) => {
     setTimeout(() => {
       controller.abort();
-      reject(new Error("Request timeout after 30s"));
-    }, 40000);
+      reject(new Error("Request timeout after 60s"));
+    }, 60000);
   });
 
   try {
