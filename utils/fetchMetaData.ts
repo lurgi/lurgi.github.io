@@ -6,11 +6,19 @@ export async function fetchMetadata(url: string) {
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      controller.abort();
+      reject(new Error("Request timeout after 30s"));
+    }, 40000);
+  });
 
   try {
-    const response = await fetch(url, { signal: controller.signal });
-    if (!response.ok) throw new Error("Failed to fetch URL");
+    const response = await Promise.race([fetch(url, { signal: controller.signal, keepalive: true }), timeoutPromise]);
+
+    if (!(response instanceof Response) || !response.ok) {
+      throw new Error("Failed to fetch URL");
+    }
 
     const html = await response.text();
     const dom = new JSDOM(html);
@@ -28,7 +36,5 @@ export async function fetchMetadata(url: string) {
   } catch (error) {
     console.error("Error fetching metadata:", error);
     return null;
-  } finally {
-    clearTimeout(timeout);
   }
 }
