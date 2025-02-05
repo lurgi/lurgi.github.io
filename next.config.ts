@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "export",
+  staticPageGenerationTimeout: 300,
   basePath: "",
   assetPrefix: "/",
   reactStrictMode: true,
