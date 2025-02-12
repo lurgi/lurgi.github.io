@@ -1,0 +1,36 @@
+const Driply: PostPreview[] = [
+  {
+    type: "Driply",
+    title: "Remix 애플리케이션을 Docker와 GCP로 배포하기",
+    fileName: "Deploying-a-Remix-application-with-Docker-and-GCP",
+    date: "2025-02-12",
+    keywords: [
+      "Remix",
+      "Docker",
+      "GCP",
+      "Cloud Run",
+      "Google Artifact Registry",
+      "Github Actions",
+      "CI/CD",
+      "서버리스",
+      "배포 자동화",
+      "환경 변수 주입",
+      "Dockerfile 최적화",
+      "Node.js",
+      "컨테이너 배포",
+      "Cloud Build",
+      "DevOps",
+      "Kubernetes",
+      "WebView",
+      "풀스택 개발",
+      "Vite",
+      "Supabase",
+      "보안 강화",
+      "서비스 확장성",
+      "비용 최적화",
+      "서버리스 아키텍처",
+    ],
+  },
+];
+
+export default Driply;

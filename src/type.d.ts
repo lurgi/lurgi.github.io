@@ -1,4 +1,4 @@
-type PostType = "Development" | "Reading" | "Insights";
+type PostType = "Development" | "Reading" | "Insights" | "Driply";
 type PostPreview = {
   type: PostType;
   fileName: string;
