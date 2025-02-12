@@ -1,6 +1,22 @@
 const READING: PostPreview[] = [
   {
     type: "Reading",
+    title: "사고의 본질(1)",
+    author: "더글라스 호프스태터, 에마뉘엘 상데",
+    fileName: "Surfaces-and-Essences-1",
+    date: "2025-02-10",
+    keywords: [
+      "사고의 본질",
+      "사고의 본질 해석",
+      "사고의 본질 분석",
+      "사고의 본질 줄거리",
+      "사고의 본질 독후감",
+      "더글라스 호프스태터",
+      "에마뉘엘 상데",
+    ],
+  },
+  {
+    type: "Reading",
     title: "감정의 혼란",
     author: "슈테판 츠바이크",
     fileName: "Confusion-of-Feelings",
