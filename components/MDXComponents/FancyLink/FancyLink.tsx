@@ -18,9 +18,9 @@ export default function FancyLink({ href, children, linkMetadata }: FancyLinkPro
 
   return (
     <a href={href} target={"_blank"} rel={"noopener noreferrer"} className={styles.link}>
-      {linkMetadata?.image && (
+      {linkMetadata?.image && /^https?:\/\//.test(linkMetadata.image) && (
         <span className={styles.image}>
-          <img src={linkMetadata?.image} alt={"image"} />
+          <img src={linkMetadata.image} alt="링크 미리보기 이미지" />
         </span>
       )}
       <span className={styles.textLayout}>

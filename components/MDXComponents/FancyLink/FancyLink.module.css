@@ -4,10 +4,9 @@
 
 .link {
   display: flex;
-  align-items: center;
   gap: 10px;
 
-  height: 100px;
+  max-height: 100px;
 
   padding: 10px;
   border: 1px solid #d1d1d1;
