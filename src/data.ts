@@ -1,7 +1,6 @@
 import DEVELOPMENT from "@/src/statics/development/_data";
 import INSIGHTS from "@/src/statics/insights/_data";
 import READING from "@/src/statics/reading/_data";
-import Driply from "./statics/driply/_data";
 
 interface Post {
   description: string;
@@ -14,10 +13,6 @@ export const posts: Record<PostType, Post> = {
   Reading: {
     description: "읽은 책에서 얻은 핵심 내용을 정리하고, 개인적인 생각과 배움을 공유합니다.",
     contents: READING,
-  },
-  Driply: {
-    description: "당신의 커피 취향을 기록하고, 발견하세요.",
-    contents: Driply,
   },
 };
 
