@@ -1,6 +1,29 @@
 const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
+    title: "Next.js에서 useSWR과 iframe을 함께 사용할 때 발생한 무한 루프 문제 해결하기",
+    fileName: "Fixing-Infinite-Loop-Issue-When-Using-useSWR-and-iframe-in-Nextjs",
+    date: "2025-03-09",
+    description:
+      "Next.js에서 useSWR을 사용해 데이터를 가져오고, iframe을 활용해 이메일 템플릿을 미리보기로 표시할 때 발생하는 무한 루프 문제를 해결하는 방법을 알아봅니다.",
+    keywords: [
+      "Next.js",
+      "useSWR",
+      "iframe",
+      "무한 루프",
+      "Next.js 오류",
+      "React",
+      "Next.js 최적화",
+      "SWR API",
+      "iframe 문제 해결",
+      "React 개발",
+      "useSWR 문제",
+      "iframe 렌더링",
+      "Next.js API 요청 최적화",
+    ],
+  },
+  {
+    type: "Development",
     title: "Remix 애플리케이션을 Docker와 GCP로 배포하기",
     fileName: "Deploying-a-Remix-application-with-Docker-and-GCP",
     date: "2025-02-12",

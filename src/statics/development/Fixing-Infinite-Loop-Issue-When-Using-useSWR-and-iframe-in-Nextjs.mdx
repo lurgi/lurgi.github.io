@@ -1,0 +1,188 @@
+# Next.js에서 useSWR과 iframe을 함께 사용할 때 발생한 무한 루프 문제 해결하기
+
+Next.js에서 useSWR을 사용해 데이터를 가져오고, iframe을 활용해 이메일 템플릿을 미리보기로 표시하려고 했어요.
+
+그런데 예상치 못한 **무한 루프 현상**이 발생하면서, 페이지가 계속 새로고침되는 문제가 생겼어요.
+
+이번 글에서는 **문제의 원인과 해결 과정, 그리고 해결책을 적용했을 때 나타난 변화**까지 정리해볼게요.
+
+---
+
+## **1️⃣ 문제: useSWR과 iframe을 함께 사용할 때 무한 루프 발생**
+
+### **문제가 발생한 흐름**
+
+1. /admin/email 페이지에서 useSWR("/admin/email/preview")을 사용해 이메일 템플릿을 가져옴.
+2. /admin/email/preview 페이지가 iframe을 통해 렌더링됨.
+3. **문제 발생:**
+   - iframe이 /admin/email/preview를 로드하면서 내부에서 다시 useSWR("/admin/email/preview")를 실행함.
+   - 이 과정이 반복되면서 **페이지가 계속 요청을 보내는 무한 루프가 발생함.**
+
+### **발생한 오류**
+
+1. **Next.js 내부 오류 (findSourceMapURL 오류)**
+
+   ```bash
+   stitched-error.ts:23 Uncaught Error: Failed to construct 'URL': Invalid base URL
+   ```
+
+   **원인:** /admin/email/preview에서 useSWR이 다시 실행되면서 요청이 반복됨.
+
+### **코드 흐름**
+
+1. useSWR("/admin/email/preview")을 사용해 admin/email/preview 페이지의 HTML을 text로 가져옴.
+2. 가져온 text 데이터를 `<iframe srcDoc={htmlContent} />` 형태로 렌더링.
+3. **문제 발생:**
+   - iframe이 내부에서 /admin/email/preview를 다시 요청함.
+   - **그 결과, useSWR이 또다시 /admin/email/preview 요청을 트리거.**
+   - **이 과정이 반복되면서 무한 루프 발생.**
+
+---
+
+### **왜 이런 문제가 발생할까?**
+
+### **(1) srcDoc을 이용한 렌더링과 iframe의 기본 동작**
+
+```tsx
+<iframe srcDoc={htmlContent} />
+```
+
+이 코드를 실행하면
+
+1. useSWR("/admin/email/preview")이 실행되면서 admin/email/preview의 HTML을 텍스트(htmlContent)로 가져옴.
+2. 가져온 HTML을 iframe의 srcDoc 속성으로 렌더링.
+3. 하지만, **일부 브라우저 환경에서는 iframe 내부에서 리소스(예: 스타일, 스크립트) 요청을 보낼 수도 있음.**
+   - 이때, 내부에서 /admin/email/preview를 다시 요청하면서 **useSWR이 이를 감지하고 다시 요청을 보냄.**
+   - 이 과정이 계속 반복되면서 무한 루프가 발생함.
+
+---
+
+### **(2) srcDoc이 useSWR을 다시 트리거하는 구조적인 문제**
+
+### **잘못된 동작 흐름**
+
+1. useSWR("/admin/email/preview") 실행 → **HTML 가져옴**
+2. `< srcDoc={htmlContent} />` 렌더링됨
+3. **iframe이 내부에서 /admin/email/preview를 다시 요청함**
+4. **useSWR이 이를 감지하고 또다시 /admin/email/preview 요청을 보냄**
+5. **반복 → iframe무한 루프 발생**
+
+---
+
+## **2️⃣ 최종 해결 방법**
+
+**무한 루프를 방지하려면 useSWR을 제거하고, iframe이 직접 /admin/email/preview를 요청하도록 변경하는 것이 가장 좋은 방법이었어요.**
+
+---
+
+### **(1) useSWR 제거 & iframe에서 직접 /admin/email/preview 요청하기**
+
+📌 **📂 app/admin/email/page.tsx (이메일 관리 페이지)**
+
+```tsx
+"use client";
+
+import { toast } from "sonner";
+import Sidebar from "@/components/layouts/Sidebar";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw, Send } from "lucide-react";
+
+export default function EmailPage() {
+  const handleReload = () => {
+    const iframe = document.getElementById("email-preview") as HTMLIFrameElement;
+    if (iframe) {
+      iframe.src = "/admin/email/preview"; // `iframe`을 새로고침하여 최신 템플릿 불러오기
+    }
+    toast.success("템플릿이 새로고침되었습니다.");
+  };
+
+  const handleSendEmail = () => {
+    toast.info("이메일 전송 기능이 아직 구현되지 않았습니다.");
+  };
+
+  return (
+    <div className="flex h-screen">
+      {/* 사이드바 적용 */}
+      <Sidebar title="이메일 관리">
+        <Button onClick={handleReload} className="w-full">
+          <RefreshCcw className="mr-2 h-4 w-4" />
+          템플릿 새로고침
+        </Button>
+
+        <Button onClick={handleSendEmail} className="w-full" variant="destructive">
+          <Send className="mr-2 h-4 w-4" />
+          이메일 전송
+        </Button>
+      </Sidebar>
+
+      {/* 우측 콘텐츠 */}
+      <div className="flex-1 p-6 bg-white">
+        <h2 className="text-lg font-medium mb-2">미리보기</h2>
+        <div className="border rounded-lg overflow-hidden h-[700px]">
+          <iframe
+            id="email-preview"
+            src="/admin/email/preview" // `iframe`이 직접 호출
+            className="w-full h-full border-none"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+**적용된 해결책:**
+
+- useSWR 제거 → iframe이 직접 /admin/email/preview를 요청하도록 변경
+- 새로고침 버튼 클릭 시 iframe.src = "/admin/email/preview"로 강제 새로고침
+
+---
+
+### **(2) /admin/email/preview에서 올바르게 HTML 렌더링**
+
+📌 **📂 app/admin/email/preview/page.tsx**
+
+```tsx
+export default function EmailPreview() {
+  return (
+    <html>
+      <body>
+        <h1>📄 이메일 미리보기</h1>
+        <p>이메일 템플릿 미리보기 페이지입니다.</p>
+      </body>
+    </html>
+  );
+}
+```
+
+**적용된 해결책**
+
+- /admin/email/preview에서 HTML을 직접 렌더링
+- useSWR을 제거하여 불필요한 요청을 방지
+
+---
+
+## **3. 최종 해결 방법 정리**
+
+| 문제                                                             | 해결 방법                                                       |
+| ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| `useSWR`이 `/admin/email/preview`를 계속 요청하여 무한 루프 발생 | `useSWR` 제거하고 `iframe`이 `/admin/email/preview`를 직접 호출 |
+| `iframe` 내부에서도 `useSWR`이 실행되면서 불필요한 API 요청 발생 | `iframe`에서는 `useSWR`을 실행하지 않도록 변경                  |
+
+---
+
+## **🚀 최종 결과**
+
+✔ **Next.js 내부 오류(findSourceMapURL 오류) 해결**
+
+✔ **useSWR을 제거하여 불필요한 API 요청 방지**
+
+✔ **iframe이 /admin/email/preview를 직접 호출하여 API 호출 구조 단순화**
+
+---
+
+### **마무리하며**
+
+Next.js에서 useSWR과 iframe을 함께 사용할 때는, **불필요한 요청이 반복되지 않도록 구조를 잘 설계하는 것이 중요하다는 걸 깨달았습니다.**
+
+비슷한 문제를 겪고 있다면, **iframe이 직접 데이터를 요청하도록 변경하는 방법을 고려해보세요!**
