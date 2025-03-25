@@ -1,7 +1,7 @@
 const READING: PostPreview[] = [
   {
     type: "Reading",
-    title: "사고의 본질(1)",
+    title: "사고의 본질",
     author: "더글라스 호프스태터, 에마뉘엘 상데",
     fileName: "Surfaces-and-Essences-1",
     date: "2025-02-10",
