@@ -10,15 +10,15 @@ import { useRouter } from "next/router";
 const LINK = {
   github: {
     href: "https://github.com/lurgi",
-    icon: <GithubIcon />,
+    icon: <GithubIcon width={30} height={30} />,
   },
   linkedIn: {
     href: "https://www.linkedin.com/in/lurgi/",
-    icon: <LinkedInIcon />,
+    icon: <LinkedInIcon width={30} height={30} />,
   },
   brunchStory: {
     href: "https://brunch.co.kr/@lurgi",
-    icon: <BrunchIcon />,
+    icon: <BrunchIcon width={30} height={30} />,
   },
 } as const;
 
