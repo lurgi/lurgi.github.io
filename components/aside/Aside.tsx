@@ -1,6 +1,7 @@
 import styles from "./Aside.module.scss";
 import LinkedInIcon from "@/public/linkedin.svg";
 import GithubIcon from "@/public/github.svg";
+import BrunchIcon from "@/public/brunch.svg";
 
 import Link from "next/link";
 import { postTypes } from "@/src/data";
@@ -9,11 +10,15 @@ import { useRouter } from "next/router";
 const LINK = {
   github: {
     href: "https://github.com/lurgi",
-    icon: <GithubIcon width={30} height={30} />,
+    icon: <GithubIcon />,
   },
   linkedIn: {
     href: "https://www.linkedin.com/in/lurgi/",
-    icon: <LinkedInIcon width={34} height={34} />,
+    icon: <LinkedInIcon />,
+  },
+  brunchStory: {
+    href: "https://brunch.co.kr/@lurgi",
+    icon: <BrunchIcon />,
   },
 } as const;
 

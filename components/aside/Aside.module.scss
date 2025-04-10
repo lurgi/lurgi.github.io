@@ -36,6 +36,9 @@
   opacity: 0.75;
   transition: opacity 0.3s ease;
 
+  display: block;
+  transform: scale(0.9);
+
   &:hover {
     opacity: 0.99;
   }
