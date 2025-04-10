@@ -1,10 +1,10 @@
 const INSIGHTS: PostPreview[] = [
-  {
-    type: "Insights",
-    title: "25년 3월 담담하게",
-    fileName: "In-March-2025-With-Calm-Acceptance",
-    date: "2025-03-25",
-  },
+  // {
+  //   type: "Insights",
+  //   title: "25년 3월 담담하게",
+  //   fileName: "In-March-2025-With-Calm-Acceptance",
+  //   date: "2025-03-25",
+  // },
   {
     type: "Insights",
     title: "오늘도 설득하기에 실패하셨나요?",
