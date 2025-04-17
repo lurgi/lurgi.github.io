@@ -3,7 +3,7 @@ const DEVELOPMENT: PostPreview[] = [
     type: "Development",
     title: "코드 한 줄 없이 데이터 수집 자동화? MCP로 해봤습니다",
     fileName: "Code-Without-One-Line-Data-Collection-Using-MCP",
-    date: "2025-03-09",
+    date: "2025-04-17",
     description:
       "Claude AI와 MCP(Model Context Protocol)를 활용해 코드 한 줄 없이 요가 클래스 데이터를 자동 수집하고, Supabase에 저장하는 파이프라인을 구축한 사례를 소개합니다. 크롤링, 위치 변환, 중복 필터링, 이미지 수집까지 모두 자동화한 실제 사례를 확인해보세요.",
     keywords: [
