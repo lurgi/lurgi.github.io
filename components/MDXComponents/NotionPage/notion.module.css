@@ -1,0 +1,7 @@
+.notion-container :global(.notion-page-icon-hero) {
+  display: none !important;
+}
+
+.notion-container :global(.notion-page) {
+  padding: 0px 16px 32px !important;
+}
