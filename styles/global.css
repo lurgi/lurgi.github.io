@@ -1,9 +1,10 @@
 body {
+  --bg-color: #fafafa;
   margin: 0;
   font-family: "Noto Sans KR", serif;
   font-optical-sizing: auto;
   font-weight: 400;
-  background-color: #fafafa;
+  background-color: var(--bg-color);
 }
 
 /* a태그 초기화*/
