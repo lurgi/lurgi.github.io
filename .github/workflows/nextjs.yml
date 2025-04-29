@@ -47,7 +47,7 @@ jobs:
           echo "NOTION_SECRET=${{ secrets.NOTION_SECRET }}" >> .env
           echo "NOTION_TOKEN_V2=${{ secrets.NOTION_TOKEN_V2 }}" >> .env
           echo "NOTION_USER_ID=${{ secrets.NOTION_USER_ID }}" >> .env
-          echo "NOTION_DATABASE_DEVELOPMENT_I=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" >> .env
+          echo "NOTION_DATABASE_DEVELOPMENT_ID=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" >> .env
           echo "NOTION_DATABASE_INSIGHTS_ID=${{ secrets.NOTION_DATABASE_INSIGHTS_ID }}" >> .env
           echo "NOTION_DATABASE_READING_ID=${{ secrets.NOTION_DATABASE_READING_ID }}" >> .env
 
