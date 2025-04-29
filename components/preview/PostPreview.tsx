@@ -3,7 +3,7 @@ import styles from "./PostPreview.module.scss";
 
 interface PostPreviewProps {
   url: string;
-  post: PostPreview;
+  post: Pick<PostPreview, "title" | "date" | "author">;
 }
 
 export default function PostPreview({ url, post: { title, date, author } }: PostPreviewProps) {
