@@ -2,6 +2,7 @@ import { type ExtendedRecordMap } from "notion-types";
 import { NotionRenderer } from "react-notion-x";
 import TweetEmbed from "react-tweet-embed";
 import styles from "./notion.module.css";
+import { Code } from "react-notion-x/build/third-party/code";
 
 function Tweet({ id }: { id: string }) {
   return <TweetEmbed tweetId={id} />;
@@ -28,6 +29,11 @@ export function NotionPage({
         darkMode={false}
         components={{
           Tweet,
+          Code,
+        }}
+        mapImageUrl={(url, block) => {
+          const signedUrl = recordMap.signed_urls?.[block.id];
+          return signedUrl || url;
         }}
       />
     </div>
