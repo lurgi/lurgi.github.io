@@ -1,3 +1,7 @@
+import "react-notion-x/src/styles.css";
+import "prismjs/themes/prism-tomorrow.css";
+import "katex/dist/katex.min.css";
+
 import { type ExtendedRecordMap } from "notion-types";
 import { NotionRenderer } from "react-notion-x";
 import TweetEmbed from "react-tweet-embed";

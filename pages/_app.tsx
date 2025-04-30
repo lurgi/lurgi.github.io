@@ -6,10 +6,6 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import Aside from "@/components/aside/Aside";
 
-import "react-notion-x/src/styles.css";
-import "prismjs/themes/prism-tomorrow.css";
-import "katex/dist/katex.min.css";
-
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
