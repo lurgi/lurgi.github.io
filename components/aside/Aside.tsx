@@ -50,7 +50,7 @@ export default function Aside() {
         <ul className={styles["hyper-link-container"]}>
           {LINK_TYPES.map((type) => LINK[type]).map(({ href, icon }, idx) => (
             <li key={idx}>
-              <a className={styles["hyper-link"]} href={href} target="_blank">
+              <a className={styles["hyper-link"]} href={href} target="_blank" rel="noopener noreferrer">
                 {icon}
               </a>
             </li>
