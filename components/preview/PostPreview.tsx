@@ -1,5 +1,6 @@
 import useIsMobile from "@/src/hooks/useIsMobile";
 import styles from "./PostPreview.module.scss";
+import Link from "next/link";
 
 interface PostPreviewProps {
   url: string;
@@ -11,12 +12,12 @@ export default function PostPreview({ url, post: { title, date, author } }: Post
 
   return (
     <div className={styles.preview}>
-      <a href={url}>
+      <Link href={url}>
         <div className={styles.detail}>
           <div className={styles.title}>{title}</div>
           {author && <small className={styles.author}>{author}</small>}
         </div>
-      </a>
+      </Link>
 
       <small className={styles.date}>{isMobile ? date.split("").slice(2).join("") : date}</small>
     </div>
