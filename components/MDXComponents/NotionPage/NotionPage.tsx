@@ -35,10 +35,6 @@ export function NotionPage({
           Tweet,
           Code,
         }}
-        mapImageUrl={(url, block) => {
-          const signedUrl = recordMap.signed_urls?.[block.id];
-          return signedUrl || url;
-        }}
       />
     </div>
   );
