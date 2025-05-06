@@ -16,7 +16,7 @@ export default function PostListPage({ postType, notionData }: PostListPageProps
   const postData = posts[postType];
 
   return (
-    <div className={clsx(styles.postPartList, "fade-in")}>
+    <div key={postType} className={clsx(styles.postPartList, "fade-in")}>
       <h1>{postType}</h1>
       <small className={styles.description}>{postData?.description}</small>
       <ul className={styles.postPartList}>
