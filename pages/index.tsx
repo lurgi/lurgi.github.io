@@ -26,24 +26,26 @@ export default function Home({ photos, notionData }: HomeProps) {
             <Link href={`/${type}`}>
               <h2>{type}</h2>
             </Link>
-            {notionData[type].map(
-              ({ id, title, author, date }) =>
-                title &&
-                date && (
-                  <PostPreview
-                    url={`/${type}/notion/${id}`}
-                    post={{
-                      title,
-                      author: author || undefined,
-                      date,
-                    }}
-                    key={id}
-                  />
-                )
-            )}
-            {posts[type].contents.slice(0, 5).map((post) => (
-              <PostPreview url={`/${post.type}/${post.fileName}`} key={post.fileName} post={post} />
-            ))}
+            {[
+              ...notionData[type].map(
+                ({ id, title, author, date }) =>
+                  title &&
+                  date && (
+                    <PostPreview
+                      url={`/${type}/notion/${id}`}
+                      post={{
+                        title,
+                        author: author || undefined,
+                        date,
+                      }}
+                      key={`notion-${id}`}
+                    />
+                  )
+              ),
+              ...(posts[type].contents || []).map((post) => (
+                <PostPreview url={`/${post.type}/${post.fileName}`} key={`post-${post.fileName}`} post={post} />
+              )),
+            ].slice(0, 5)}
           </div>
         ))}
 

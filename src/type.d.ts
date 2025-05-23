@@ -1,4 +1,4 @@
-type PostType = "Development" | "Reading" | "Insights";
+type PostType = "Development" | "Reading" | "Insights" | "Study";
 type PostPreview = {
   type: PostType;
   fileName: string;
@@ -19,6 +19,7 @@ declare namespace NodeJS {
     NOTION_DATABASE_DEVELOPMENT_ID: string;
     NOTION_DATABASE_INSIGHTS_ID: string;
     NOTION_DATABASE_READING_ID: string;
+    NOTION_DATABASE_STUDY_ID: string;
   }
 }
 

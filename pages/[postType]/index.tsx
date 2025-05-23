@@ -36,7 +36,7 @@ export default function PostListPage({ postType, notionData }: PostListPageProps
               </li>
             )
         )}
-        {postData?.contents.map((post) => (
+        {postData?.contents?.map((post) => (
           <li key={post.fileName}>
             <PostPreview url={`/${post.type}/${post.fileName}`} post={post} />
           </li>
