@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "@/styles/PostDetailPage.module.scss";
 
 import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
@@ -79,7 +78,7 @@ export default function PostDetailPage({ mdxSource, postFileName, metaInfo, link
 
 export function getStaticPaths() {
   const paths = Object.keys(posts).flatMap((postType) =>
-    posts[postType as keyof typeof posts].contents.map((content) => ({
+    (posts[postType as keyof typeof posts].contents ?? []).map((content) => ({
       params: { postType, postFileName: content.fileName },
     }))
   );
@@ -111,7 +110,7 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     },
   });
 
-  const articleData = posts[postType].contents.find(({ fileName }) => fileName === postFileName);
+  const articleData = posts[postType].contents?.find(({ fileName }) => fileName === postFileName);
   if (!articleData) {
     return { notFound: true };
   }
