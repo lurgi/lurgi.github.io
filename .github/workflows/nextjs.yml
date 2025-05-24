@@ -39,6 +39,7 @@ jobs:
           echo "NOTION_DATABASE_DEVELOPMENT_I=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" || echo "NOTION_DATABASE_DEVELOPMENT_I is empty!"
           echo "NOTION_DATABASE_INSIGHTS_ID=${{ secrets.NOTION_DATABASE_INSIGHTS_ID }}" || echo "NOTION_DATABASE_INSIGHTS_ID is empty!"
           echo "NOTION_DATABASE_READING_ID=${{ secrets.NOTION_DATABASE_READING_ID }}" || echo "NOTION_DATABASE_READING_ID is empty!"
+          echo "NOTION_DATABASE_STUDY_ID=${{ secrets.NOTION_DATABASE_STUDY_ID }}" || echo "NOTION_DATABASE_STUDY_ID is empty!"
 
       - name: Set up .env file
         run: |
@@ -50,6 +51,7 @@ jobs:
           echo "NOTION_DATABASE_DEVELOPMENT_ID=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" >> .env
           echo "NOTION_DATABASE_INSIGHTS_ID=${{ secrets.NOTION_DATABASE_INSIGHTS_ID }}" >> .env
           echo "NOTION_DATABASE_READING_ID=${{ secrets.NOTION_DATABASE_READING_ID }}" >> .env
+          echo "NOTION_DATABASE_STUDY_ID=${{ secrets.NOTION_DATABASE_STUDY_ID }}" >> .env
 
       - name: Debug .env location
         run: cat .env || echo ".env file not found!"
