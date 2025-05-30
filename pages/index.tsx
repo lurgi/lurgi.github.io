@@ -9,6 +9,7 @@ import { getMediaDetail, getMediaIds, MediaDetail } from "@/src/api/instagram";
 import { posts, postTypes } from "@/src/data";
 import { getPagePreviewData, NotionPageMetadata } from "@/utils/notionClient";
 import { DATABASE_KEYS } from "@/src/notion";
+import { sortByDateDesc } from "@/utils/sortByDate";
 
 interface HomeProps {
   photos: MediaDetail[];
@@ -27,7 +28,7 @@ export default function Home({ photos, notionData }: HomeProps) {
               <h2>{type}</h2>
             </Link>
             {[
-              ...notionData[type].map(
+              ...sortByDateDesc(notionData[type]).map(
                 ({ id, title, author, date }) =>
                   title &&
                   date && (

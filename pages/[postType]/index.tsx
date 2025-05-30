@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { DATABASE_ID, DatabaseKey } from "@/src/notion";
 import { getPageWithCache, NotionPageMetadata, queryDatabaseWithCache } from "@/utils/notionClient";
 import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+import { sortByDateDesc } from "@/utils/sortByDate";
 
 interface PostListPageProps {
   postType: PostType;
@@ -14,13 +15,14 @@ interface PostListPageProps {
 
 export default function PostListPage({ postType, notionData }: PostListPageProps) {
   const postData = posts[postType];
+  const sortedNotionData = sortByDateDesc(notionData);
 
   return (
     <div key={postType} className={clsx(styles.postPartList, "fade-in")}>
       <h1>{postType}</h1>
       <small className={styles.description}>{postData?.description}</small>
       <ul className={styles.postPartList}>
-        {notionData.map(
+        {sortedNotionData.map(
           ({ id, title, author, date }) =>
             title &&
             date && (

@@ -33,9 +33,9 @@ export async function queryDatabaseWithCache(database_id: string): Promise<Query
 
 /* 개별 페이지에 대한 RecordMap과 Metadata를 가져오는 함수*/
 export interface NotionPageMetadata {
-  title: string | null;
+  title: string;
   description: string | null;
-  date: string | null;
+  date: string;
   keywords: string | null;
   author: string | null;
 }
