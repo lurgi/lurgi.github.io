@@ -6,6 +6,7 @@ import BrunchIcon from "@/public/brunch.svg";
 import Link from "next/link";
 import { postTypes } from "@/src/data";
 import { useRouter } from "next/router";
+import { useLayoutEffect, useState } from "react";
 
 const LINK = {
   github: {
@@ -28,14 +29,42 @@ export default function Aside() {
   const router = useRouter();
   const pathname = router.pathname;
   const postType = router.query.postType as string | undefined;
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useLayoutEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const SCROLL_THRESHOLD = 100; // 스크롤 임계값
+
+      if (currentScrollY > SCROLL_THRESHOLD) {
+        if (currentScrollY > lastScrollY) {
+          // 스크롤 다운
+          setIsHidden(true);
+        } else {
+          // 스크롤 업
+          setIsHidden(false);
+        }
+      } else {
+        setIsHidden(false);
+      }
+
+      setIsScrolled(currentScrollY > 20);
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   return (
-    <aside className={styles.aside}>
-      <nav>
-        <ul>
+    <aside className={`${styles.aside} ${isScrolled ? styles.scrolled : ""} ${isHidden ? styles.hidden : ""}`}>
+      <nav className={styles.nav}>
+        <ul className={styles["category-container"]}>
           <li>
             <Link href={"/"}>
-              <p className={pathname === "/" ? styles["link-text-highlight"] : undefined}>Park Jeong Woo (lurgi)</p>
+              <p className={pathname === "/" ? styles["link-text-highlight"] : undefined}>Lurgi</p>
             </Link>
           </li>
           {postTypes.map((type) => (

@@ -12,6 +12,18 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .main {
+    margin-top: 3rem;
+  }
+}
+
+@media (max-width: 493px) {
+  .main {
+    margin-top: 8rem;
+  }
+}
+
 .main {
   box-sizing: border-box;
   padding: 1rem;
