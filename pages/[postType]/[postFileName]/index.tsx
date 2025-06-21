@@ -29,19 +29,19 @@ interface MetaInfo {
 function CustomHead({ title, description, keywords, url, date }: MetaInfo) {
   return (
     <Head>
-      <title>{title}</title>
+      <title key="title">{title}</title>
 
-      {description && <meta name="description" content={description} />}
-      {keywords?.length && <meta name="keywords" content={keywords} />}
-      <meta name="author" content="lurgi" />
-      <meta name="robots" content="index, follow" />
-      <meta name="date" content={date} />
+      {description && <meta key="description" name="description" content={description} />}
+      {keywords?.length && <meta key="keywords" name="keywords" content={keywords} />}
+      <meta key="author" name="author" content="lurgi" />
+      <meta key="robots" name="robots" content="index, follow" />
+      <meta key="date" name="date" content={date} />
 
-      {title && <meta property="og:title" content={title} />}
-      {description && <meta property="og:description" content={description} />}
-      <meta property="og:type" content="article" />
-      <meta property="og:url" content={url} />
-      <meta property="og:site_name" content="Lurgi's blog" />
+      {title && <meta key="og:title" property="og:title" content={title} />}
+      {description && <meta key="og:description" property="og:description" content={description} />}
+      <meta key="og:type" property="og:type" content="article" />
+      <meta key="og:url" property="og:url" content={url} />
+      <meta key="og:site_name" property="og:site_name" content="Lurgi's blog" />
     </Head>
   );
 }
