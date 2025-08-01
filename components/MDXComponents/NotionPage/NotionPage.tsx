@@ -7,6 +7,7 @@ import { NotionRenderer } from "react-notion-x";
 import TweetEmbed from "react-tweet-embed";
 import styles from "./notion.module.css";
 import { Code } from "react-notion-x/build/third-party/code";
+import LayoutShiftMinimizedImage from "./LayoutShiftMinimizedImage";
 
 function Tweet({ id }: { id: string }) {
   return <TweetEmbed tweetId={id} />;
@@ -31,9 +32,11 @@ export function NotionPage({
         recordMap={recordMap}
         fullPage={true}
         darkMode={false}
+        forceCustomImages={true}
         components={{
           Tweet,
           Code,
+          Image: LayoutShiftMinimizedImage,
         }}
       />
     </div>
