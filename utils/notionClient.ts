@@ -92,5 +92,5 @@ function getImageUrl(recordMap: ExtendedRecordMap) {
   const image = getPageImageUrls(recordMap, {
     mapImageUrl: (url, block) => `https://www.notion.so/image/${url}?table=block&id=${block.id}&cache=v2`,
   })[0];
-  return image;
+  return image || null;
 }
