@@ -2,7 +2,7 @@ import { Client } from "@notionhq/client";
 import { PageObjectResponse, QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
 import { NotionAPI } from "notion-client";
 import { type ExtendedRecordMap } from "notion-types";
-import { getPageProperty, getPageTitle } from "notion-utils";
+import { getPageImageUrls, getPageProperty, getPageTitle } from "notion-utils";
 import { format } from "date-fns";
 import { DATABASE_ID, DatabaseKey } from "@/src/notion";
 
@@ -60,6 +60,7 @@ function getMetadata({ recordMap, pageId }: { recordMap: ExtendedRecordMap; page
   const date = format(new Date(getPageProperty("날짜", recordMap.block[pageId]?.value, recordMap)), "yyyy-MM-dd");
   const keywords = getPageProperty("키워드", recordMap.block[pageId]?.value, recordMap);
   const author = getPageProperty("저자", recordMap.block[pageId]?.value, recordMap);
+  const image = getImageUrl(recordMap);
 
   return {
     title,
@@ -67,6 +68,7 @@ function getMetadata({ recordMap, pageId }: { recordMap: ExtendedRecordMap; page
     date,
     keywords,
     author,
+    image,
   } as NotionPageMetadata;
 }
 
@@ -84,4 +86,11 @@ export async function getPagePreviewData(postType: PostType) {
   );
 
   return metadataList;
+}
+
+function getImageUrl(recordMap: ExtendedRecordMap) {
+  const image = getPageImageUrls(recordMap, {
+    mapImageUrl: (url, block) => `https://www.notion.so/image/${url}?table=block&id=${block.id}&cache=v2`,
+  })[0];
+  return image;
 }

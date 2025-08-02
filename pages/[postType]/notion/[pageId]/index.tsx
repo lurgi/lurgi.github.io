@@ -16,9 +16,10 @@ interface MetaInfo {
   keywords?: string | null;
   url?: string | null;
   date?: string | null;
+  image?: string | null;
 }
 
-function CustomHead({ title, description, keywords, url, date }: MetaInfo) {
+function CustomHead({ title, description, keywords, url, date, image }: MetaInfo) {
   return (
     <Head>
       {title && <title key="title">{title}</title>}
@@ -34,7 +35,7 @@ function CustomHead({ title, description, keywords, url, date }: MetaInfo) {
       <meta key="og:type" property="og:type" content="article" />
       {url && <meta key="og:url" property="og:url" content={url} />}
       <meta key="og:site_name" property="og:site_name" content="Lurgi's blog" />
-      {/* <meta key="og:image" property="og:image" content="/lurgi.webp" /> */}
+      {image && <meta key="og:image" property="og:image" content={image} />}
     </Head>
   );
 }
