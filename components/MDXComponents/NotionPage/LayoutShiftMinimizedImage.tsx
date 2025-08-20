@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 
 export default function LayoutShiftMinimizedImage({
   src,
@@ -13,20 +13,39 @@ export default function LayoutShiftMinimizedImage({
 }: React.ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    setIsLoaded(true);
-    onLoad?.(e);
-  };
+  useLayoutEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
 
-  const handleImageError = () => {
-    setHasError(true);
-    setIsLoaded(true);
-  };
+    if (img.complete) {
+      setIsLoaded(true);
+      return;
+    }
+
+    const handleLoad = () => {
+      setIsLoaded(true);
+    };
+
+    const handleError = () => {
+      setHasError(true);
+      setIsLoaded(true);
+    };
+
+    img.addEventListener("load", handleLoad);
+    img.addEventListener("error", handleError);
+
+    return () => {
+      img.removeEventListener("load", handleLoad);
+      img.removeEventListener("error", handleError);
+    };
+  }, [src, onLoad]);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <img
+        ref={imgRef}
         src={src}
         alt={alt}
         style={{
@@ -35,8 +54,6 @@ export default function LayoutShiftMinimizedImage({
           visibility: isLoaded && !hasError ? "visible" : "hidden",
           ...props.style,
         }}
-        onLoad={handleImageLoad}
-        onError={handleImageError}
         {...props}
       />
 
