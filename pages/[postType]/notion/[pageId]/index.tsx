@@ -44,12 +44,13 @@ interface PostProps {
   recordMap: ExtendedRecordMap;
   pageId: string;
   metadata: NotionPageMetadata;
+  postType: string;
 }
 
-export default function PostDetailPage({ recordMap, metadata, pageId }: PostProps) {
+export default function PostDetailPage({ recordMap, metadata, pageId, postType }: PostProps) {
   return (
     <>
-      <CustomHead {...metadata} url={`https://lurgi.github.io/notion/${pageId}`} />
+      <CustomHead {...metadata} url={`https://lurgi.github.io/${postType}/notion/${pageId}`} />
       <div className={clsx(styles.postDetailContainer, "fade-in")}>
         <NotionPage recordMap={recordMap} />
         <Giscus postFileName={metadata.title || pageId} />
@@ -81,7 +82,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context: Parameters<GetStaticProps>[0]): Promise<{ props: PostProps }> {
-  const { pageId } = context.params as { pageId: string };
+  const { pageId, postType } = context.params as { pageId: string; postType: string };
   const { recordMap, metadata } = await getPageWithCache(pageId);
 
   return {
@@ -89,6 +90,7 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]): Pr
       recordMap,
       pageId,
       metadata,
+      postType,
     },
   };
 }
