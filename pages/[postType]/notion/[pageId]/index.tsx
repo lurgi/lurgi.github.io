@@ -49,7 +49,7 @@ interface PostProps {
 export default function PostDetailPage({ recordMap, metadata, pageId }: PostProps) {
   return (
     <>
-      <CustomHead {...metadata} />
+      <CustomHead {...metadata} url={`https://lurgi.github.io/notion/${pageId}`} />
       <div className={clsx(styles.postDetailContainer, "fade-in")}>
         <NotionPage recordMap={recordMap} />
         <Giscus postFileName={metadata.title || pageId} />
