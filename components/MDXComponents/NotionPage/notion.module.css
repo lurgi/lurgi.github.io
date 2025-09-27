@@ -3,5 +3,5 @@
 }
 
 .notion-container :global(.notion-page) {
-  padding: 0px 16px 32px !important;
+  padding: 0px 0px 32px !important;
 }
