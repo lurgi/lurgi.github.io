@@ -36,7 +36,7 @@ jobs:
           echo "NOTION_SECRET=${{ secrets.NOTION_SECRET }}" || echo "NOTION_SECRET is empty!"
           echo "NOTION_TOKEN_V2=${{ secrets.NOTION_TOKEN_V2 }}" || echo "NOTION_TOKEN_V2 is empty!"
           echo "NOTION_USER_ID=${{ secrets.NOTION_USER_ID }}" || echo "NOTION_USER_ID is empty!"        
-          echo "NOTION_DATABASE_DEVELOPMENT_I=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" || echo "NOTION_DATABASE_DEVELOPMENT_I is empty!"
+          echo "NOTION_DATABASE_DEVELOPMENT_ID=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" || echo "NOTION_DATABASE_DEVELOPMENT_I is empty!"
           echo "NOTION_DATABASE_YOGA_LOGS_ID=${{ secrets.NOTION_DATABASE_YOGA_LOGS_ID }}" || echo "NOTION_DATABASE_YOGA_LOGS_ID is empty!"
           echo "NOTION_DATABASE_INSIGHTS_ID=${{ secrets.NOTION_DATABASE_INSIGHTS_ID }}" || echo "NOTION_DATABASE_INSIGHTS_ID is empty!"
           echo "NOTION_DATABASE_READING_ID=${{ secrets.NOTION_DATABASE_READING_ID }}" || echo "NOTION_DATABASE_READING_ID is empty!"
@@ -50,6 +50,7 @@ jobs:
           echo "NOTION_TOKEN_V2=${{ secrets.NOTION_TOKEN_V2 }}" >> .env
           echo "NOTION_USER_ID=${{ secrets.NOTION_USER_ID }}" >> .env
           echo "NOTION_DATABASE_DEVELOPMENT_ID=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" >> .env
+          echo "NOTION_DATABASE_YOGA_LOGS_ID=${{ secrets.NOTION_DATABASE_YOGA_LOGS_ID }}" >> .env
           echo "NOTION_DATABASE_INSIGHTS_ID=${{ secrets.NOTION_DATABASE_INSIGHTS_ID }}" >> .env
           echo "NOTION_DATABASE_READING_ID=${{ secrets.NOTION_DATABASE_READING_ID }}" >> .env
           echo "NOTION_DATABASE_STUDY_ID=${{ secrets.NOTION_DATABASE_STUDY_ID }}" >> .env
