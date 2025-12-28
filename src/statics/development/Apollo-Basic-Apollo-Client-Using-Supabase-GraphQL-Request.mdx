@@ -100,7 +100,8 @@ export default function Test() {
 공식문서에서 소개하는 `useMutation`은 다음과 같습니다.
 
 ```jsx
-const [mutateFunction, { data, loading, error }] = useMutation(INCREMENT_COUNTER);
+const [mutateFunction, { data, loading, error }] =
+  useMutation(INCREMENT_COUNTER);
 ```
 
 순서대로 살펴보겠습니다.
@@ -132,7 +133,8 @@ import { useMutation } from "@apollo/client/index.js";
 import { INSERT_TEST, InsertTestResponse } from "src/gql/queries";
 
 // ...
-const [insertTest, { data, loading, error }] = useMutation<InsertTestResponse>(INSERT_TEST);
+const [insertTest, { data, loading, error }] =
+  useMutation<InsertTestResponse>(INSERT_TEST);
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -166,7 +168,8 @@ affectedCount는 GraphQL 스키마의 **수정된 데이터 수**를 의미합�
 
 ```tsx
 //...
-const [deleteTest, { data, loading }] = useMutation<DeleteTestResponse>(DELETE_TEST);
+const [deleteTest, { data, loading }] =
+  useMutation<DeleteTestResponse>(DELETE_TEST);
 
 const handleDelete = async (id: number) => {
   if (loading) return;
@@ -209,7 +212,8 @@ Apollo Client에서 낙관적 Update는 `optimisticResponse` 와 `update` 메서
 
 ```tsx
 //...
-const [deleteTest, { data, loading }] = useMutation<DeleteTestResponse>(DELETE_TEST);
+const [deleteTest, { data, loading }] =
+  useMutation<DeleteTestResponse>(DELETE_TEST);
 
 const handleDelete = async (id: number) => {
   if (loading) return;
@@ -234,7 +238,10 @@ const handleDelete = async (id: number) => {
     optimisticResponse: {
       deleteFromTestCollection: {
         __typename: "TestDeleteResponse",
-        affectedCount: Math.min(0, (data?.testCollection?.edges.length || 0) - 1),
+        affectedCount: Math.min(
+          0,
+          (data?.testCollection?.edges.length || 0) - 1
+        ),
         records: data?.testCollection?.edges.map(({ node }) => node) || [],
       },
     }, // optimisticResponse를 작성해준다.
@@ -268,7 +275,9 @@ await deleteTest({
     });
 
     if (existingData?.testCollection) {
-      const updatedEdges = existingData.testCollection.edges.filter((edge) => edge.node.id !== id);
+      const updatedEdges = existingData.testCollection.edges.filter(
+        (edge) => edge.node.id !== id
+      );
 
       cache.writeQuery({
         query: GET_TEST,
@@ -307,7 +316,9 @@ await deleteTest({
     });
 
     if (existingData?.testCollection) {
-      const updatedEdges = existingData.testCollection.edges.filter((edge) => edge.node.id !== id);
+      const updatedEdges = existingData.testCollection.edges.filter(
+        (edge) => edge.node.id !== id
+      );
 
       cache.writeQuery({
         query: GET_TEST,

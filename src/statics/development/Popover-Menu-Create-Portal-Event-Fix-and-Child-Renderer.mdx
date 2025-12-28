@@ -21,12 +21,21 @@ interface PopoverProps extends PropsWithChildren {
   anchorEl: HTMLElement | null;
 }
 
-export default function Popover({ isOpen, onClose, anchorEl, children }: PopoverProps) {
+export default function Popover({
+  isOpen,
+  onClose,
+  anchorEl,
+  children,
+}: PopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(event.target as Node) && event.target !== anchorEl) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target as Node) &&
+        event.target !== anchorEl
+      ) {
         onClose();
       }
     };

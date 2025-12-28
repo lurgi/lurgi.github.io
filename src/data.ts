@@ -8,14 +8,20 @@ interface Post {
 }
 
 export const posts: Record<PostType, Post> = {
-  Development: { description: "프로그래밍 학습 과정에서 배운 지식과 경험을 기록합니다.", contents: DEVELOPMENT },
-  Insights: { description: "삶에서 얻은 지혜와 통찰을 다양한 관점에서 풀어냅니다.", contents: INSIGHTS },
+  Development: {
+    description: "프로그래밍 학습 과정에서 배운 지식과 경험을 기록합니다.",
+    contents: DEVELOPMENT,
+  },
+  YogaLogs: {
+    description: "나만의 속도로 성장하는 과정을 담은 월지입니다.",
+  },
+  Insights: {
+    description: "삶에서 얻은 지혜와 통찰을 다양한 관점에서 풀어냅니다.",
+    contents: INSIGHTS,
+  },
   Reading: {
     description: "읽은 책에서 얻은 배움을 통한 생각을 이야기합니다.",
     contents: READING,
-  },
-  Study: {
-    description: "함께 공부한 내용을 정리하고, 생각과 지식을 나눕니다.",
   },
 };
 

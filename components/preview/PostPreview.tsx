@@ -7,7 +7,10 @@ interface PostPreviewProps {
   post: Pick<PostPreview, "title" | "date" | "author">;
 }
 
-export default function PostPreview({ url, post: { title, date, author } }: PostPreviewProps) {
+export default function PostPreview({
+  url,
+  post: { title, date, author },
+}: PostPreviewProps) {
   const isMobile = useIsMobile();
 
   return (
@@ -19,7 +22,9 @@ export default function PostPreview({ url, post: { title, date, author } }: Post
         </div>
       </Link>
 
-      <small className={styles.date}>{isMobile ? date.split("").slice(2).join("") : date}</small>
+      <small className={styles.date}>
+        {isMobile ? date.split("").slice(2).join("") : date}
+      </small>
     </div>
   );
 }

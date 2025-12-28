@@ -1,11 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "@/styles/PostDetailPage.module.scss";
 
 import clsx from "clsx";
 import { GetStaticProps } from "next";
 import Head from "next/head";
 import { ExtendedRecordMap } from "notion-types";
-import { getPageWithCache, NotionPageMetadata, queryDatabaseWithCache } from "@/utils/notionClient";
+import {
+  getPageWithCache,
+  NotionPageMetadata,
+  queryDatabaseWithCache,
+} from "@/utils/notionClient";
 import { NotionPage } from "@/components/MDXComponents/NotionPage/NotionPage";
 import Giscus from "@/components/customGiscus/CustomGiscus";
 import { DATABASE_ID, DATABASE_KEYS } from "@/src/notion";
@@ -19,19 +22,36 @@ interface MetaInfo {
   image?: string | null;
 }
 
-function CustomHead({ title, description, keywords, url, date, image }: MetaInfo) {
+function CustomHead({
+  title,
+  description,
+  keywords,
+  url,
+  date,
+  image,
+}: MetaInfo) {
   return (
     <Head>
       {title && <title key="title">{title}</title>}
 
-      {description && <meta key="description" name="description" content={description} />}
-      {keywords?.length && <meta key="keywords" name="keywords" content={keywords} />}
+      {description && (
+        <meta key="description" name="description" content={description} />
+      )}
+      {keywords?.length && (
+        <meta key="keywords" name="keywords" content={keywords} />
+      )}
       <meta key="author" name="author" content="lurgi" />
       <meta key="robots" name="robots" content="index, follow" />
       {date && <meta key="date" name="date" content={date} />}
 
       {title && <meta key="og:title" property="og:title" content={title} />}
-      {description && <meta key="og:description" property="og:description" content={description} />}
+      {description && (
+        <meta
+          key="og:description"
+          property="og:description"
+          content={description}
+        />
+      )}
       <meta key="og:type" property="og:type" content="article" />
       {url && <meta key="og:url" property="og:url" content={url} />}
       <meta key="og:site_name" property="og:site_name" content="Lurgi's blog" />
@@ -47,10 +67,18 @@ interface PostProps {
   postType: string;
 }
 
-export default function PostDetailPage({ recordMap, metadata, pageId, postType }: PostProps) {
+export default function PostDetailPage({
+  recordMap,
+  metadata,
+  pageId,
+  postType,
+}: PostProps) {
   return (
     <>
-      <CustomHead {...metadata} url={`https://lurgi.github.io/${postType}/notion/${pageId}`} />
+      <CustomHead
+        {...metadata}
+        url={`https://lurgi.github.io/${postType}/notion/${pageId}`}
+      />
       <div className={clsx(styles.postDetailContainer, "fade-in")}>
         <NotionPage recordMap={recordMap} />
         <Giscus postFileName={metadata.title || pageId} />
@@ -81,8 +109,13 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps(context: Parameters<GetStaticProps>[0]): Promise<{ props: PostProps }> {
-  const { pageId, postType } = context.params as { pageId: string; postType: string };
+export async function getStaticProps(
+  context: Parameters<GetStaticProps>[0]
+): Promise<{ props: PostProps }> {
+  const { pageId, postType } = context.params as {
+    pageId: string;
+    postType: string;
+  };
   const { recordMap, metadata } = await getPageWithCache(pageId);
 
   return {

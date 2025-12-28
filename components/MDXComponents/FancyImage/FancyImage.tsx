@@ -10,7 +10,11 @@ export default function FancyImage({ alt, src }: FancyImageProps) {
   return (
     <span className={styles["image-container"]}>
       <picture>
-        <img className={clsx(styles["responsive-image"], "image-loading")} alt={alt} src={src} />
+        <img
+          className={clsx(styles["responsive-image"], "image-loading")}
+          alt={alt}
+          src={src}
+        />
       </picture>
     </span>
   );

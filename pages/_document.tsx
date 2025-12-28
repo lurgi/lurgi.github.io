@@ -4,7 +4,10 @@ export default function Document() {
   return (
     <Html lang="ko">
       <Head>
-        <script defer src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}></script>
+        <script
+          defer
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+        ></script>
         <script
           id="google-analytics"
           dangerouslySetInnerHTML={{

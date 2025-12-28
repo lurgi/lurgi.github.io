@@ -59,18 +59,34 @@ export default function Aside() {
   }, [lastScrollY]);
 
   return (
-    <aside className={`${styles.aside} ${isScrolled ? styles.scrolled : ""} ${isHidden ? styles.hidden : ""}`}>
+    <aside
+      className={`${styles.aside} ${isScrolled ? styles.scrolled : ""} ${isHidden ? styles.hidden : ""}`}
+    >
       <nav className={styles.nav}>
         <ul className={styles["category-container"]}>
           <li>
             <Link href={"/"}>
-              <p className={pathname === "/" ? styles["link-text-highlight"] : undefined}>Lurgi</p>
+              <p
+                className={
+                  pathname === "/" ? styles["link-text-highlight"] : undefined
+                }
+              >
+                Lurgi
+              </p>
             </Link>
           </li>
           {postTypes.map((type) => (
             <li key={type}>
               <Link href={`/${type}`}>
-                <p className={postType === type ? styles["link-text-highlight"] : undefined}>{type}</p>
+                <p
+                  className={
+                    postType === type
+                      ? styles["link-text-highlight"]
+                      : undefined
+                  }
+                >
+                  {type}
+                </p>
               </Link>
             </li>
           ))}
@@ -79,7 +95,12 @@ export default function Aside() {
         <ul className={styles["hyper-link-container"]}>
           {LINK_TYPES.map((type) => LINK[type]).map(({ href, icon }, idx) => (
             <li key={idx}>
-              <a className={styles["hyper-link"]} href={href} target="_blank" rel="noopener noreferrer">
+              <a
+                className={styles["hyper-link"]}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {icon}
               </a>
             </li>

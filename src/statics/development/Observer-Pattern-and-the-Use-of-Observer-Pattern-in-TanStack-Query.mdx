@@ -218,7 +218,11 @@ export function useQuery(options: UseQueryOptions, queryClient?: QueryClient) {
 ```tsx
 // useBaseQuery
 const [observer] = React.useState(
-  () => new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(client, defaultedOptions)
+  () =>
+    new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(
+      client,
+      defaultedOptions
+    )
 );
 
 const result = observer.getOptimisticResult(defaultedOptions);
@@ -226,7 +230,9 @@ const result = observer.getOptimisticResult(defaultedOptions);
 React.useSyncExternalStore(
   React.useCallback(
     (onStoreChange) => {
-      const unsubscribe = isRestoring ? () => undefined : observer.subscribe(notifyManager.batchCalls(onStoreChange));
+      const unsubscribe = isRestoring
+        ? () => undefined
+        : observer.subscribe(notifyManager.batchCalls(onStoreChange));
 
       // Update result to make sure we did not miss any query updates
       // between creating the observer and subscribing to it.

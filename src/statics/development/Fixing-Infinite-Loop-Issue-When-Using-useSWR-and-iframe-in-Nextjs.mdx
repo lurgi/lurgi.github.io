@@ -89,7 +89,9 @@ import { RefreshCcw, Send } from "lucide-react";
 
 export default function EmailPage() {
   const handleReload = () => {
-    const iframe = document.getElementById("email-preview") as HTMLIFrameElement;
+    const iframe = document.getElementById(
+      "email-preview"
+    ) as HTMLIFrameElement;
     if (iframe) {
       iframe.src = "/admin/email/preview"; // `iframe`을 새로고침하여 최신 템플릿 불러오기
     }
@@ -109,7 +111,11 @@ export default function EmailPage() {
           템플릿 새로고침
         </Button>
 
-        <Button onClick={handleSendEmail} className="w-full" variant="destructive">
+        <Button
+          onClick={handleSendEmail}
+          className="w-full"
+          variant="destructive"
+        >
           <Send className="mr-2 h-4 w-4" />
           이메일 전송
         </Button>

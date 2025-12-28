@@ -32,7 +32,6 @@ TanStack Query가 **Error 데이터를 캐싱**하는 것은 기본적인 동작
    - `staleTime: 0`은 쿼리 데이터가 "항상 stale" 상태로 간주된다는 것을 의미합니다.
    - 하지만 stale 상태는 **데이터를 캐시에서 제거하는 기준**이 아닙니다. 데이터를 캐시에서 읽어오고, 동시에 새로운 데이터를 fetch하도록 작동합니다.
 2. `gcTime`과 캐시 제거
-
    - 쿼리가 구독되지 않는 상태에서 `gcTime`(기본값: 5분)이 지나야 데이터가 캐시에서 제거됩니다.
    - 즉, 구독 중인 쿼리의 데이터는 stale 상태라도 여전히 캐시에서 유지됩니다.
    - gc에 대해서 더 자세히 알고 싶다면 ⤵️
@@ -50,15 +49,31 @@ TanStack Query가 **Error 데이터를 캐싱**하는 것은 기본적인 동작
 기본적인 useQuery의 결과 값은 다음과 같습니다.
 
 ```tsx
-export function useBaseQuery<TQueryFnData, TError, TData, TQueryData, TQueryKey extends QueryKey>(
-  options: UseBaseQueryOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>,
+export function useBaseQuery<
+  TQueryFnData,
+  TError,
+  TData,
+  TQueryData,
+  TQueryKey extends QueryKey,
+>(
+  options: UseBaseQueryOptions<
+    TQueryFnData,
+    TError,
+    TData,
+    TQueryData,
+    TQueryKey
+  >,
   Observer: typeof QueryObserver,
   queryClient?: QueryClient
 ): QueryObserverResult<TData, TError> {
   //...
 
   const [observer] = React.useState(
-    () => new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(client, defaultedOptions)
+    () =>
+      new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(
+        client,
+        defaultedOptions
+      )
   );
 
   const result = observer.getOptimisticResult(defaultedOptions);
@@ -66,7 +81,9 @@ export function useBaseQuery<TQueryFnData, TError, TData, TQueryData, TQueryKey 
   React.useSyncExternalStore(
     React.useCallback(
       (onStoreChange) => {
-        const unsubscribe = isRestoring ? noop : observer.subscribe(notifyManager.batchCalls(onStoreChange));
+        const unsubscribe = isRestoring
+          ? noop
+          : observer.subscribe(notifyManager.batchCalls(onStoreChange));
 
         // Update result to make sure we did not miss any query updates
         // between creating the observer and subscribing to it.
@@ -85,14 +102,23 @@ export function useBaseQuery<TQueryFnData, TError, TData, TQueryData, TQueryKey 
       result,
       errorResetBoundary,
       throwOnError: defaultedOptions.throwOnError,
-      query: client.getQueryCache().get<TQueryFnData, TError, TQueryData, TQueryKey>(defaultedOptions.queryHash),
+      query: client
+        .getQueryCache()
+        .get<
+          TQueryFnData,
+          TError,
+          TQueryData,
+          TQueryKey
+        >(defaultedOptions.queryHash),
     })
   ) {
     throw result.error;
   }
   //...
 
-  return !defaultedOptions.notifyOnChangeProps ? observer.trackResult(result) : result;
+  return !defaultedOptions.notifyOnChangeProps
+    ? observer.trackResult(result)
+    : result;
 }
 ```
 
@@ -110,7 +136,11 @@ export function useBaseQuery<TQueryFnData, TError, TData, TQueryData, TQueryKey 
 
 ```tsx
 const [observer] = React.useState(
-  () => new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(client, defaultedOptions)
+  () =>
+    new Observer<TQueryFnData, TError, TData, TQueryData, TQueryKey>(
+      client,
+      defaultedOptions
+    )
 );
 
 const result = observer.getOptimisticResult(defaultedOptions);
@@ -192,7 +222,8 @@ if (options._optimisticResults) {
 
   const fetchOnMount = !mounted && shouldFetchOnMount(query, options);
 
-  const fetchOptionally = mounted && shouldFetchOptionally(query, prevQuery, options, prevOptions);
+  const fetchOptionally =
+    mounted && shouldFetchOptionally(query, prevQuery, options, prevOptions);
 
   if (fetchOnMount || fetchOptionally) {
     newState = {
@@ -245,7 +276,10 @@ export abstract class Removable {
 
   protected updateGcTime(newGcTime: number | undefined): void {
     // Default to 5 minutes (Infinity for server-side) if no gcTime is set
-    this.gcTime = Math.max(this.gcTime || 0, newGcTime ?? (isServer ? Infinity : 5 * 60 * 1000));
+    this.gcTime = Math.max(
+      this.gcTime || 0,
+      newGcTime ?? (isServer ? Infinity : 5 * 60 * 1000)
+    );
   }
 
   protected clearGcTimeout() {
@@ -319,7 +353,8 @@ function shouldFetchOnMount(
 ): boolean {
   return (
     shouldLoadOnMount(query, options) ||
-    (query.state.data !== undefined && shouldFetchOn(query, options, options.refetchOnMount))
+    (query.state.data !== undefined &&
+      shouldFetchOn(query, options, options.refetchOnMount))
   );
 }
 
@@ -376,7 +411,9 @@ Tanstack Query를 직접 까보면서, 내부 동작을 이해해봤습니다! �
 ```tsx
 const defaultedOptions = client.defaultQueryOptions(options);
 
-(client.getDefaultOptions().queries as any)?._experimental_beforeQuery?.(defaultedOptions);
+(client.getDefaultOptions().queries as any)?._experimental_beforeQuery?.(
+  defaultedOptions
+);
 ```
 
 이렇게 코드를 작성하는데 세미콜론이 왜 저기있지? 와 같은 의문이 종종 들었습니다.

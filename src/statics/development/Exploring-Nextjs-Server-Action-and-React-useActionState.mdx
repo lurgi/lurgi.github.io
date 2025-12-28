@@ -156,7 +156,10 @@ export default function MyComponent() {
 "use server";
 
 // ...
-export async function login(currentState: LoginReturn, formData: FormData): Promise<LoginReturn> {
+export async function login(
+  currentState: LoginReturn,
+  formData: FormData
+): Promise<LoginReturn> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 

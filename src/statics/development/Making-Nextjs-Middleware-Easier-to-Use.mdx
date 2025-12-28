@@ -65,7 +65,9 @@ const authMiddleware = (req: NextRequest) => {
   }
 };
 
-const { middleware, config } = createMiddleware([{ matcher: "/admin", handler: [logMiddleware, authMiddleware] }]);
+const { middleware, config } = createMiddleware([
+  { matcher: "/admin", handler: [logMiddleware, authMiddleware] },
+]);
 
 export { middleware, config };
 ```

@@ -63,7 +63,13 @@ export default function PostDetailPage({ mdxSource }: PostDetailPageProps) {
 
 export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
   // ...
-  const filePath = path.join(process.cwd(), "src", "statics", postType.toLowerCase(), `${postFileName}.mdx`);
+  const filePath = path.join(
+    process.cwd(),
+    "src",
+    "statics",
+    postType.toLowerCase(),
+    `${postFileName}.mdx`
+  );
   const fileContents = fs.readFileSync(filePath, "utf-8");
   const mdxSource = await serialize(fileContents, {
     mdxOptions: {

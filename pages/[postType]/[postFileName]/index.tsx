@@ -31,14 +31,24 @@ function CustomHead({ title, description, keywords, url, date }: MetaInfo) {
     <Head>
       <title key="title">{title}</title>
 
-      {description && <meta key="description" name="description" content={description} />}
-      {keywords?.length && <meta key="keywords" name="keywords" content={keywords} />}
+      {description && (
+        <meta key="description" name="description" content={description} />
+      )}
+      {keywords?.length && (
+        <meta key="keywords" name="keywords" content={keywords} />
+      )}
       <meta key="author" name="author" content="lurgi" />
       <meta key="robots" name="robots" content="index, follow" />
       <meta key="date" name="date" content={date} />
 
       {title && <meta key="og:title" property="og:title" content={title} />}
-      {description && <meta key="og:description" property="og:description" content={description} />}
+      {description && (
+        <meta
+          key="og:description"
+          property="og:description"
+          content={description}
+        />
+      )}
       <meta key="og:type" property="og:type" content="article" />
       <meta key="og:url" property="og:url" content={url} />
       <meta key="og:site_name" property="og:site_name" content="Lurgi's blog" />
@@ -50,10 +60,18 @@ interface PostProps {
   mdxSource: MDXRemoteSerializeResult;
   postFileName: string;
   metaInfo: MetaInfo;
-  linkMetadata: { url: string; metadata: { title?: string; description?: string; image?: string } }[];
+  linkMetadata: {
+    url: string;
+    metadata: { title?: string; description?: string; image?: string };
+  }[];
 }
 
-export default function PostDetailPage({ mdxSource, postFileName, metaInfo, linkMetadata }: PostProps) {
+export default function PostDetailPage({
+  mdxSource,
+  postFileName,
+  metaInfo,
+  linkMetadata,
+}: PostProps) {
   return (
     <>
       <CustomHead {...metaInfo} />
@@ -63,7 +81,13 @@ export default function PostDetailPage({ mdxSource, postFileName, metaInfo, link
             {...mdxSource}
             components={{
               a: (props) => (
-                <FancyLink {...props} linkMetadata={linkMetadata.find((link) => link.url === props.href)?.metadata} />
+                <FancyLink
+                  {...props}
+                  linkMetadata={
+                    linkMetadata.find((link) => link.url === props.href)
+                      ?.metadata
+                  }
+                />
               ),
               code: FancyCode,
               img: FancyImage,
@@ -90,19 +114,30 @@ export function getStaticPaths() {
 }
 
 export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
-  const { postType, postFileName } = context.params as { postType: PostType; postFileName: string };
+  const { postType, postFileName } = context.params as {
+    postType: PostType;
+    postFileName: string;
+  };
   if (!postType || !postFileName) {
     return { notFound: true };
   }
 
-  const filePath = path.join(process.cwd(), "src", "statics", postType.toLowerCase(), `${postFileName}.mdx`);
+  const filePath = path.join(
+    process.cwd(),
+    "src",
+    "statics",
+    postType.toLowerCase(),
+    `${postFileName}.mdx`
+  );
   const fileContents = fs.readFileSync(filePath, "utf-8");
   if (!fileContents) {
     return { notFound: true };
   }
 
   const links = extractLinksFromMDX(fileContents);
-  const linkMetadata = await Promise.all(links.map(async (url) => ({ url, metadata: await fetchMetadata(url) })));
+  const linkMetadata = await Promise.all(
+    links.map(async (url) => ({ url, metadata: await fetchMetadata(url) }))
+  );
 
   const mdxSource = await serialize(fileContents, {
     mdxOptions: {
@@ -110,7 +145,9 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     },
   });
 
-  const articleData = posts[postType].contents?.find(({ fileName }) => fileName === postFileName);
+  const articleData = posts[postType].contents?.find(
+    ({ fileName }) => fileName === postFileName
+  );
   if (!articleData) {
     return { notFound: true };
   }

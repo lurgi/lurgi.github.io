@@ -4,7 +4,11 @@ import { posts } from "@/src/data";
 import { GetStaticProps } from "next";
 import clsx from "clsx";
 import { DATABASE_ID, DatabaseKey } from "@/src/notion";
-import { getPageWithCache, NotionPageMetadata, queryDatabaseWithCache } from "@/utils/notionClient";
+import {
+  getPageWithCache,
+  NotionPageMetadata,
+  queryDatabaseWithCache,
+} from "@/utils/notionClient";
 import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import { sortByDateDesc } from "@/utils/sortByDate";
 
@@ -13,7 +17,10 @@ interface PostListPageProps {
   notionData: ({ id: string } & NotionPageMetadata)[];
 }
 
-export default function PostListPage({ postType, notionData }: PostListPageProps) {
+export default function PostListPage({
+  postType,
+  notionData,
+}: PostListPageProps) {
   const postData = posts[postType];
   const sortedNotionData = sortByDateDesc(notionData);
 
@@ -65,7 +72,9 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     return { notFound: true };
   }
 
-  const notionDatabaseId = await queryDatabaseWithCache(DATABASE_ID[postType as DatabaseKey]);
+  const notionDatabaseId = await queryDatabaseWithCache(
+    DATABASE_ID[postType as DatabaseKey]
+  );
   if (!notionDatabaseId)
     return {
       props: {
@@ -73,7 +82,10 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
       },
     };
   const dbIds = notionDatabaseId.results
-    .filter((page): page is PageObjectResponse => "public_url" in page && !!page.public_url)
+    .filter(
+      (page): page is PageObjectResponse =>
+        "public_url" in page && !!page.public_url
+    )
     .map((page) => page.id);
   const metadataList = await Promise.all(
     dbIds.map(async (id) => {

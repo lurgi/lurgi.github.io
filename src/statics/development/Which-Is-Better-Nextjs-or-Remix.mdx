@@ -91,7 +91,6 @@ Next.js는 Vercel에서 개발한 React 기반의 풀스택 프레임워크로, 
 
 - **SSR(서버사이드 렌더링)과 SSG(정적 사이트 생성)**
   Next.js는 다양한 데이터 페칭 방법을 제공하여 유연하게 SSR 및 SSG를 구현할 수 있습니다.
-
   - `getServerSideProps`: 각 요청마다 서버에서 데이터를 받아 페이지를 렌더링합니다. 이는 동적 데이터를 필요로 하는 경우에 유용하며, 페이지가 요청될 때마다 새로운 데이터를 받아 처리합니다.
 
     ```tsx
@@ -110,7 +109,9 @@ Next.js는 Vercel에서 개발한 React 기반의 풀스택 프레임워크로, 
       return { props: { repo } };
     }) satisfies GetServerSideProps<{ repo: Repo }>;
 
-    export default function Page({ repo }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    export default function Page({
+      repo,
+    }: InferGetServerSidePropsType<typeof getServerSideProps>) {
       return (
         <main>
           <p>{repo.stargazers_count}</p>
@@ -140,7 +141,9 @@ Next.js는 Vercel에서 개발한 React 기반의 풀스택 프레임워크로, 
       repo: Repo;
     }>;
 
-    export default function Page({ repo }: InferGetStaticPropsType<typeof getStaticProps>) {
+    export default function Page({
+      repo,
+    }: InferGetStaticPropsType<typeof getStaticProps>) {
       return repo.stargazers_count;
     }
     ```
@@ -210,7 +213,16 @@ Remix는 2022년에 React Router의 창립자들이 만든 비교적 새로운 �
 
   ```tsx
   import { json } from "@remix-run/node";
-  import { Form, Link, Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
+  import {
+    Form,
+    Link,
+    Links,
+    Meta,
+    Outlet,
+    Scripts,
+    ScrollRestoration,
+    useLoaderData,
+  } from "@remix-run/react";
 
   // existing imports
   import { getContacts } from "./data";
@@ -326,7 +338,6 @@ Remix는 2022년에 React Router의 창립자들이 만든 비교적 새로운 �
   ```
 
   이 방법의 장점은 다음과 같습니다.
-
   - JavaScript가 비활성화되어도 기본적인 폼 제출이 작동합니다.
   - 점진적 향상(Progressive enhancement)을 쉽게 구현할 수 있습니다.
   - 웹 표준을 따르므로 다양한 클라이언트와 호환됩니다.

@@ -44,7 +44,11 @@ export default function Home({ photos, notionData }: HomeProps) {
                   )
               ),
               ...(posts[type].contents || []).map((post) => (
-                <PostPreview url={`/${post.type}/${post.fileName}`} key={`post-${post.fileName}`} post={post} />
+                <PostPreview
+                  url={`/${post.type}/${post.fileName}`}
+                  key={`post-${post.fileName}`}
+                  post={post}
+                />
               )),
             ].slice(0, 5)}
           </div>
@@ -60,7 +64,11 @@ export async function getStaticProps() {
   const mediaIds = await getMediaIds();
   const instagramIds = mediaIds.map(({ id }) => id);
 
-  const results = await Promise.all(instagramIds.slice(0, 20).map((instagramId) => getMediaDetail({ instagramId })));
+  const results = await Promise.all(
+    instagramIds
+      .slice(0, 20)
+      .map((instagramId) => getMediaDetail({ instagramId }))
+  );
   const photos = results.flatMap((v) => v).filter((v) => !!v);
 
   const notionData = await Promise.all(

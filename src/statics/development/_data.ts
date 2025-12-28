@@ -1,8 +1,10 @@
 const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
-    title: "Next.js에서 useSWR과 iframe을 함께 사용할 때 발생한 무한 루프 문제 해결하기",
-    fileName: "Fixing-Infinite-Loop-Issue-When-Using-useSWR-and-iframe-in-Nextjs",
+    title:
+      "Next.js에서 useSWR과 iframe을 함께 사용할 때 발생한 무한 루프 문제 해결하기",
+    fileName:
+      "Fixing-Infinite-Loop-Issue-When-Using-useSWR-and-iframe-in-Nextjs",
     date: "2025-03-09",
     description:
       "Next.js에서 useSWR을 사용해 데이터를 가져오고, iframe을 활용해 이메일 템플릿을 미리보기로 표시할 때 발생하는 무한 루프 문제를 해결하는 방법을 알아봅니다.",
@@ -176,7 +178,8 @@ const DEVELOPMENT: PostPreview[] = [
   },
   {
     type: "Development",
-    title: "[Apollo Basic] Apollo Client를 이용하여 Supabase GraphQL 요청 보내기",
+    title:
+      "[Apollo Basic] Apollo Client를 이용하여 Supabase GraphQL 요청 보내기",
     fileName: "Apollo-Basic-Apollo-Client-Using-Supabase-GraphQL-Request",
     date: "2024-11-27",
   },
@@ -194,14 +197,16 @@ const DEVELOPMENT: PostPreview[] = [
   },
   {
     type: "Development",
-    title: "PopoverMenu 컴포넌트의 createPortal과 합성 이벤트 문제 해결 및 자식 요소 컴포넌트 렌더러 만들기",
+    title:
+      "PopoverMenu 컴포넌트의 createPortal과 합성 이벤트 문제 해결 및 자식 요소 컴포넌트 렌더러 만들기",
     fileName: "Popover-Menu-Create-Portal-Event-Fix-and-Child-Renderer",
     date: "2024-11-16",
   },
   {
     type: "Development",
     title: "크루루 서비스의 자동 로그인 문제와 Tanstack Query 캐싱 이슈 해결기",
-    fileName: "Resolving-Auto-Login-Issues-and-TanStack-Query-Caching-Challenges-in-the-Cruru-Service",
+    fileName:
+      "Resolving-Auto-Login-Issues-and-TanStack-Query-Caching-Challenges-in-the-Cruru-Service",
     date: "2024-11-13",
   },
   {
@@ -219,7 +224,8 @@ const DEVELOPMENT: PostPreview[] = [
   {
     type: "Development",
     title: "옵저버 패턴과 Tanstack Query에서의 옵저버 패턴",
-    fileName: "Observer-Pattern-and-the-Use-of-Observer-Pattern-in-TanStack-Query",
+    fileName:
+      "Observer-Pattern-and-the-Use-of-Observer-Pattern-in-TanStack-Query",
     date: "2024-04-08",
   },
 ];

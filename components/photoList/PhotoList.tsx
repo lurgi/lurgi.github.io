@@ -14,7 +14,11 @@ export default function PhotoList({ photos }: PhotoListProps) {
       <div className={styles["photos_container"]}>
         {photos.slice(0, 15).map(({ id, media_url }) => (
           <div key={id} className={styles["photo_wrapper"]}>
-            <img src={media_url} className={styles.photo} alt="instagram photo" />
+            <img
+              src={media_url}
+              className={styles.photo}
+              alt="instagram photo"
+            />
           </div>
         ))}
       </div>

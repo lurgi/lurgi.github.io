@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+.vercel
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+

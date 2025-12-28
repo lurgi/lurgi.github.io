@@ -1,5 +1,8 @@
 import { Client } from "@notionhq/client";
-import { PageObjectResponse, QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
+import {
+  PageObjectResponse,
+  QueryDatabaseResponse,
+} from "@notionhq/client/build/src/api-endpoints";
 import { NotionAPI } from "notion-client";
 import { type ExtendedRecordMap } from "notion-types";
 import { getPageImageUrls, getPageProperty, getPageTitle } from "notion-utils";
@@ -20,7 +23,13 @@ export const notionClient = new NotionAPI({
           const url = request.url.toString();
 
           if (url.includes("/api/v3/syncRecordValues")) {
-            return new Request(url.replace("/api/v3/syncRecordValues", "/api/v3/syncRecordValuesMain"), options);
+            return new Request(
+              url.replace(
+                "/api/v3/syncRecordValues",
+                "/api/v3/syncRecordValuesMain"
+              ),
+              options
+            );
           }
 
           return request;
@@ -33,7 +42,9 @@ export const notionClient = new NotionAPI({
 /* database에 따른 각 페이지 id를 가져오는 함수*/
 const databaseQueryCache = new Map();
 
-export async function queryDatabaseWithCache(database_id: string): Promise<QueryDatabaseResponse> {
+export async function queryDatabaseWithCache(
+  database_id: string
+): Promise<QueryDatabaseResponse> {
   if (databaseQueryCache.has(database_id)) {
     return databaseQueryCache.get(database_id);
   }
@@ -65,16 +76,42 @@ export async function getPageWithCache(pageId: string): Promise<{
   }
 
   const recordMap = await notionClient.getPage(pageId);
-  pageQueryCache.set(pageId, { recordMap, metadata: getMetadata({ recordMap, pageId }) });
+  pageQueryCache.set(pageId, {
+    recordMap,
+    metadata: getMetadata({ recordMap, pageId }),
+  });
   return { recordMap, metadata: getMetadata({ recordMap, pageId }) };
 }
 
-function getMetadata({ recordMap, pageId }: { recordMap: ExtendedRecordMap; pageId: string }) {
+function getMetadata({
+  recordMap,
+  pageId,
+}: {
+  recordMap: ExtendedRecordMap;
+  pageId: string;
+}) {
   const title = getPageTitle(recordMap);
-  const description = getPageProperty("설명", recordMap.block[pageId]?.value, recordMap);
-  const date = format(new Date(getPageProperty("날짜", recordMap.block[pageId]?.value, recordMap)), "yyyy-MM-dd");
-  const keywords = getPageProperty("키워드", recordMap.block[pageId]?.value, recordMap);
-  const author = getPageProperty("저자", recordMap.block[pageId]?.value, recordMap);
+  const description = getPageProperty(
+    "설명",
+    recordMap.block[pageId]?.value,
+    recordMap
+  );
+  const date = format(
+    new Date(
+      getPageProperty("날짜", recordMap.block[pageId]?.value, recordMap)
+    ),
+    "yyyy-MM-dd"
+  );
+  const keywords = getPageProperty(
+    "키워드",
+    recordMap.block[pageId]?.value,
+    recordMap
+  );
+  const author = getPageProperty(
+    "저자",
+    recordMap.block[pageId]?.value,
+    recordMap
+  );
   const image = getImageUrl(recordMap);
 
   return {
@@ -88,10 +125,15 @@ function getMetadata({ recordMap, pageId }: { recordMap: ExtendedRecordMap; page
 }
 
 export async function getPagePreviewData(postType: PostType) {
-  const notionDatabaseId = await queryDatabaseWithCache(DATABASE_ID[postType as DatabaseKey]);
+  const notionDatabaseId = await queryDatabaseWithCache(
+    DATABASE_ID[postType as DatabaseKey]
+  );
   if (!notionDatabaseId) return;
   const dbIds = notionDatabaseId.results
-    .filter((page): page is PageObjectResponse => "public_url" in page && !!page.public_url)
+    .filter(
+      (page): page is PageObjectResponse =>
+        "public_url" in page && !!page.public_url
+    )
     .map((page) => page.id);
   const metadataList = await Promise.all(
     dbIds.map(async (id) => {
@@ -105,7 +147,8 @@ export async function getPagePreviewData(postType: PostType) {
 
 function getImageUrl(recordMap: ExtendedRecordMap) {
   const image = getPageImageUrls(recordMap, {
-    mapImageUrl: (url, block) => `https://www.notion.so/image/${url}?table=block&id=${block.id}&cache=v2`,
+    mapImageUrl: (url, block) =>
+      `https://www.notion.so/image/${url}?table=block&id=${block.id}&cache=v2`,
   })[0];
   return image || null;
 }
