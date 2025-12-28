@@ -74,7 +74,7 @@ export async function getStaticProps() {
   const notionData = await Promise.all(
     DATABASE_KEYS.map(async (key) => {
       const data = await getPagePreviewData(key);
-      return { [key as PostType]: data };
+      return { [key as PostType]: data || [] };
     })
   ).then((data) => Object.assign({}, ...data));
 

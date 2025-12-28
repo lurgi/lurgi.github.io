@@ -91,16 +91,26 @@ export async function getStaticPaths() {
   const paths = [];
 
   for (const key of DATABASE_KEYS) {
-    const pages = await queryDatabaseWithCache(DATABASE_ID[key]);
+    const databaseId = DATABASE_ID[key];
+    if (!databaseId) {
+      continue;
+    }
 
-    const newPaths = pages.results.map((page) => ({
-      params: {
-        postType: key,
-        pageId: page.id,
-      },
-    }));
+    try {
+      const pages = await queryDatabaseWithCache(databaseId);
 
-    paths.push(...newPaths);
+      const newPaths = pages.results.map((page) => ({
+        params: {
+          postType: key,
+          pageId: page.id,
+        },
+      }));
+
+      paths.push(...newPaths);
+    } catch (error) {
+      console.warn(`Failed to query database for ${key}:`, error);
+      continue;
+    }
   }
 
   return {

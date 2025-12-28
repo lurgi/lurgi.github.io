@@ -72,32 +72,52 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     return { notFound: true };
   }
 
-  const notionDatabaseId = await queryDatabaseWithCache(
-    DATABASE_ID[postType as DatabaseKey]
-  );
-  if (!notionDatabaseId)
+  const databaseId = DATABASE_ID[postType as DatabaseKey];
+  if (!databaseId) {
     return {
       props: {
         postType,
+        notionData: [],
       },
     };
-  const dbIds = notionDatabaseId.results
-    .filter(
-      (page): page is PageObjectResponse =>
-        "public_url" in page && !!page.public_url
-    )
-    .map((page) => page.id);
-  const metadataList = await Promise.all(
-    dbIds.map(async (id) => {
-      const res = await getPageWithCache(id);
-      return { ...res.metadata, id };
-    })
-  );
+  }
 
-  return {
-    props: {
-      postType,
-      notionData: metadataList,
-    },
-  };
+  try {
+    const notionDatabaseId = await queryDatabaseWithCache(databaseId);
+    if (!notionDatabaseId) {
+      return {
+        props: {
+          postType,
+          notionData: [],
+        },
+      };
+    }
+    const dbIds = notionDatabaseId.results
+      .filter(
+        (page): page is PageObjectResponse =>
+          "public_url" in page && !!page.public_url
+      )
+      .map((page) => page.id);
+    const metadataList = await Promise.all(
+      dbIds.map(async (id) => {
+        const res = await getPageWithCache(id);
+        return { ...res.metadata, id };
+      })
+    );
+
+    return {
+      props: {
+        postType,
+        notionData: metadataList,
+      },
+    };
+  } catch (error) {
+    console.warn(`Failed to query database for ${postType}:`, error);
+    return {
+      props: {
+        postType,
+        notionData: [],
+      },
+    };
+  }
 }

@@ -13,7 +13,8 @@ export const posts: Record<PostType, Post> = {
     contents: DEVELOPMENT,
   },
   YogaLogs: {
-    description: "나만의 속도로 성장하는 과정을 담은 월지입니다.",
+    description:
+      "요가 수련 기록. 나만의 속도로 성장하는 과정을 담은 월지입니다.",
   },
   Insights: {
     description: "삶에서 얻은 지혜와 통찰을 다양한 관점에서 풀어냅니다.",

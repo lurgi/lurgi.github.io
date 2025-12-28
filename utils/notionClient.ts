@@ -125,24 +125,32 @@ function getMetadata({
 }
 
 export async function getPagePreviewData(postType: PostType) {
-  const notionDatabaseId = await queryDatabaseWithCache(
-    DATABASE_ID[postType as DatabaseKey]
-  );
-  if (!notionDatabaseId) return;
-  const dbIds = notionDatabaseId.results
-    .filter(
-      (page): page is PageObjectResponse =>
-        "public_url" in page && !!page.public_url
-    )
-    .map((page) => page.id);
-  const metadataList = await Promise.all(
-    dbIds.map(async (id) => {
-      const res = await getPageWithCache(id);
-      return { ...res.metadata, id };
-    })
-  );
+  const databaseId = DATABASE_ID[postType as DatabaseKey];
+  if (!databaseId) {
+    return [];
+  }
 
-  return metadataList;
+  try {
+    const notionDatabaseId = await queryDatabaseWithCache(databaseId);
+    if (!notionDatabaseId) return [];
+    const dbIds = notionDatabaseId.results
+      .filter(
+        (page): page is PageObjectResponse =>
+          "public_url" in page && !!page.public_url
+      )
+      .map((page) => page.id);
+    const metadataList = await Promise.all(
+      dbIds.map(async (id) => {
+        const res = await getPageWithCache(id);
+        return { ...res.metadata, id };
+      })
+    );
+
+    return metadataList;
+  } catch (error) {
+    console.warn(`Failed to get page preview data for ${postType}:`, error);
+    return [];
+  }
 }
 
 function getImageUrl(recordMap: ExtendedRecordMap) {
