@@ -15,8 +15,12 @@ function Tweet({ id }: { id: string }) {
 
 export function NotionPage({
   recordMap,
+  title,
+  date,
 }: {
   recordMap: ExtendedRecordMap;
+  title: string;
+  date: string;
   previewImagesEnabled?: boolean;
   rootPageId?: string;
   rootDomain?: string;
@@ -33,6 +37,12 @@ export function NotionPage({
         fullPage={true}
         darkMode={false}
         forceCustomImages={true}
+        pageTitle={
+          <span className={styles["notion-page-title-wrapper"]}>
+            <span className={styles["notion-page-title-text"]}>{title}</span>
+            <small className={styles["notion-page-date"]}>{date}</small>
+          </span>
+        }
         components={{
           Tweet,
           Code,

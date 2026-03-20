@@ -85,7 +85,11 @@ export default function PostDetailPage({
         url={`https://lurgi.github.io/${postType}/notion/${pageId}`}
       />
       <div className={clsx(styles.postDetailContainer, "fade-in")}>
-        <NotionPage recordMap={recordMap} />
+        <NotionPage
+          recordMap={recordMap}
+          title={metadata.title}
+          date={metadata.date}
+        />
         <Giscus postFileName={metadata.title || pageId} />
       </div>
     </>
