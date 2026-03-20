@@ -98,6 +98,8 @@ export default function Aside({ selectedNotionPosts }: AsideProps) {
           ))}
         </ul>
 
+        <SelectedNotionPosts posts={selectedNotionPosts} />
+
         <ul className={styles["hyper-link-container"]}>
           {LINK_TYPES.map((type) => LINK[type]).map(({ href, icon }, idx) => (
             <li key={idx}>
@@ -112,8 +114,6 @@ export default function Aside({ selectedNotionPosts }: AsideProps) {
             </li>
           ))}
         </ul>
-
-        <SelectedNotionPosts posts={selectedNotionPosts} />
       </nav>
     </aside>
   );
