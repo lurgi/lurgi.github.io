@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useLayoutEffect, useRef } from "react";
+import { CSSProperties, useState, useLayoutEffect, useRef } from "react";
 
 export default function LayoutShiftMinimizedImage({
   src,
   alt = "",
+  style,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   priority, // 무시
   onLoad,
@@ -13,19 +14,39 @@ export default function LayoutShiftMinimizedImage({
 }: React.ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [isBookmarkThumbnail, setIsBookmarkThumbnail] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
+    setIsLoaded(false);
+    setHasError(false);
+
+    const isBookmark =
+      wrapperRef.current?.parentElement?.classList.contains(
+        "notion-bookmark-image"
+      ) ?? false;
+
+    setIsBookmarkThumbnail(isBookmark);
+
     const img = imgRef.current;
     if (!img) return;
 
     if (img.complete) {
-      setIsLoaded(true);
+      if (img.naturalWidth === 0) {
+        setHasError(true);
+        setIsLoaded(true);
+      } else {
+        setIsLoaded(true);
+      }
       return;
     }
 
-    const handleLoad = () => {
+    const handleLoad = (event: Event) => {
       setIsLoaded(true);
+      onLoad?.(
+        event as unknown as React.SyntheticEvent<HTMLImageElement, Event>
+      );
     };
 
     const handleError = () => {
@@ -42,19 +63,44 @@ export default function LayoutShiftMinimizedImage({
     };
   }, [src, onLoad]);
 
+  if (isBookmarkThumbnail && hasError) {
+    return null;
+  }
+
+  const visibility: CSSProperties["visibility"] =
+    isLoaded && !hasError ? "visible" : "hidden";
+
+  const mergedStyle: CSSProperties = isBookmarkThumbnail
+    ? {
+        width: "100%",
+        height: "100%",
+        display: "block",
+        objectFit: "cover" as const,
+        visibility,
+        ...style,
+      }
+    : {
+        width: "100%",
+        height: "auto",
+        visibility,
+        ...style,
+      };
+
   return (
-    <div style={{ position: "relative", width: "100%" }}>
+    <div
+      ref={wrapperRef}
+      style={{
+        position: "relative",
+        width: "100%",
+        height: isBookmarkThumbnail ? "100%" : undefined,
+      }}
+    >
       <img
         ref={imgRef}
         src={src}
         alt={alt}
-        style={{
-          width: "100%",
-          height: "auto",
-          visibility: isLoaded && !hasError ? "visible" : "hidden",
-          ...props.style,
-        }}
         {...props}
+        style={mergedStyle}
       />
 
       {!isLoaded && !hasError && (
@@ -66,7 +112,8 @@ export default function LayoutShiftMinimizedImage({
             alignItems: "center",
             justifyContent: "center",
             padding: "32px",
-            minHeight: "200px",
+            minHeight: isBookmarkThumbnail ? "100%" : "200px",
+            height: isBookmarkThumbnail ? "100%" : undefined,
           }}
         >
           <div

@@ -1,3 +1,15 @@
+.notion-container {
+  font-family: inherit;
+  --notion-font: inherit;
+}
+
+.notion-container :global(.notion),
+.notion-container :global(.notion-page),
+.notion-container :global(.notion-page-content),
+.notion-container :global(.notion-page-content-inner) {
+  font-family: inherit;
+}
+
 .notion-container :global(.notion-page-icon-hero) {
   display: none !important;
 }
