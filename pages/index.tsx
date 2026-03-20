@@ -7,9 +7,14 @@ import PostPreview from "@/components/preview/PostPreview";
 import { posts, postTypes } from "@/src/data";
 import { getPagePreviewData, NotionPageMetadata } from "@/utils/notionClient";
 import { DATABASE_KEYS } from "@/src/notion";
+import {
+  getSelectedNotionPosts,
+  SelectedNotionPost,
+} from "@/utils/getSelectedNotionPosts";
 import { sortByDateDesc } from "@/utils/sortByDate";
 
 interface HomeProps {
+  selectedNotionPosts: SelectedNotionPost[];
   notionData: Record<PostType, ({ id: string } & NotionPageMetadata)[]>;
 }
 
@@ -56,6 +61,7 @@ export default function Home({ notionData }: HomeProps) {
 }
 
 export async function getStaticProps() {
+  const selectedNotionPosts = await getSelectedNotionPosts();
   const notionData = await Promise.all(
     DATABASE_KEYS.map(async (key) => {
       const data = await getPagePreviewData(key);
@@ -63,5 +69,5 @@ export async function getStaticProps() {
     })
   ).then((data) => Object.assign({}, ...data));
 
-  return { props: { notionData } };
+  return { props: { notionData, selectedNotionPosts } };
 }

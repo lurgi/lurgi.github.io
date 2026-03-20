@@ -9,10 +9,15 @@ import {
   NotionPageMetadata,
   queryDatabaseWithCache,
 } from "@/utils/notionClient";
+import {
+  getSelectedNotionPosts,
+  SelectedNotionPost,
+} from "@/utils/getSelectedNotionPosts";
 import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import { sortByDateDesc } from "@/utils/sortByDate";
 
 interface PostListPageProps {
+  selectedNotionPosts: SelectedNotionPost[];
   postType: PostType;
   notionData: ({ id: string } & NotionPageMetadata)[];
 }
@@ -67,6 +72,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
+  const selectedNotionPosts = await getSelectedNotionPosts();
   const postType = context.params?.postType as PostType;
   if (!postType || !Object.keys(posts).includes(postType)) {
     return { notFound: true };
@@ -76,6 +82,7 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
   if (!databaseId) {
     return {
       props: {
+        selectedNotionPosts,
         postType,
         notionData: [],
       },
@@ -87,6 +94,7 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     if (!notionDatabaseId) {
       return {
         props: {
+          selectedNotionPosts,
           postType,
           notionData: [],
         },
@@ -107,6 +115,7 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
 
     return {
       props: {
+        selectedNotionPosts,
         postType,
         notionData: metadataList,
       },
@@ -115,6 +124,7 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     console.warn(`Failed to query database for ${postType}:`, error);
     return {
       props: {
+        selectedNotionPosts,
         postType,
         notionData: [],
       },

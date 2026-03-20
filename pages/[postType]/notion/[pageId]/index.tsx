@@ -9,6 +9,10 @@ import {
   NotionPageMetadata,
   queryDatabaseWithCache,
 } from "@/utils/notionClient";
+import {
+  getSelectedNotionPosts,
+  SelectedNotionPost,
+} from "@/utils/getSelectedNotionPosts";
 import { NotionPage } from "@/components/MDXComponents/NotionPage/NotionPage";
 import Giscus from "@/components/customGiscus/CustomGiscus";
 import { DATABASE_ID, DATABASE_KEYS } from "@/src/notion";
@@ -61,6 +65,7 @@ function CustomHead({
 }
 
 interface PostProps {
+  selectedNotionPosts: SelectedNotionPost[];
   recordMap: ExtendedRecordMap;
   pageId: string;
   metadata: NotionPageMetadata;
@@ -122,6 +127,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(
   context: Parameters<GetStaticProps>[0]
 ): Promise<{ props: PostProps }> {
+  const selectedNotionPosts = await getSelectedNotionPosts();
   const { pageId, postType } = context.params as {
     pageId: string;
     postType: string;
@@ -130,6 +136,7 @@ export async function getStaticProps(
 
   return {
     props: {
+      selectedNotionPosts,
       recordMap,
       pageId,
       metadata,

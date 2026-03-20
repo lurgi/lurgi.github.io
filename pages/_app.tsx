@@ -4,6 +4,7 @@ import { Noto_Sans_KR } from "next/font/google";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Aside from "@/components/aside/Aside";
+import { SelectedNotionPost } from "@/utils/getSelectedNotionPosts";
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
@@ -11,7 +12,14 @@ const notoSansKr = Noto_Sans_KR({
   preload: true,
 });
 
-export default function MyApp({ Component, pageProps }: AppProps) {
+interface SharedPageProps {
+  selectedNotionPosts?: SelectedNotionPost[];
+}
+
+export default function MyApp({
+  Component,
+  pageProps,
+}: AppProps<SharedPageProps>) {
   return (
     <>
       <Head>
@@ -66,7 +74,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       <div className={`${notoSansKr.className} ${styles.layout}`}>
-        <Aside />
+        <Aside selectedNotionPosts={pageProps.selectedNotionPosts} />
         <main className={styles.main}>
           <Component {...pageProps} />
         </main>

@@ -1,4 +1,5 @@
 import styles from "./Aside.module.scss";
+import SelectedNotionPosts from "./SelectedNotionPosts";
 import LinkedInIcon from "@/public/linkedin.svg";
 import GithubIcon from "@/public/github.svg";
 import BrunchIcon from "@/public/brunch.svg";
@@ -7,6 +8,7 @@ import Link from "next/link";
 import { postTypes } from "@/src/data";
 import { useRouter } from "next/router";
 import { useLayoutEffect, useState } from "react";
+import { SelectedNotionPost } from "@/utils/getSelectedNotionPosts";
 
 const LINK = {
   github: {
@@ -25,7 +27,11 @@ const LINK = {
 
 const LINK_TYPES = Object.keys(LINK) as (keyof typeof LINK)[];
 
-export default function Aside() {
+interface AsideProps {
+  selectedNotionPosts?: SelectedNotionPost[];
+}
+
+export default function Aside({ selectedNotionPosts }: AsideProps) {
   const router = useRouter();
   const pathname = router.pathname;
   const postType = router.query.postType as string | undefined;
@@ -66,19 +72,19 @@ export default function Aside() {
         <ul className={styles["category-container"]}>
           <li>
             <Link href={"/"}>
-              <p
+              <div
                 className={
                   pathname === "/" ? styles["link-text-highlight"] : undefined
                 }
               >
                 Lurgi
-              </p>
+              </div>
             </Link>
           </li>
           {postTypes.map((type) => (
             <li key={type}>
               <Link href={`/${type}`}>
-                <p
+                <div
                   className={
                     postType === type
                       ? styles["link-text-highlight"]
@@ -86,7 +92,7 @@ export default function Aside() {
                   }
                 >
                   {type}
-                </p>
+                </div>
               </Link>
             </li>
           ))}
@@ -106,6 +112,8 @@ export default function Aside() {
             </li>
           ))}
         </ul>
+
+        <SelectedNotionPosts posts={selectedNotionPosts} />
       </nav>
     </aside>
   );

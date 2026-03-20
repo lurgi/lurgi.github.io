@@ -1,0 +1,50 @@
+.section {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .section {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  text-decoration: none;
+}
+
+.title {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.date {
+  font-size: 0.76rem;
+  color: #666;
+  line-height: 1.35;
+}

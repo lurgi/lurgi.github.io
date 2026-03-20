@@ -1,7 +1,7 @@
 @media (min-width: 1024px) {
   .aside {
     transform: translateX(-28rem);
-    width: 10rem;
+    width: 13rem;
   }
 
   .nav {
@@ -48,7 +48,15 @@
 .nav {
   display: flex;
   max-width: 42rem;
-  margin: 0 auto;
+  margin: 1rem auto;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.category-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 @media (max-width: 1024px) {
@@ -71,6 +79,7 @@
 
     .category-container {
       display: flex;
+      flex-direction: row;
       gap: 1rem;
     }
   }

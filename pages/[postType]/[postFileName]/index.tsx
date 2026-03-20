@@ -17,6 +17,10 @@ import clsx from "clsx";
 import Head from "next/head";
 import { extractLinksFromMDX } from "@/utils/extractLinksFromMDX";
 import { fetchMetadata } from "@/utils/fetchMetaData";
+import {
+  getSelectedNotionPosts,
+  SelectedNotionPost,
+} from "@/utils/getSelectedNotionPosts";
 
 interface MetaInfo {
   title: string;
@@ -57,6 +61,7 @@ function CustomHead({ title, description, keywords, url, date }: MetaInfo) {
 }
 
 interface PostProps {
+  selectedNotionPosts: SelectedNotionPost[];
   mdxSource: MDXRemoteSerializeResult;
   postFileName: string;
   metaInfo: MetaInfo;
@@ -114,6 +119,7 @@ export function getStaticPaths() {
 }
 
 export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
+  const selectedNotionPosts = await getSelectedNotionPosts();
   const { postType, postFileName } = context.params as {
     postType: PostType;
     postFileName: string;
@@ -161,6 +167,12 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
   };
 
   return {
-    props: { mdxSource, postFileName, metaInfo, linkMetadata },
+    props: {
+      selectedNotionPosts,
+      mdxSource,
+      postFileName,
+      metaInfo,
+      linkMetadata,
+    },
   };
 }
