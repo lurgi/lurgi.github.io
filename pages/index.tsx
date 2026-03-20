@@ -2,21 +2,18 @@ import styles from "@/styles/PostPartList.module.css";
 import Link from "next/link";
 
 import Introduce from "@/components/introduce/Introduce";
-import PhotoList from "@/components/photoList/PhotoList";
 import PostPreview from "@/components/preview/PostPreview";
 
-import { getMediaDetail, getMediaIds, MediaDetail } from "@/src/api/instagram";
 import { posts, postTypes } from "@/src/data";
 import { getPagePreviewData, NotionPageMetadata } from "@/utils/notionClient";
 import { DATABASE_KEYS } from "@/src/notion";
 import { sortByDateDesc } from "@/utils/sortByDate";
 
 interface HomeProps {
-  photos: MediaDetail[];
   notionData: Record<PostType, ({ id: string } & NotionPageMetadata)[]>;
 }
 
-export default function Home({ photos, notionData }: HomeProps) {
+export default function Home({ notionData }: HomeProps) {
   return (
     <div className="fade-in">
       <Introduce />
@@ -53,24 +50,12 @@ export default function Home({ photos, notionData }: HomeProps) {
             ].slice(0, 5)}
           </div>
         ))}
-
-        <PhotoList photos={photos} />
       </div>
     </div>
   );
 }
 
 export async function getStaticProps() {
-  const mediaIds = await getMediaIds();
-  const instagramIds = mediaIds.map(({ id }) => id);
-
-  const results = await Promise.all(
-    instagramIds
-      .slice(0, 20)
-      .map((instagramId) => getMediaDetail({ instagramId }))
-  );
-  const photos = results.flatMap((v) => v).filter((v) => !!v);
-
   const notionData = await Promise.all(
     DATABASE_KEYS.map(async (key) => {
       const data = await getPagePreviewData(key);
@@ -78,5 +63,5 @@ export async function getStaticProps() {
     })
   ).then((data) => Object.assign({}, ...data));
 
-  return { props: { photos, notionData } };
+  return { props: { notionData } };
 }

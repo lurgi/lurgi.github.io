@@ -31,7 +31,6 @@ jobs:
 
       - name: Debug Secrets Value
         run: |
-          echo "INSTAGRAM_ACCESS_TOKEN=${{ secrets.INSTAGRAM_ACCESS_TOKEN }}" || echo "INSTAGRAM_ACCESS_TOKEN is empty!"
           echo "GA_ID=${{ secrets.GA_ID }}" || echo "GA_ID is empty!"
           echo "NOTION_SECRET=${{ secrets.NOTION_SECRET }}" || echo "NOTION_SECRET is empty!"
           echo "NOTION_TOKEN_V2=${{ secrets.NOTION_TOKEN_V2 }}" || echo "NOTION_TOKEN_V2 is empty!"
@@ -44,8 +43,7 @@ jobs:
 
       - name: Set up .env file
         run: |
-          echo "NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN=${{ secrets.INSTAGRAM_ACCESS_TOKEN }}" > .env
-          echo "NEXT_PUBLIC_GA_ID=${{ secrets.GA_ID }}" >> .env
+          echo "NEXT_PUBLIC_GA_ID=${{ secrets.GA_ID }}" > .env
           echo "NOTION_SECRET=${{ secrets.NOTION_SECRET }}" >> .env
           echo "NOTION_TOKEN_V2=${{ secrets.NOTION_TOKEN_V2 }}" >> .env
           echo "NOTION_USER_ID=${{ secrets.NOTION_USER_ID }}" >> .env

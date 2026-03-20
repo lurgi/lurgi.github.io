@@ -12,7 +12,6 @@ type PostPreview = {
 
 declare namespace NodeJS {
   interface ProcessEnv {
-    NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN: string;
     NEXT_PUBLIC_GA_ID: string;
     NOTION_SECRET: string;
     NOTION_TOKEN_V2: string;

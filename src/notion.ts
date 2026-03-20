@@ -12,5 +12,4 @@ export const DATABASE_ID: Record<DatabaseKey, string> = {
   YogaLogs: process.env.NOTION_DATABASE_YOGA_LOGS_ID || "",
   Insights: process.env.NOTION_DATABASE_INSIGHTS_ID || "",
   Reading: process.env.NOTION_DATABASE_READING_ID || "",
-  // Study: process.env.NOTION_DATABASE_STUDY_ID,
 };
