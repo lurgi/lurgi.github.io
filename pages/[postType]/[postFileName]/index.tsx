@@ -15,8 +15,6 @@ import fs from "fs";
 import path from "path";
 import clsx from "clsx";
 import Head from "next/head";
-import { extractLinksFromMDX } from "@/utils/extractLinksFromMDX";
-import { fetchMetadata } from "@/utils/fetchMetaData";
 import {
   getSelectedNotionPosts,
   SelectedNotionPost,
@@ -65,17 +63,12 @@ interface PostProps {
   mdxSource: MDXRemoteSerializeResult;
   postFileName: string;
   metaInfo: MetaInfo;
-  linkMetadata: {
-    url: string;
-    metadata: { title?: string; description?: string; image?: string };
-  }[];
 }
 
 export default function PostDetailPage({
   mdxSource,
   postFileName,
   metaInfo,
-  linkMetadata,
 }: PostProps) {
   return (
     <>
@@ -85,15 +78,7 @@ export default function PostDetailPage({
           <MDXRemote
             {...mdxSource}
             components={{
-              a: (props) => (
-                <FancyLink
-                  {...props}
-                  linkMetadata={
-                    linkMetadata.find((link) => link.url === props.href)
-                      ?.metadata
-                  }
-                />
-              ),
+              a: (props) => <FancyLink {...props} />,
               code: FancyCode,
               img: FancyImage,
             }}
@@ -140,11 +125,6 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
     return { notFound: true };
   }
 
-  const links = extractLinksFromMDX(fileContents);
-  const linkMetadata = await Promise.all(
-    links.map(async (url) => ({ url, metadata: await fetchMetadata(url) }))
-  );
-
   const mdxSource = await serialize(fileContents, {
     mdxOptions: {
       remarkPlugins: [remarkGfm],
@@ -172,7 +152,6 @@ export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
       mdxSource,
       postFileName,
       metaInfo,
-      linkMetadata,
     },
   };
 }
