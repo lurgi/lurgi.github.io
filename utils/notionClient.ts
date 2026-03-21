@@ -40,21 +40,39 @@ export const notionClient = new NotionAPI({
 });
 
 /* database에 따른 각 페이지 id를 가져오는 함수*/
-const databaseQueryCache = new Map();
+const databaseQueryCache = new Map<string, QueryDatabaseResponse>();
+const databaseQueryPromiseCache = new Map<
+  string,
+  Promise<QueryDatabaseResponse>
+>();
 
 export async function queryDatabaseWithCache(
   database_id: string
 ): Promise<QueryDatabaseResponse> {
-  if (databaseQueryCache.has(database_id)) {
-    return databaseQueryCache.get(database_id);
+  const cachedDatabaseQuery = databaseQueryCache.get(database_id);
+  if (cachedDatabaseQuery) {
+    return cachedDatabaseQuery;
   }
 
-  const result = await notionOfficialClient.databases.query({
-    database_id,
-  });
+  const pendingDatabaseQuery = databaseQueryPromiseCache.get(database_id);
+  if (pendingDatabaseQuery) {
+    return pendingDatabaseQuery;
+  }
 
-  databaseQueryCache.set(database_id, result);
-  return result;
+  const databaseQueryPromise = notionOfficialClient.databases
+    .query({
+      database_id,
+    })
+    .then((result) => {
+      databaseQueryCache.set(database_id, result);
+      return result;
+    })
+    .finally(() => {
+      databaseQueryPromiseCache.delete(database_id);
+    });
+
+  databaseQueryPromiseCache.set(database_id, databaseQueryPromise);
+  return databaseQueryPromise;
 }
 
 /* 개별 페이지에 대한 RecordMap과 Metadata를 가져오는 함수*/
@@ -65,22 +83,42 @@ export interface NotionPageMetadata {
   keywords: string | null;
   author: string | null;
 }
-const pageQueryCache = new Map();
-
-export async function getPageWithCache(pageId: string): Promise<{
+type PageWithMetadata = {
   recordMap: ExtendedRecordMap;
   metadata: NotionPageMetadata;
-}> {
-  if (pageQueryCache.has(pageId)) {
-    return pageQueryCache.get(pageId);
+};
+
+const pageQueryCache = new Map<string, PageWithMetadata>();
+const pageQueryPromiseCache = new Map<string, Promise<PageWithMetadata>>();
+
+export async function getPageWithCache(
+  pageId: string
+): Promise<PageWithMetadata> {
+  const cachedPage = pageQueryCache.get(pageId);
+  if (cachedPage) {
+    return cachedPage;
   }
 
-  const recordMap = await notionClient.getPage(pageId);
-  pageQueryCache.set(pageId, {
-    recordMap,
-    metadata: getMetadata({ recordMap, pageId }),
-  });
-  return { recordMap, metadata: getMetadata({ recordMap, pageId }) };
+  const pendingPage = pageQueryPromiseCache.get(pageId);
+  if (pendingPage) {
+    return pendingPage;
+  }
+
+  const pageQueryPromise = notionClient
+    .getPage(pageId)
+    .then((recordMap) => {
+      const metadata = getMetadata({ recordMap, pageId });
+      const pageWithMetadata = { recordMap, metadata };
+
+      pageQueryCache.set(pageId, pageWithMetadata);
+      return pageWithMetadata;
+    })
+    .finally(() => {
+      pageQueryPromiseCache.delete(pageId);
+    });
+
+  pageQueryPromiseCache.set(pageId, pageQueryPromise);
+  return pageQueryPromise;
 }
 
 function getMetadata({
