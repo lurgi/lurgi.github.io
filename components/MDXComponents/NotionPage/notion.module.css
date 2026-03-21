@@ -18,6 +18,18 @@
   padding: 0px 0px 32px !important;
 }
 
+.notion-container :global(.notion-text) {
+  line-height: 1.72;
+}
+
+.notion-container :global(.notion-text + .notion-text) {
+  margin-top: 0.35rem;
+}
+
+.notion-container :global(.notion-list li) {
+  line-height: 1.7;
+}
+
 .notion-page-title-wrapper {
   display: inline-flex;
   flex-direction: column;
