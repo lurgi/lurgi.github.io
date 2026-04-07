@@ -29,18 +29,6 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Debug Secrets Value
-        run: |
-          echo "GA_ID=${{ secrets.GA_ID }}" || echo "GA_ID is empty!"
-          echo "NOTION_SECRET=${{ secrets.NOTION_SECRET }}" || echo "NOTION_SECRET is empty!"
-          echo "NOTION_TOKEN_V2=${{ secrets.NOTION_TOKEN_V2 }}" || echo "NOTION_TOKEN_V2 is empty!"
-          echo "NOTION_USER_ID=${{ secrets.NOTION_USER_ID }}" || echo "NOTION_USER_ID is empty!"        
-          echo "NOTION_DATABASE_DEVELOPMENT_ID=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" || echo "NOTION_DATABASE_DEVELOPMENT_I is empty!"
-          echo "NOTION_DATABASE_YOGA_LOGS_ID=${{ secrets.NOTION_DATABASE_YOGA_LOGS_ID }}" || echo "NOTION_DATABASE_YOGA_LOGS_ID is empty!"
-          echo "NOTION_DATABASE_INSIGHTS_ID=${{ secrets.NOTION_DATABASE_INSIGHTS_ID }}" || echo "NOTION_DATABASE_INSIGHTS_ID is empty!"
-          echo "NOTION_DATABASE_READING_ID=${{ secrets.NOTION_DATABASE_READING_ID }}" || echo "NOTION_DATABASE_READING_ID is empty!"
-          echo "NOTION_DATABASE_STUDY_ID=${{ secrets.NOTION_DATABASE_STUDY_ID }}" || echo "NOTION_DATABASE_STUDY_ID is empty!"
-
       - name: Set up .env file
         run: |
           echo "NEXT_PUBLIC_GA_ID=${{ secrets.GA_ID }}" > .env
@@ -53,21 +41,26 @@ jobs:
           echo "NOTION_DATABASE_READING_ID=${{ secrets.NOTION_DATABASE_READING_ID }}" >> .env
           echo "NOTION_DATABASE_STUDY_ID=${{ secrets.NOTION_DATABASE_STUDY_ID }}" >> .env
 
-      - name: Debug .env location
-        run: cat .env || echo ".env file not found!"
-
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: List files in src/statics
-        run: find ./src/statics
+      - name: Prepare build artifacts
+        run: rm -rf .next .artifacts && mkdir -p .artifacts
 
-      - name: Clear Cache
-        run: rm -rf .next
+      - name: Run Notion preflight
+        run: npm run notion:preflight
 
       - name: Build with Next.js
         timeout-minutes: 10
         run: npm run build
+
+      - name: Upload Notion diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: notion-diagnostics
+          path: .artifacts/notion-diagnostics.ndjson
+          if-no-files-found: ignore
 
       - name: Add .nojekyll file
         run: echo > ./out/.nojekyll

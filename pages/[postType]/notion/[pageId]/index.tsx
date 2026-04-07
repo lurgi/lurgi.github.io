@@ -16,6 +16,7 @@ import {
 import { NotionPage } from "@/components/MDXComponents/NotionPage/NotionPage";
 import Giscus from "@/components/customGiscus/CustomGiscus";
 import { DATABASE_ID, DATABASE_KEYS } from "@/src/notion";
+import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 interface MetaInfo {
   title?: string | null;
@@ -102,24 +103,27 @@ export async function getStaticPaths() {
   for (const key of DATABASE_KEYS) {
     const databaseId = DATABASE_ID[key];
     if (!databaseId) {
-      continue;
+      throw new Error(`Missing Notion database ID for ${key}.`);
     }
 
-    try {
-      const pages = await queryDatabaseWithCache(databaseId);
+    const pages = await queryDatabaseWithCache(databaseId, {
+      postType: key,
+      databaseId,
+    });
 
-      const newPaths = pages.results.map((page) => ({
+    const newPaths = pages.results
+      .filter(
+        (page): page is PageObjectResponse =>
+          "public_url" in page && !!page.public_url
+      )
+      .map((page) => ({
         params: {
           postType: key,
           pageId: page.id,
         },
       }));
 
-      paths.push(...newPaths);
-    } catch (error) {
-      console.warn(`Failed to query database for ${key}:`, error);
-      continue;
-    }
+    paths.push(...newPaths);
   }
 
   return {
@@ -136,7 +140,14 @@ export async function getStaticProps(
     pageId: string;
     postType: string;
   };
-  const { recordMap, metadata } = await getPageWithCache(pageId);
+  const { recordMap, metadata } = await getPageWithCache(pageId, {
+    pageId,
+    postType: postType as PostType,
+    databaseId:
+      postType in DATABASE_ID
+        ? DATABASE_ID[postType as keyof typeof DATABASE_ID]
+        : undefined,
+  });
 
   return {
     props: {

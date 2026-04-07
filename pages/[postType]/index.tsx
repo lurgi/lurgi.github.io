@@ -3,17 +3,11 @@ import PostPreview from "@/components/preview/PostPreview";
 import { posts } from "@/src/data";
 import { GetStaticProps } from "next";
 import clsx from "clsx";
-import { DATABASE_ID, DatabaseKey } from "@/src/notion";
-import {
-  getPageWithCache,
-  NotionPageMetadata,
-  queryDatabaseWithCache,
-} from "@/utils/notionClient";
+import { getPagePreviewData, NotionPageMetadata } from "@/utils/notionClient";
 import {
   getSelectedNotionPosts,
   SelectedNotionPost,
 } from "@/utils/getSelectedNotionPosts";
-import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import { sortByDateDesc } from "@/utils/sortByDate";
 
 interface PostListPageProps {
@@ -72,62 +66,21 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context: Parameters<GetStaticProps>[0]) {
-  const selectedNotionPosts = await getSelectedNotionPosts();
   const postType = context.params?.postType as PostType;
   if (!postType || !Object.keys(posts).includes(postType)) {
     return { notFound: true };
   }
 
-  const databaseId = DATABASE_ID[postType as DatabaseKey];
-  if (!databaseId) {
-    return {
-      props: {
-        selectedNotionPosts,
-        postType,
-        notionData: [],
-      },
-    };
-  }
+  const [selectedNotionPosts, notionData] = await Promise.all([
+    getSelectedNotionPosts(),
+    getPagePreviewData(postType),
+  ]);
 
-  try {
-    const notionDatabaseId = await queryDatabaseWithCache(databaseId);
-    if (!notionDatabaseId) {
-      return {
-        props: {
-          selectedNotionPosts,
-          postType,
-          notionData: [],
-        },
-      };
-    }
-    const dbIds = notionDatabaseId.results
-      .filter(
-        (page): page is PageObjectResponse =>
-          "public_url" in page && !!page.public_url
-      )
-      .map((page) => page.id);
-    const metadataList = await Promise.all(
-      dbIds.map(async (id) => {
-        const res = await getPageWithCache(id);
-        return { ...res.metadata, id };
-      })
-    );
-
-    return {
-      props: {
-        selectedNotionPosts,
-        postType,
-        notionData: metadataList,
-      },
-    };
-  } catch (error) {
-    console.warn(`Failed to query database for ${postType}:`, error);
-    return {
-      props: {
-        selectedNotionPosts,
-        postType,
-        notionData: [],
-      },
-    };
-  }
+  return {
+    props: {
+      selectedNotionPosts,
+      postType,
+      notionData,
+    },
+  };
 }
