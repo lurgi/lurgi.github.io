@@ -52,6 +52,12 @@ export default function MyApp({
           content="https://lurgi.github.io/"
         />
         <meta key="og:image" property="og:image" content="/lurgi.webp" />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Lurgi Blog RSS"
+          href="https://lurgi.github.io/feed.xml"
+        />
 
         <link
           rel="apple-touch-icon"

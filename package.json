@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "notion:preflight": "node scripts/notion-preflight.cjs",
-    "postbuild": "next-sitemap",
+    "postbuild": "next-sitemap && node scripts/generate-feed.mjs",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
