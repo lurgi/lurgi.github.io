@@ -30,12 +30,6 @@ export default function MyApp({
           content="사용자 경험과 비즈니스 가치를 구현하는 풀스택 웹 개발자. 프론트엔드 기술력과 프로덕트 마인드로 디지털 제품을 만듭니다."
         />
         <meta
-          key="keywords"
-          name="keywords"
-          content="웹 개발자, 프로덕트 개발자, 풀스택 개발자, UX 구현, 웹 서비스 개발, 디지털 프로덕트 빌더"
-        />
-
-        <meta
           key="og:title"
           property="og:title"
           content="박정우(러기) | 프로덕트 중심의 웹 개발자"

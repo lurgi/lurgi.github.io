@@ -7,7 +7,6 @@ type PostPreview = {
   date: string;
   author?: string;
   description?: string;
-  keywords?: string[];
 };
 
 declare namespace NodeJS {

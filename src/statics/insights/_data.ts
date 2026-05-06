@@ -10,17 +10,6 @@ const INSIGHTS: PostPreview[] = [
     title: "오늘도 설득하기에 실패하셨나요?",
     fileName: "Did-You-Fail-to-Persuade-Again-Today",
     date: "2025-02-05",
-    keywords: [
-      "설득",
-      "논리적 사고",
-      "유추",
-      "논리 갑질",
-      "커뮤니케이션",
-      "사고의 본질",
-      "논리적 표현",
-      "효과적인 설득",
-      "말 잘하는 방법",
-    ],
   },
   {
     type: "Insights",

@@ -21,7 +21,6 @@ import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 interface MetaInfo {
   title?: string | null;
   description?: string | null;
-  keywords?: string | null;
   url?: string | null;
   date?: string | null;
   image?: string | null;
@@ -30,7 +29,6 @@ interface MetaInfo {
 function CustomHead({
   title,
   description,
-  keywords,
   url,
   date,
   image,
@@ -41,9 +39,6 @@ function CustomHead({
 
       {description && (
         <meta key="description" name="description" content={description} />
-      )}
-      {keywords?.length && (
-        <meta key="keywords" name="keywords" content={keywords} />
       )}
       <meta key="author" name="author" content="lurgi" />
       <meta key="robots" name="robots" content="index, follow" />

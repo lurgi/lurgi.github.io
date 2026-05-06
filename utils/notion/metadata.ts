@@ -141,7 +141,6 @@ export async function getMetadataFromPage(
     title,
     description: getRichTextPropertyValue(page, "설명"),
     date: format(new Date(dateProperty.date.start), "yyyy-MM-dd"),
-    keywords: getRichTextPropertyValue(page, "키워드"),
     author: getAuthorPropertyValue(page),
     image: getPageImage(page),
   } satisfies NotionPageMetadata;

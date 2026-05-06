@@ -10,7 +10,6 @@ export interface NotionPageMetadata {
   title: string;
   description: string | null;
   date: string;
-  keywords: string | null;
   author: string | null;
   image: string | null;
 }
