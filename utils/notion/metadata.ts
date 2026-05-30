@@ -90,6 +90,40 @@ function getPageImage(page: PageObjectResponse) {
   return page.cover.file.url;
 }
 
+function getThumbnailPropertyValue(page: PageObjectResponse) {
+  const property = page.properties["썸네일"];
+  if (!property) {
+    return null;
+  }
+
+  if (property.type === "files") {
+    const firstFile = property.files[0];
+    if (!firstFile) {
+      return null;
+    }
+
+    if (firstFile.type === "external") {
+      return firstFile.external.url || null;
+    }
+
+    return firstFile.file.url || null;
+  }
+
+  if (property.type === "url") {
+    return property.url || null;
+  }
+
+  if (property.type === "rich_text") {
+    return getPlainText(property.rich_text);
+  }
+
+  if (property.type === "title") {
+    return getPlainText(property.title);
+  }
+
+  return null;
+}
+
 export async function getMetadataFromPage(
   page: PageObjectResponse,
   context: NotionRequestContext = {}
@@ -142,6 +176,6 @@ export async function getMetadataFromPage(
     description: getRichTextPropertyValue(page, "설명"),
     date: format(new Date(dateProperty.date.start), "yyyy-MM-dd"),
     author: getAuthorPropertyValue(page),
-    image: getPageImage(page),
+    image: getThumbnailPropertyValue(page) || getPageImage(page),
   } satisfies NotionPageMetadata;
 }
