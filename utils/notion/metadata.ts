@@ -106,7 +106,11 @@ function getThumbnailPropertyValue(page: PageObjectResponse) {
       return firstFile.external.url || null;
     }
 
-    return firstFile.file.url || null;
+    if (firstFile.type === "file") {
+      return firstFile.file.url || null;
+    }
+
+    return null;
   }
 
   if (property.type === "url") {
