@@ -3,6 +3,7 @@ import styles from "@/styles/layout.module.css";
 import { Noto_Sans_KR } from "next/font/google";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import Aside from "@/components/aside/Aside";
 import { SelectedNotionPost } from "@/utils/getSelectedNotionPosts";
 
@@ -20,6 +21,8 @@ export default function MyApp({
   Component,
   pageProps,
 }: AppProps<SharedPageProps>) {
+  const router = useRouter();
+
   return (
     <>
       <Head>
@@ -76,7 +79,7 @@ export default function MyApp({
       <div className={`${notoSansKr.className} ${styles.layout}`}>
         <Aside selectedNotionPosts={pageProps.selectedNotionPosts} />
         <main className={styles.main}>
-          <Component {...pageProps} />
+          <Component key={router.asPath} {...pageProps} />
         </main>
       </div>
     </>
