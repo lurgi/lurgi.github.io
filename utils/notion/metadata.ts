@@ -6,6 +6,7 @@ import {
 import { format } from "date-fns";
 import { createNotionBuildError } from "@/utils/notionDiagnostics";
 import { type NotionPageMetadata, type NotionRequestContext } from "./types";
+import { getOgImageUrlFromNotionSource } from "./imageProxy";
 
 export function isFullPageObjectResponse(
   page:
@@ -175,11 +176,15 @@ export async function getMetadataFromPage(
     });
   }
 
+  const rawImage = getThumbnailPropertyValue(page) || getPageImage(page);
+
   return {
     title,
     description: getRichTextPropertyValue(page, "설명"),
     date: format(new Date(dateProperty.date.start), "yyyy-MM-dd"),
     author: getAuthorPropertyValue(page),
-    image: getThumbnailPropertyValue(page) || getPageImage(page),
+    image: getOgImageUrlFromNotionSource(rawImage, {
+      pageId: page.id,
+    }),
   } satisfies NotionPageMetadata;
 }
