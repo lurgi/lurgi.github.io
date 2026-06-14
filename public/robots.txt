@@ -4,4 +4,3 @@ Allow: /
 
 # Sitemaps  
 Sitemap: https://lurgi.github.io/sitemap.xml
-Sitemap: https://lurgi.github.io/sitempa-new.xml

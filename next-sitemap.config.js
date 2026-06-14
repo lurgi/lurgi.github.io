@@ -8,9 +8,6 @@ module.exports = {
   changefreq: "weekly",
   priority: 0.7,
   exclude: ["/api/*"],
-  robotsTxtOptions: {
-    additionalSitemaps: ["https://lurgi.github.io/sitempa-new.xml"],
-  },
   transform: async (config, path) => {
     const notionPath = "notion/";
     const isNotionPath = path.includes(notionPath);
