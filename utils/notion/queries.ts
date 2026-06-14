@@ -18,10 +18,8 @@ import {
   pageRecordMapCache,
   pageRecordMapPromiseCache,
 } from "./cache";
-import {
-  getMetadataFromPage,
-  isFullPageObjectResponse,
-} from "./metadata";
+import { getMetadataFromPage, isFullPageObjectResponse } from "./metadata";
+import { getExcerptFromRecordMap } from "./excerpt";
 import { normalizeRecordMap } from "./recordMap";
 import { type NotionRequestContext, type PageWithMetadata } from "./types";
 
@@ -187,7 +185,13 @@ export async function getPageWithCache(
     getPageMetadataWithCache(pageId, context),
   ])
     .then(([recordMap, metadata]) => {
-      const pageWithMetadata = { recordMap, metadata };
+      const pageWithMetadata = {
+        recordMap,
+        metadata: {
+          ...metadata,
+          description: getExcerptFromRecordMap(recordMap, { maxLength: 150 }),
+        },
+      };
       pageQueryCache.set(pageId, pageWithMetadata);
       return pageWithMetadata;
     })

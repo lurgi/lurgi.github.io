@@ -20,28 +20,11 @@ export function isFullPageObjectResponse(
 }
 
 function getPlainText(items: RichTextItemResponse[]) {
-  const value = items.map((item) => item.plain_text).join("").trim();
+  const value = items
+    .map((item) => item.plain_text)
+    .join("")
+    .trim();
   return value || null;
-}
-
-function getRichTextPropertyValue(
-  page: PageObjectResponse,
-  propertyName: string
-) {
-  const property = page.properties[propertyName];
-  if (!property) {
-    return null;
-  }
-
-  if (property.type === "rich_text") {
-    return getPlainText(property.rich_text);
-  }
-
-  if (property.type === "title") {
-    return getPlainText(property.title);
-  }
-
-  return null;
 }
 
 function getAuthorPropertyValue(page: PageObjectResponse) {
@@ -180,7 +163,7 @@ export async function getMetadataFromPage(
 
   return {
     title,
-    description: getRichTextPropertyValue(page, "설명"),
+    description: null,
     date: format(new Date(dateProperty.date.start), "yyyy-MM-dd"),
     author: getAuthorPropertyValue(page),
     image: getOgImageUrlFromNotionSource(rawImage, {
