@@ -1,4 +1,4 @@
-import { getTextContent } from "notion-utils";
+import { getBlockValue, getTextContent } from "notion-utils";
 import {
   type Block,
   type BlockType,
@@ -27,7 +27,7 @@ interface GetExcerptFromRecordMapOptions {
 }
 
 function getBlock(recordMap: ExtendedRecordMap, blockId: ID) {
-  return recordMap.block[blockId]?.value || null;
+  return getBlockValue(recordMap.block[blockId]) || null;
 }
 
 function getRootPageBlock(recordMap: ExtendedRecordMap) {
