@@ -36,7 +36,6 @@ jobs:
           echo "NOTION_TOKEN_V2=${{ secrets.NOTION_TOKEN_V2 }}" >> .env
           echo "NOTION_USER_ID=${{ secrets.NOTION_USER_ID }}" >> .env
           echo "NOTION_DATABASE_DEVELOPMENT_ID=${{ secrets.NOTION_DATABASE_DEVELOPMENT_ID }}" >> .env
-          echo "NOTION_DATABASE_YOGA_LOGS_ID=${{ secrets.NOTION_DATABASE_YOGA_LOGS_ID }}" >> .env
           echo "NOTION_DATABASE_INSIGHTS_ID=${{ secrets.NOTION_DATABASE_INSIGHTS_ID }}" >> .env
           echo "NOTION_DATABASE_READING_ID=${{ secrets.NOTION_DATABASE_READING_ID }}" >> .env
           echo "NOTION_DATABASE_STUDY_ID=${{ secrets.NOTION_DATABASE_STUDY_ID }}" >> .env
@@ -45,7 +44,7 @@ jobs:
         run: npm ci
 
       - name: Prepare build artifacts
-        run: rm -rf .next .artifacts && mkdir -p .artifacts
+        run: rm -rf .next out .artifacts && mkdir -p .artifacts
 
       - name: Run Notion preflight
         run: npm run notion:preflight

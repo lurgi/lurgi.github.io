@@ -12,7 +12,6 @@ const DIAGNOSTICS_PATH = path.join(
 
 const DATABASE_CONFIGS = [
   { postType: "Development", envKey: "NOTION_DATABASE_DEVELOPMENT_ID" },
-  { postType: "YogaLogs", envKey: "NOTION_DATABASE_YOGA_LOGS_ID" },
   { postType: "Insights", envKey: "NOTION_DATABASE_INSIGHTS_ID" },
   { postType: "Reading", envKey: "NOTION_DATABASE_READING_ID" },
 ];
