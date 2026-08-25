@@ -85,7 +85,7 @@ function getUriIdFromPage(page, { postType, databaseId }) {
     );
   }
 
-  return `${prefix}-${number}`;
+  return `${prefix.toLowerCase()}-${number}`;
 }
 
 function isPublicPage(page) {

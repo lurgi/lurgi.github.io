@@ -37,7 +37,7 @@ export async function getNotionPageIdentity(
 
   return {
     pageId: page.id,
-    uriId: `${prefix}-${number}`,
+    uriId: `${prefix.toLowerCase()}-${number}`,
   };
 }
 

@@ -37,6 +37,10 @@
   text-overflow: ellipsis;
 }
 
+.active .title {
+  font-weight: 600;
+}
+
 .meta {
   display: flex;
   flex-direction: column;

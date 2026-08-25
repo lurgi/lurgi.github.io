@@ -183,7 +183,7 @@ async function validatePageProperties(page, { postType, databaseId }) {
     });
   }
 
-  return `${prefix}-${number}`;
+  return `${prefix.toLowerCase()}-${number}`;
 }
 
 async function queryAllPages(notionClient, databaseId) {
