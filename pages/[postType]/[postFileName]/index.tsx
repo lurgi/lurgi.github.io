@@ -49,6 +49,7 @@ function CustomHead({ title, description, url, date }: MetaInfo) {
       )}
       <meta key="og:type" property="og:type" content="article" />
       <meta key="og:url" property="og:url" content={url} />
+      <link key="canonical" rel="canonical" href={url} />
       <meta key="og:site_name" property="og:site_name" content="Lurgi's blog" />
     </Head>
   );

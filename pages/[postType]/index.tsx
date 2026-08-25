@@ -2,6 +2,7 @@ import styles from "@/styles/PostListPage.module.css";
 import PostPreview from "@/components/preview/PostPreview";
 import { posts } from "@/src/data";
 import { GetStaticProps } from "next";
+import Head from "next/head";
 import clsx from "clsx";
 import { getPagePreviewData, NotionPageMetadata } from "@/utils/notionClient";
 import {
@@ -9,6 +10,7 @@ import {
   SelectedNotionPost,
 } from "@/utils/getSelectedNotionPosts";
 import { sortByDateDesc } from "@/utils/sortByDate";
+import { getCanonicalUrl } from "@/src/site";
 
 interface PostListPageProps {
   selectedNotionPosts: SelectedNotionPost[];
@@ -22,35 +24,42 @@ export default function PostListPage({
 }: PostListPageProps) {
   const postData = posts[postType];
   const sortedNotionData = sortByDateDesc(notionData);
+  const canonicalUrl = getCanonicalUrl(`/${postType}`);
 
   return (
-    <div key={postType} className={clsx(styles.postPartList, "fade-in")}>
-      <h1>{postType}</h1>
-      <small className={styles.description}>{postData?.description}</small>
-      <ul className={styles.postPartList}>
-        {sortedNotionData.map(
-          ({ id, title, author, date }) =>
-            title &&
-            date && (
-              <li key={id}>
-                <PostPreview
-                  url={`/${postType}/notion/${id}`}
-                  post={{
-                    title,
-                    author: author || undefined,
-                    date,
-                  }}
-                />
-              </li>
-            )
-        )}
-        {postData?.contents?.map((post) => (
-          <li key={post.fileName}>
-            <PostPreview url={`/${post.type}/${post.fileName}`} post={post} />
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <Head>
+        <link key="canonical" rel="canonical" href={canonicalUrl} />
+        <meta key="og:url" property="og:url" content={canonicalUrl} />
+      </Head>
+      <div key={postType} className={clsx(styles.postPartList, "fade-in")}>
+        <h1>{postType}</h1>
+        <small className={styles.description}>{postData?.description}</small>
+        <ul className={styles.postPartList}>
+          {sortedNotionData.map(
+            ({ id, title, author, date }) =>
+              title &&
+              date && (
+                <li key={id}>
+                  <PostPreview
+                    url={`/${postType}/notion/${id}`}
+                    post={{
+                      title,
+                      author: author || undefined,
+                      date,
+                    }}
+                  />
+                </li>
+              )
+          )}
+          {postData?.contents?.map((post) => (
+            <li key={post.fileName}>
+              <PostPreview url={`/${post.type}/${post.fileName}`} post={post} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }
 

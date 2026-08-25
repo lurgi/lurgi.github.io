@@ -26,13 +26,7 @@ interface MetaInfo {
   image?: string | null;
 }
 
-function CustomHead({
-  title,
-  description,
-  url,
-  date,
-  image,
-}: MetaInfo) {
+function CustomHead({ title, description, url, date, image }: MetaInfo) {
   return (
     <Head>
       {title && <title key="title">{title}</title>}
@@ -54,6 +48,7 @@ function CustomHead({
       )}
       <meta key="og:type" property="og:type" content="article" />
       {url && <meta key="og:url" property="og:url" content={url} />}
+      {url && <link key="canonical" rel="canonical" href={url} />}
       <meta key="og:site_name" property="og:site_name" content="Lurgi's blog" />
       {image && <meta key="og:image" property="og:image" content={image} />}
     </Head>
