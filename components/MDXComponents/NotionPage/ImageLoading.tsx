@@ -16,6 +16,8 @@ export default function ImageLoading({
 
   return (
     <div
+      className="image-skeleton"
+      aria-hidden="true"
       style={{
         width: "100%",
         height: isBookmarkThumbnail ? "100%" : undefined,
@@ -23,30 +25,36 @@ export default function ImageLoading({
         aspectRatio:
           !isBookmarkThumbnail && hasAspectRatio ? aspectRatio : undefined,
         boxSizing: "border-box",
-        backgroundColor: "#f5f5f5",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "32px",
+        backgroundColor: "#f1f3f5",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          width: "32px",
-          height: "32px",
-          border: "2px solid #e5e5e5",
-          borderTopColor: "#6b7280",
-          borderRadius: "50%",
-          animation: "spin 1s linear infinite",
-        }}
-      />
+      <div className="image-skeleton-shimmer" />
       <style jsx>{`
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
+        .image-skeleton-shimmer {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.6) 50%,
+            transparent 100%
+          );
+          transform: translateX(-100%);
+          animation: image-shimmer 1.5s ease-in-out infinite;
+        }
+
+        @keyframes image-shimmer {
+          to {
+            transform: translateX(100%);
           }
-          100% {
-            transform: rotate(360deg);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .image-skeleton-shimmer {
+            animation: none;
+            display: none;
           }
         }
       `}</style>

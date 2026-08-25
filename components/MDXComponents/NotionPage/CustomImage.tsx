@@ -19,6 +19,7 @@ export interface CustomImageProps extends ImgHTMLAttributes<HTMLImageElement> {
 export default function CustomImage({
   src,
   alt = "",
+  className,
   style,
   aspectRatio,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -75,17 +76,19 @@ export default function CustomImage({
         height: "100%",
         display: "block",
         objectFit: "cover",
-        visibility: isLoaded && !hasError ? "visible" : "hidden",
+        opacity: isLoaded && !hasError ? 1 : 0,
         position: isLoaded ? undefined : "absolute",
         inset: isLoaded ? undefined : 0,
+        pointerEvents: isLoaded ? undefined : "none",
       }
     : {
         ...style,
         width: "100%",
         height: "auto",
-        visibility: isLoaded && !hasError ? "visible" : "hidden",
+        opacity: isLoaded && !hasError ? 1 : 0,
         position: isLoaded ? undefined : "absolute",
         inset: isLoaded ? undefined : 0,
+        pointerEvents: isLoaded ? undefined : "none",
       };
 
   return (
@@ -101,11 +104,23 @@ export default function CustomImage({
         ref={imgRef}
         src={src}
         alt={alt}
+        className={`custom-image${className ? ` ${className}` : ""}`}
         {...props}
         style={imageStyle}
         onLoad={handleLoad}
         onError={handleError}
       />
+      <style jsx>{`
+        .custom-image {
+          transition: opacity 180ms ease-out;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .custom-image {
+            transition: none;
+          }
+        }
+      `}</style>
 
       {!isLoaded && !hasError && (
         <ImageLoading
