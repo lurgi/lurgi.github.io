@@ -7,8 +7,23 @@ import BrunchIcon from "@/public/brunch.svg";
 import Link from "next/link";
 import { postTypes } from "@/src/data";
 import { useRouter } from "next/router";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SelectedNotionPost } from "@/utils/getSelectedNotionPosts";
+
+const HEADER_VISIBILITY_SCROLL_Y = 100;
+const HEADER_HIDE_DISTANCE = 48;
+const HEADER_SHOW_DISTANCE = 32;
+
+type ScrollDirection = "up" | "down" | null;
+
+function getClampedScrollY() {
+  const maxScrollY = Math.max(
+    document.documentElement.scrollHeight - window.innerHeight,
+    0
+  );
+
+  return Math.min(Math.max(window.scrollY, 0), maxScrollY);
+}
 
 const LINK = {
   github: {
@@ -37,32 +52,81 @@ export default function Aside({ selectedNotionPosts }: AsideProps) {
   const postType = router.query.postType as string | undefined;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
+  const directionStartYRef = useRef(0);
+  const scrollDirectionRef = useRef<ScrollDirection>(null);
+  const isHiddenRef = useRef(false);
 
-  useLayoutEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const SCROLL_THRESHOLD = 100; // 스크롤 임계값
+  useEffect(() => {
+    let animationFrameId: number | null = null;
 
-      if (currentScrollY > SCROLL_THRESHOLD) {
-        if (currentScrollY > lastScrollY) {
-          // 스크롤 다운
-          setIsHidden(true);
-        } else {
-          // 스크롤 업
-          setIsHidden(false);
-        }
-      } else {
-        setIsHidden(false);
-      }
+    const updateHeader = () => {
+      animationFrameId = null;
+
+      const currentScrollY = getClampedScrollY();
+      const previousScrollY = lastScrollYRef.current;
 
       setIsScrolled(currentScrollY > 20);
-      setLastScrollY(currentScrollY);
+
+      if (currentScrollY <= HEADER_VISIBILITY_SCROLL_Y) {
+        if (isHiddenRef.current) {
+          isHiddenRef.current = false;
+          setIsHidden(false);
+        }
+
+        scrollDirectionRef.current = null;
+        directionStartYRef.current = currentScrollY;
+        lastScrollYRef.current = currentScrollY;
+        return;
+      }
+
+      if (currentScrollY === previousScrollY) {
+        return;
+      }
+
+      const nextDirection: Exclude<ScrollDirection, null> =
+        currentScrollY > previousScrollY ? "down" : "up";
+
+      if (scrollDirectionRef.current !== nextDirection) {
+        scrollDirectionRef.current = nextDirection;
+        directionStartYRef.current = currentScrollY;
+      } else if (
+        Math.abs(currentScrollY - directionStartYRef.current) >=
+        (nextDirection === "down" ? HEADER_HIDE_DISTANCE : HEADER_SHOW_DISTANCE)
+      ) {
+        const shouldHide = nextDirection === "down";
+
+        if (isHiddenRef.current !== shouldHide) {
+          isHiddenRef.current = shouldHide;
+          setIsHidden(shouldHide);
+        }
+
+        directionStartYRef.current = currentScrollY;
+      }
+
+      lastScrollYRef.current = currentScrollY;
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+    const handleScroll = () => {
+      if (animationFrameId === null) {
+        animationFrameId = window.requestAnimationFrame(updateHeader);
+      }
+    };
+
+    const initialScrollY = getClampedScrollY();
+    lastScrollYRef.current = initialScrollY;
+    directionStartYRef.current = initialScrollY;
+    setIsScrolled(initialScrollY > 20);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, []);
 
   return (
     <aside
