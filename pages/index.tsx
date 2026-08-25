@@ -6,7 +6,10 @@ import Introduce from "@/components/introduce/Introduce";
 import PostPreview from "@/components/preview/PostPreview";
 
 import { posts, postTypes } from "@/src/data";
-import { getPagePreviewData, NotionPageMetadata } from "@/utils/notionClient";
+import {
+  getPagePreviewData,
+  NotionPagePreviewData,
+} from "@/utils/notionClient";
 import { DATABASE_KEYS } from "@/src/notion";
 import {
   getSelectedNotionPosts,
@@ -17,7 +20,7 @@ import { getCanonicalUrl } from "@/src/site";
 
 interface HomeProps {
   selectedNotionPosts: SelectedNotionPost[];
-  notionData: Record<PostType, ({ id: string } & NotionPageMetadata)[]>;
+  notionData: Record<PostType, NotionPagePreviewData[]>;
 }
 
 export default function Home({ notionData }: HomeProps) {
@@ -37,17 +40,17 @@ export default function Home({ notionData }: HomeProps) {
               </Link>
               {[
                 ...sortByDateDesc(notionData[type]).map(
-                  ({ id, title, author, date }) =>
+                  ({ uriId, title, author, date }) =>
                     title &&
                     date && (
                       <PostPreview
-                        url={`/${type}/notion/${id}`}
+                        url={`/${type}/notion/${uriId}`}
                         post={{
                           title,
                           author: author || undefined,
                           date,
                         }}
-                        key={`notion-${id}`}
+                        key={`notion-${uriId}`}
                       />
                     )
                 ),

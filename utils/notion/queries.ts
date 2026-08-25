@@ -21,7 +21,12 @@ import {
 import { getMetadataFromPage, isFullPageObjectResponse } from "./metadata";
 import { getExcerptFromRecordMap } from "./excerpt";
 import { normalizeRecordMap } from "./recordMap";
-import { type NotionRequestContext, type PageWithMetadata } from "./types";
+import { getNotionPageIdentities } from "./identity";
+import {
+  type NotionPagePreviewData,
+  type NotionRequestContext,
+  type PageWithMetadata,
+} from "./types";
 
 export async function queryDatabaseWithCache(
   database_id: string,
@@ -37,10 +42,35 @@ export async function queryDatabaseWithCache(
     return pendingDatabaseQuery;
   }
 
-  const databaseQueryPromise = notionOfficialClient.databases
-    .query({
+  const databaseQueryPromise = (async () => {
+    const firstResult = await notionOfficialClient.databases.query({
       database_id,
-    })
+      page_size: 100,
+    });
+    const results = [...firstResult.results];
+    let nextCursor = firstResult.has_more
+      ? firstResult.next_cursor || undefined
+      : undefined;
+
+    while (nextCursor) {
+      const nextResult = await notionOfficialClient.databases.query({
+        database_id,
+        page_size: 100,
+        start_cursor: nextCursor,
+      });
+      results.push(...nextResult.results);
+      nextCursor = nextResult.has_more
+        ? nextResult.next_cursor || undefined
+        : undefined;
+    }
+
+    return {
+      ...firstResult,
+      results,
+      has_more: false,
+      next_cursor: null,
+    };
+  })()
     .then((result) => {
       databaseQueryCache.set(database_id, result);
       return result;
@@ -220,21 +250,28 @@ export async function getPagePreviewData(postType: PostType) {
     databaseId,
   });
 
+  const publicPages = notionDatabaseId.results.filter(
+    (page): page is PageObjectResponse =>
+      isFullPageObjectResponse(page) &&
+      "public_url" in page &&
+      !!page.public_url
+  );
+  const identities = await getNotionPageIdentities(publicPages, {
+    postType,
+    databaseId,
+  });
+
   return Promise.all(
-    notionDatabaseId.results
-      .filter(
-        (page): page is PageObjectResponse =>
-          isFullPageObjectResponse(page) &&
-          "public_url" in page &&
-          !!page.public_url
-      )
-      .map(async (page) => ({
-        ...(await getMetadataFromPage(page, {
-          postType,
-          databaseId,
-          pageId: page.id,
-        })),
-        id: page.id,
-      }))
+    publicPages.map(
+      async (page, index) =>
+        ({
+          ...(await getMetadataFromPage(page, {
+            postType,
+            databaseId,
+            pageId: page.id,
+          })),
+          ...identities[index],
+        }) satisfies NotionPagePreviewData
+    )
   );
 }

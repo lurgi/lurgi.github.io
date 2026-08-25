@@ -7,7 +7,7 @@ export type SelectedNotionPost = Pick<
   NotionPageMetadata,
   "title" | "date" | "author"
 > & {
-  id: string;
+  uriId: string;
   postType: PostType;
 };
 
@@ -23,8 +23,8 @@ export async function getSelectedNotionPosts() {
 
       return (data || [])
         .filter(({ title }) => selectedTitles.has(title))
-        .map(({ id, title, date, author }) => ({
-          id,
+        .map(({ uriId, title, date, author }) => ({
+          uriId,
           title,
           date,
           author,

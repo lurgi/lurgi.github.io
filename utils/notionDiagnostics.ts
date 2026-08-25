@@ -8,6 +8,7 @@ export interface NotionBuildDiagnostic {
     | "database-query"
     | "page-retrieve"
     | "metadata-parse"
+    | "identity-parse"
     | "record-map-fetch"
     | "preflight";
   message: string;
@@ -28,7 +29,10 @@ export const NOTION_DIAGNOSTICS_PATH = path.join(
 export class NotionBuildError extends Error {
   diagnostic: NotionBuildDiagnostic;
 
-  constructor(diagnostic: NotionBuildDiagnostic, options?: { cause?: unknown }) {
+  constructor(
+    diagnostic: NotionBuildDiagnostic,
+    options?: { cause?: unknown }
+  ) {
     super(diagnostic.message, {
       cause: options?.cause instanceof Error ? options.cause : undefined,
     });

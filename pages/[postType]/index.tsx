@@ -4,7 +4,10 @@ import { posts } from "@/src/data";
 import { GetStaticProps } from "next";
 import Head from "next/head";
 import clsx from "clsx";
-import { getPagePreviewData, NotionPageMetadata } from "@/utils/notionClient";
+import {
+  getPagePreviewData,
+  NotionPagePreviewData,
+} from "@/utils/notionClient";
 import {
   getSelectedNotionPosts,
   SelectedNotionPost,
@@ -15,7 +18,7 @@ import { getCanonicalUrl } from "@/src/site";
 interface PostListPageProps {
   selectedNotionPosts: SelectedNotionPost[];
   postType: PostType;
-  notionData: ({ id: string } & NotionPageMetadata)[];
+  notionData: NotionPagePreviewData[];
 }
 
 export default function PostListPage({
@@ -37,12 +40,12 @@ export default function PostListPage({
         <small className={styles.description}>{postData?.description}</small>
         <ul className={styles.postPartList}>
           {sortedNotionData.map(
-            ({ id, title, author, date }) =>
+            ({ uriId, title, author, date }) =>
               title &&
               date && (
-                <li key={id}>
+                <li key={uriId}>
                   <PostPreview
-                    url={`/${postType}/notion/${id}`}
+                    url={`/${postType}/notion/${uriId}`}
                     post={{
                       title,
                       author: author || undefined,

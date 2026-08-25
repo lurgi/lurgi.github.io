@@ -1,13 +1,13 @@
 import styles from "@/styles/PostDetailPage.module.scss";
 
 import clsx from "clsx";
-import { GetStaticProps } from "next";
+import { GetStaticProps, GetStaticPropsResult } from "next";
 import Head from "next/head";
 import { ExtendedRecordMap } from "notion-types";
 import {
   getPageWithCache,
+  getPagePreviewData,
   NotionPageMetadata,
-  queryDatabaseWithCache,
 } from "@/utils/notionClient";
 import {
   getSelectedNotionPosts,
@@ -16,7 +16,6 @@ import {
 import { NotionPage } from "@/components/MDXComponents/NotionPage/NotionPage";
 import Giscus from "@/components/customGiscus/CustomGiscus";
 import { DATABASE_ID, DATABASE_KEYS } from "@/src/notion";
-import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 interface MetaInfo {
   title?: string | null;
@@ -59,6 +58,7 @@ interface PostProps {
   selectedNotionPosts: SelectedNotionPost[];
   recordMap: ExtendedRecordMap;
   pageId: string;
+  uriId: string;
   metadata: NotionPageMetadata;
   postType: string;
 }
@@ -67,13 +67,14 @@ export default function PostDetailPage({
   recordMap,
   metadata,
   pageId,
+  uriId,
   postType,
 }: PostProps) {
   return (
     <>
       <CustomHead
         {...metadata}
-        url={`https://lurgi.github.io/${postType}/notion/${pageId}`}
+        url={`https://lurgi.github.io/${postType}/notion/${uriId}`}
       />
       <div className={clsx(styles.postDetailContainer, "fade-in")}>
         <NotionPage
@@ -91,27 +92,13 @@ export async function getStaticPaths() {
   const paths = [];
 
   for (const key of DATABASE_KEYS) {
-    const databaseId = DATABASE_ID[key];
-    if (!databaseId) {
-      throw new Error(`Missing Notion database ID for ${key}.`);
-    }
-
-    const pages = await queryDatabaseWithCache(databaseId, {
-      postType: key,
-      databaseId,
-    });
-
-    const newPaths = pages.results
-      .filter(
-        (page): page is PageObjectResponse =>
-          "public_url" in page && !!page.public_url
-      )
-      .map((page) => ({
-        params: {
-          postType: key,
-          pageId: page.id,
-        },
-      }));
+    const pages = await getPagePreviewData(key);
+    const newPaths = pages.map(({ uriId }) => ({
+      params: {
+        postType: key,
+        uriId,
+      },
+    }));
 
     paths.push(...newPaths);
   }
@@ -124,12 +111,20 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(
   context: Parameters<GetStaticProps>[0]
-): Promise<{ props: PostProps }> {
-  const selectedNotionPosts = await getSelectedNotionPosts();
-  const { pageId, postType } = context.params as {
-    pageId: string;
+): Promise<GetStaticPropsResult<PostProps>> {
+  const { uriId, postType } = context.params as {
+    uriId: string;
     postType: string;
   };
+  const previewPages = await getPagePreviewData(postType as PostType);
+  const pageIdentity = previewPages.find((page) => page.uriId === uriId);
+
+  if (!pageIdentity) {
+    return { notFound: true };
+  }
+
+  const { pageId } = pageIdentity;
+  const selectedNotionPosts = await getSelectedNotionPosts();
   const { recordMap, metadata } = await getPageWithCache(pageId, {
     pageId,
     postType: postType as PostType,
@@ -144,6 +139,7 @@ export async function getStaticProps(
       selectedNotionPosts,
       recordMap,
       pageId,
+      uriId,
       metadata,
       postType,
     },

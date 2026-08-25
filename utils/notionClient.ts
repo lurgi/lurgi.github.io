@@ -6,6 +6,8 @@ export {
 } from "@/utils/notion/queries";
 export type {
   NotionPageMetadata,
+  NotionPageIdentity,
+  NotionPagePreviewData,
   NotionRequestContext,
   PageWithMetadata,
 } from "@/utils/notion/types";

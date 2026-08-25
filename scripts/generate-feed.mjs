@@ -69,6 +69,25 @@ function getDateFromPage(page) {
   return dateProperty.date.start;
 }
 
+function getUriIdFromPage(page, { postType, databaseId }) {
+  const idProperty = page?.properties?.["ID"];
+  if (!idProperty || idProperty.type !== "unique_id") {
+    throw new Error(
+      `Missing required "ID" unique_id property for ${postType} page ${page.id} in database ${databaseId}.`
+    );
+  }
+
+  const prefix = idProperty.unique_id.prefix?.trim();
+  const number = idProperty.unique_id.number;
+  if (!prefix || number === null || !Number.isSafeInteger(number)) {
+    throw new Error(
+      `Invalid "ID" unique_id value for ${postType} page ${page.id} in database ${databaseId}.`
+    );
+  }
+
+  return `${prefix}-${number}`;
+}
+
 function isPublicPage(page) {
   return "public_url" in page && Boolean(page.public_url);
 }
@@ -149,6 +168,7 @@ async function main() {
     const publicPages = pages.filter(
       (page) => isFullPage(page) && isPublicPage(page)
     );
+    const pageIdByUriId = new Map();
 
     for (const page of publicPages) {
       const title = getTitleFromPage(page);
@@ -158,8 +178,16 @@ async function main() {
         continue;
       }
 
-      const pageId = page.id;
-      const link = `${SITE_URL}/${postType}/notion/${pageId}`;
+      const uriId = getUriIdFromPage(page, { postType, databaseId });
+      const existingPageId = pageIdByUriId.get(uriId);
+      if (existingPageId) {
+        throw new Error(
+          `Duplicate Notion URI ID "${uriId}" for ${postType} pages ${existingPageId} and ${page.id} in database ${databaseId}.`
+        );
+      }
+      pageIdByUriId.set(uriId, page.id);
+
+      const link = `${SITE_URL}/${postType}/notion/${uriId}`;
       const description = getDescriptionFromPage(page);
 
       feedItems.push({

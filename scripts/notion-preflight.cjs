@@ -69,7 +69,10 @@ async function failPreflight({
 }
 
 function getPlainText(items) {
-  const value = (items || []).map((item) => item.plain_text).join("").trim();
+  const value = (items || [])
+    .map((item) => item.plain_text)
+    .join("")
+    .trim();
   return value || null;
 }
 
@@ -140,7 +143,11 @@ async function validatePageProperties(page, { postType, databaseId }) {
   }
 
   const dateProperty = page.properties["날짜"];
-  if (!dateProperty || dateProperty.type !== "date" || !dateProperty.date?.start) {
+  if (
+    !dateProperty ||
+    dateProperty.type !== "date" ||
+    !dateProperty.date?.start
+  ) {
     await failPreflight({
       stage: "metadata-parse",
       message: `Missing required "날짜" date property on Notion page ${page.id}.`,
@@ -150,6 +157,50 @@ async function validatePageProperties(page, { postType, databaseId }) {
       pageId: page.id,
     });
   }
+
+  const idProperty = page.properties["ID"];
+  if (!idProperty || idProperty.type !== "unique_id") {
+    await failPreflight({
+      stage: "identity-parse",
+      message: `Missing required "ID" unique_id property on Notion page ${page.id}.`,
+      reason: "missing_required_unique_id_property",
+      postType,
+      databaseId,
+      pageId: page.id,
+    });
+  }
+
+  const prefix = idProperty.unique_id.prefix?.trim();
+  const number = idProperty.unique_id.number;
+  if (!prefix || number === null || !Number.isSafeInteger(number)) {
+    await failPreflight({
+      stage: "identity-parse",
+      message: `Invalid "ID" unique_id value on Notion page ${page.id}.`,
+      reason: "invalid_unique_id_value",
+      postType,
+      databaseId,
+      pageId: page.id,
+    });
+  }
+
+  return `${prefix}-${number}`;
+}
+
+async function queryAllPages(notionClient, databaseId) {
+  const results = [];
+  let nextCursor;
+
+  do {
+    const response = await notionClient.databases.query({
+      database_id: databaseId,
+      page_size: 100,
+      start_cursor: nextCursor,
+    });
+    results.push(...response.results);
+    nextCursor = response.has_more ? response.next_cursor : undefined;
+  } while (nextCursor);
+
+  return results;
 }
 
 async function main() {
@@ -183,12 +234,9 @@ async function main() {
   for (const { postType, envKey } of DATABASE_CONFIGS) {
     const databaseId = process.env[envKey];
 
-    let response;
+    let results;
     try {
-      response = await notionOfficialClient.databases.query({
-        database_id: databaseId,
-        page_size: 20,
-      });
+      results = await queryAllPages(notionOfficialClient, databaseId);
     } catch (cause) {
       await failPreflight({
         stage: "database-query",
@@ -200,7 +248,7 @@ async function main() {
       });
     }
 
-    const publicPages = response.results.filter(
+    const publicPages = results.filter(
       (page) => "properties" in page && "public_url" in page && page.public_url
     );
 
@@ -214,6 +262,26 @@ async function main() {
         timestamp: new Date().toISOString(),
       });
       continue;
+    }
+
+    const pageIdByUriId = new Map();
+    for (const page of publicPages) {
+      const uriId = await validatePageProperties(page, {
+        postType,
+        databaseId,
+      });
+      const existingPageId = pageIdByUriId.get(uriId);
+      if (existingPageId) {
+        await failPreflight({
+          stage: "identity-parse",
+          message: `Duplicate Notion URI ID "${uriId}" on pages ${existingPageId} and ${page.id}.`,
+          reason: "duplicate_uri_id",
+          postType,
+          databaseId,
+          pageId: page.id,
+        });
+      }
+      pageIdByUriId.set(uriId, page.id);
     }
 
     const representativePage = publicPages[0];

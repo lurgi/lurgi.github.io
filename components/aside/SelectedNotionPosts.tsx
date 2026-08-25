@@ -17,9 +17,9 @@ export default function SelectedNotionPosts({
   return (
     <section className={styles.section} aria-label="선택 글">
       <ul className={styles.list}>
-        {posts.map(({ id, postType, title, date }) => (
-          <li key={`${postType}-${id}`} className={styles.item}>
-            <Link href={`/${postType}/notion/${id}`} className={styles.link}>
+        {posts.map(({ uriId, postType, title, date }) => (
+          <li key={`${postType}-${uriId}`} className={styles.item}>
+            <Link href={`/${postType}/notion/${uriId}`} className={styles.link}>
               <span className={styles.title}>{title}</span>
               <span className={styles.meta}>
                 <span className={styles.date}>{date}</span>

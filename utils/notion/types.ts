@@ -14,6 +14,13 @@ export interface NotionPageMetadata {
   image: string | null;
 }
 
+export interface NotionPageIdentity {
+  pageId: string;
+  uriId: string;
+}
+
+export type NotionPagePreviewData = NotionPageMetadata & NotionPageIdentity;
+
 export interface PageWithMetadata {
   recordMap: ExtendedRecordMap;
   metadata: NotionPageMetadata;
