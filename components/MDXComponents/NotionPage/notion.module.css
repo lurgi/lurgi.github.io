@@ -39,6 +39,7 @@
 
 .notion-page-title-text {
   display: inline;
+  word-break: keep-all;
 }
 
 .notion-page-date {

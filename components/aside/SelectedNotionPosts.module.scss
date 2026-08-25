@@ -32,9 +32,7 @@
 .title {
   font-size: 0.95rem;
   line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: keep-all;
 }
 
 .active .title {
