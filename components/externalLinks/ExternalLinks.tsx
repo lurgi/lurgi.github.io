@@ -59,7 +59,6 @@ export default function ExternalLinks({ className }: ExternalLinksProps) {
           alt="oboksobok"
           width={80}
           height={33}
-          unoptimized
         />
       </a>
     </div>
