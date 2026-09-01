@@ -5,6 +5,7 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Aside from "@/components/aside/Aside";
+import ExternalLinks from "@/components/externalLinks/ExternalLinks";
 import { SelectedNotionPost } from "@/utils/getSelectedNotionPosts";
 
 const notoSansKr = Noto_Sans_KR({
@@ -81,6 +82,9 @@ export default function MyApp({
         <main className={styles.main}>
           <Component key={router.asPath} {...pageProps} />
         </main>
+        <footer className={styles.footer} aria-label="외부 링크">
+          <ExternalLinks />
+        </footer>
       </div>
     </>
   );

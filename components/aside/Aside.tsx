@@ -1,8 +1,6 @@
 import styles from "./Aside.module.scss";
 import SelectedNotionPosts from "./SelectedNotionPosts";
-import LinkedInIcon from "@/public/linkedin.svg";
-import GithubIcon from "@/public/github.svg";
-import BrunchIcon from "@/public/brunch.svg";
+import ExternalLinks from "@/components/externalLinks/ExternalLinks";
 
 import Link from "next/link";
 import { postTypes } from "@/src/data";
@@ -24,23 +22,6 @@ function getClampedScrollY() {
 
   return Math.min(Math.max(window.scrollY, 0), maxScrollY);
 }
-
-const LINK = {
-  github: {
-    href: "https://github.com/lurgi",
-    icon: <GithubIcon width={30} height={30} />,
-  },
-  linkedIn: {
-    href: "https://www.linkedin.com/in/lurgi/",
-    icon: <LinkedInIcon width={30} height={30} />,
-  },
-  brunchStory: {
-    href: "https://brunch.co.kr/@lurgi",
-    icon: <BrunchIcon width={30} height={30} />,
-  },
-} as const;
-
-const LINK_TYPES = Object.keys(LINK) as (keyof typeof LINK)[];
 
 interface AsideProps {
   selectedNotionPosts?: SelectedNotionPost[];
@@ -164,20 +145,7 @@ export default function Aside({ selectedNotionPosts }: AsideProps) {
 
         <SelectedNotionPosts posts={selectedNotionPosts} />
 
-        <ul className={styles["hyper-link-container"]}>
-          {LINK_TYPES.map((type) => LINK[type]).map(({ href, icon }, idx) => (
-            <li key={idx}>
-              <a
-                className={styles["hyper-link"]}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {icon}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <ExternalLinks className={styles["aside-external-links"]} />
       </nav>
     </aside>
   );

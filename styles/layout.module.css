@@ -3,7 +3,11 @@
   flex-direction: column;
   align-items: center;
 
-  height: 100vh;
+  min-height: 100vh;
+}
+
+.footer {
+  display: none;
 }
 
 @media (min-width: 1024px) {
@@ -14,13 +18,23 @@
 
 @media (max-width: 1024px) {
   .main {
-    margin-top: 3rem;
+    margin-top: 4.5rem;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: auto;
+    padding: 1.25rem 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
   }
 }
 
 @media (max-width: 493px) {
   .main {
-    margin-top: 8rem;
+    margin-top: 5rem;
   }
 }
 

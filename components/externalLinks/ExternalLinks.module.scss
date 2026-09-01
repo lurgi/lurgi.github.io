@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.social-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.link {
+  display: block;
+  opacity: 0.75;
+  transform: scale(0.9);
+  transition: opacity 0.3s ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 0.99;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+.oboksobok-link {
+  line-height: 0;
+  transform: none;
+  border-radius: 0.25rem;
+}
+
+.oboksobok-logo {
+  display: block;
+  width: 80px;
+  height: auto;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+}

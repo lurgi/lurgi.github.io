@@ -83,6 +83,10 @@
       flex-direction: row;
       gap: 1rem;
     }
+
+    .aside-external-links {
+      display: none;
+    }
   }
 }
 
@@ -109,32 +113,9 @@
         flex-shrink: 0;
       }
     }
-
-    .hyper-link-container {
-      justify-content: center;
-    }
   }
 }
 
 .link-text-highlight {
   font-weight: 600;
-}
-
-/* HyperLink */
-.hyper-link-container {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.hyper-link {
-  opacity: 0.75;
-  transition: opacity 0.3s ease;
-
-  display: block;
-  transform: scale(0.9);
-
-  &:hover {
-    opacity: 0.99;
-  }
 }
