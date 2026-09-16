@@ -5,7 +5,7 @@ import Link from "next/link";
 import Introduce from "@/components/introduce/Introduce";
 import PostPreview from "@/components/preview/PostPreview";
 
-import { posts, postTypes } from "@/src/data";
+import { postTypes } from "@/src/data";
 import {
   getPagePreviewData,
   NotionPagePreviewData,
@@ -38,30 +38,20 @@ export default function Home({ notionData }: HomeProps) {
               <Link href={`/${type}`}>
                 <h2>{type}</h2>
               </Link>
-              {[
-                ...sortByDateDesc(notionData[type]).map(
-                  ({ uriId, title, author, date }) =>
-                    title &&
-                    date && (
-                      <PostPreview
-                        url={`/${type}/notion/${uriId}`}
-                        post={{
-                          title,
-                          author: author || undefined,
-                          date,
-                        }}
-                        key={`notion-${uriId}`}
-                      />
-                    )
-                ),
-                ...(posts[type].contents || []).map((post) => (
+              {sortByDateDesc(notionData[type])
+                .filter(({ title, date }) => title && date)
+                .slice(0, 5)
+                .map(({ uriId, title, author, date }) => (
                   <PostPreview
-                    url={`/${post.type}/${post.fileName}`}
-                    key={`post-${post.fileName}`}
-                    post={post}
+                    url={`/${type}/notion/${uriId}`}
+                    post={{
+                      title,
+                      author: author || undefined,
+                      date,
+                    }}
+                    key={`notion-${uriId}`}
                   />
-                )),
-              ].slice(0, 5)}
+                ))}
             </div>
           ))}
         </div>

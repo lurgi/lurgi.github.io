@@ -55,11 +55,6 @@ export default function PostListPage({
                 </li>
               )
           )}
-          {postData?.contents?.map((post) => (
-            <li key={post.fileName}>
-              <PostPreview url={`/${post.type}/${post.fileName}`} post={post} />
-            </li>
-          ))}
         </ul>
       </div>
     </>

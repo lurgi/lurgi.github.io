@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -10,10 +9,6 @@ const nextConfig: NextConfig = {
   basePath: "",
   assetPrefix: "/",
   reactStrictMode: true,
-  transpilePackages: ["react-syntax-highlighter"],
-  experimental: {
-    mdxRs: true,
-  },
   turbopack: {
     rules: {
       "*.svg": {
