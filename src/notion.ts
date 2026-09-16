@@ -1,7 +1,7 @@
 export const DATABASE_KEYS: readonly PostType[] = [
   "Development",
-  "Insights",
   "Reading",
+  "Insights",
 ];
 
 export type DatabaseKey = (typeof DATABASE_KEYS)[number];
