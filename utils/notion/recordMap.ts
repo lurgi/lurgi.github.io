@@ -1,4 +1,5 @@
 import { type ExtendedRecordMap } from "notion-types";
+import { getBlockValue } from "notion-utils";
 
 export function normalizeRecordMapTable<
   T extends Record<string, { value?: unknown; role?: string } | undefined>,
@@ -38,11 +39,23 @@ export function normalizeRecordMapTable<
 }
 
 export function normalizeRecordMap(recordMap: ExtendedRecordMap) {
+  const block = normalizeRecordMapTable(recordMap.block);
+  const signedUrls = Object.fromEntries(
+    Object.entries(recordMap.signed_urls || {}).filter(([blockId]) => {
+      const imageBlock = getBlockValue(block?.[blockId]);
+      return !(
+        imageBlock?.type === "image" &&
+        imageBlock.properties?.source?.[0]?.[0]?.startsWith("attachment:")
+      );
+    })
+  );
+
   return {
     ...recordMap,
-    block: normalizeRecordMapTable(recordMap.block),
+    block,
     collection: normalizeRecordMapTable(recordMap.collection),
     collection_view: normalizeRecordMapTable(recordMap.collection_view),
     notion_user: normalizeRecordMapTable(recordMap.notion_user),
+    signed_urls: signedUrls,
   } as ExtendedRecordMap;
 }

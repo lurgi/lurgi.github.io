@@ -1,5 +1,6 @@
 import { type Block, type ExtendedRecordMap } from "notion-types";
-import { defaultMapImageUrl, getBlockValue } from "notion-utils";
+import { getBlockValue } from "notion-utils";
+import { mapNotionImageUrl } from "@/utils/notion/imageProxy";
 
 type MapImageUrl = (
   url: string | undefined,
@@ -34,7 +35,7 @@ function getRenderedImageSource(recordMap: ExtendedRecordMap, block: Block) {
 
 export function getNotionImageAspectRatios(
   recordMap: ExtendedRecordMap,
-  mapImageUrl: MapImageUrl = defaultMapImageUrl
+  mapImageUrl: MapImageUrl = mapNotionImageUrl
 ) {
   const aspectRatios = new Map<string, number>();
 

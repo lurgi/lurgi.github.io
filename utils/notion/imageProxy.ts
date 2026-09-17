@@ -1,3 +1,6 @@
+import { type Block } from "notion-types";
+import { defaultMapImageUrl } from "notion-utils";
+
 const NOTION_ORIGIN = "https://www.notion.so";
 const NOTION_IMAGE_PATH = "/image";
 
@@ -10,7 +13,8 @@ function isNotionImageProxyUrl(url: string) {
   try {
     const parsed = new URL(url);
     return (
-      (parsed.hostname === "www.notion.so" || parsed.hostname === "notion.so") &&
+      (parsed.hostname === "www.notion.so" ||
+        parsed.hostname === "notion.so") &&
       parsed.pathname === NOTION_IMAGE_PATH
     );
   } catch {
@@ -73,6 +77,21 @@ function createNotionImageProxyUrl(
   proxyUrl.searchParams.set("cache", "v2");
 
   return proxyUrl.toString();
+}
+
+export function mapNotionImageUrl(url: string | undefined, block: Block) {
+  if (!url?.startsWith("attachment:")) {
+    return defaultMapImageUrl(url, block);
+  }
+
+  let table = block.parent_table === "space" ? "block" : block.parent_table;
+  if (table === "collection" || table === "team") {
+    table = "block";
+  }
+
+  return (
+    createNotionImageProxyUrl(url, { pageId: block.id, table }) || undefined
+  );
 }
 
 export function getOgImageUrlFromNotionSource(

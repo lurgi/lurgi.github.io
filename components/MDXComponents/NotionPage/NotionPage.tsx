@@ -4,9 +4,9 @@ import "katex/dist/katex.min.css";
 
 import { useCallback, useMemo } from "react";
 import { type ExtendedRecordMap } from "notion-types";
-import { defaultMapImageUrl } from "notion-utils";
 import { NotionRenderer } from "react-notion-x";
 import TweetEmbed from "react-tweet-embed";
+import { mapNotionImageUrl } from "@/utils/notion/imageProxy";
 import styles from "./notion.module.css";
 import { Code } from "react-notion-x/build/third-party/code";
 import CustomImage, { type CustomImageProps } from "./CustomImage";
@@ -29,7 +29,7 @@ export function NotionPage({
   rootDomain?: string;
 }) {
   const imageAspectRatios = useMemo(
-    () => getNotionImageAspectRatios(recordMap, defaultMapImageUrl),
+    () => getNotionImageAspectRatios(recordMap, mapNotionImageUrl),
     [recordMap]
   );
   const RendererImage = useCallback(
@@ -54,7 +54,7 @@ export function NotionPage({
         fullPage={true}
         darkMode={false}
         forceCustomImages={true}
-        mapImageUrl={defaultMapImageUrl}
+        mapImageUrl={mapNotionImageUrl}
         pageTitle={
           <span className={styles["notion-page-title-wrapper"]}>
             <span className={styles["notion-page-title-text"]}>{title}</span>
