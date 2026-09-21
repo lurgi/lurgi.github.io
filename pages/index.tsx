@@ -29,7 +29,7 @@ export default function Home({ notionData }: HomeProps) {
       <Head>
         <link key="canonical" rel="canonical" href={getCanonicalUrl()} />
       </Head>
-      <div className="fade-in">
+      <div className={`${styles.home} fade-in`}>
         <Introduce />
 
         <div className={styles.postList}>

@@ -7,15 +7,19 @@ export default function Introduce() {
         <img src="lurgi.webp" alt="lurgi" width={230} height={329} />
       </picture>
 
-      <p className={styles.p}>
-        📖 ☕️
-        <br />
-        책과 커피를 사랑하는 웹 개발자 박정우입니다.
-        <br />
-        표준화된 길보단 나만의 길을 추구합니다.
-        <br />
-        세상에 대한 호기심을 바탕으로 개발을 문제 해결의 도구로 활용합니다.
-      </p>
+      <div className={styles.copy}>
+        <p className={styles.p}>
+          기술과 사람 사이에서 생기는 문제에 관심을 가집니다.
+        </p>
+        <p className={styles.p}>
+          사람이 기술을 어떻게 이해하고 자신의 의도대로 사용할 수 있는지
+          고민합니다.
+        </p>
+        <p className={styles.p}>
+          최근에는 AI가 우리의 판단과 상호작용 방식을 어떻게 바꾸는지 탐구하고
+          있습니다.
+        </p>
+      </div>
     </div>
   );
 }
