@@ -27,21 +27,21 @@ export default function MyApp({
   return (
     <>
       <Head>
-        <title key="title">박정우(러기) | 프로덕트 중심의 웹 개발자</title>
+        <title key="title">박정우(러기) | 사람을 이해하는 웹 개발자</title>
         <meta
           key="description"
           name="description"
-          content="사용자 경험과 비즈니스 가치를 구현하는 풀스택 웹 개발자. 프론트엔드 기술력과 프로덕트 마인드로 디지털 제품을 만듭니다."
+          content="사람이 기술을 이해하고 자신의 의도대로 사용할 수 있는 웹을 만듭니다. 기술과 사람 사이에서 생기는 문제를 고민합니다."
         />
         <meta
           key="og:title"
           property="og:title"
-          content="박정우(러기) | 프로덕트 중심의 웹 개발자"
+          content="박정우(러기) | 사람을 이해하는 웹 개발자"
         />
         <meta
           key="og:description"
           property="og:description"
-          content="사용자 경험과 비즈니스 가치를 구현하는 풀스택 웹 개발자. 프론트엔드 기술력과 프로덕트 마인드로 디지털 제품을 만듭니다."
+          content="사람이 기술을 이해하고 자신의 의도대로 사용할 수 있는 웹을 만듭니다. 기술과 사람 사이에서 생기는 문제를 고민합니다."
         />
         <meta key="og:type" property="og:type" content="website" />
         <meta
@@ -53,7 +53,7 @@ export default function MyApp({
         <link
           rel="alternate"
           type="application/rss+xml"
-          title="Lurgi Blog RSS"
+          title="박정우(러기) RSS"
           href="https://lurgi.github.io/feed.xml"
         />
 
