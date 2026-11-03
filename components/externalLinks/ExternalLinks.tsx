@@ -1,8 +1,6 @@
 import Image from "next/image";
 
-import BrunchIcon from "@/public/brunch.svg";
 import GithubIcon from "@/public/github.svg";
-import LinkedInIcon from "@/public/linkedin.svg";
 
 import styles from "./ExternalLinks.module.scss";
 
@@ -11,16 +9,6 @@ const LINKS = [
     href: "https://github.com/lurgi",
     label: "GitHub",
     icon: <GithubIcon width={30} height={30} />,
-  },
-  {
-    href: "https://www.linkedin.com/in/lurgi/",
-    label: "LinkedIn",
-    icon: <LinkedInIcon width={30} height={30} />,
-  },
-  {
-    href: "https://brunch.co.kr/@lurgi",
-    label: "Brunch Story",
-    icon: <BrunchIcon width={30} height={30} />,
   },
 ] as const;
 
