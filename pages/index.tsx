@@ -29,10 +29,10 @@ export default function Home({ notionData }: HomeProps) {
       <Head>
         <link key="canonical" rel="canonical" href={getCanonicalUrl()} />
       </Head>
-      <div className={`${styles.home} fade-in`}>
+      <div className={styles.home}>
         <Introduce />
 
-        <div className={styles.postList}>
+        <div className={`${styles.postList} fade-in`}>
           {postTypes.map((type) => (
             <div className={styles.postPartList} key={type}>
               <Link href={`/${type}`}>

@@ -1,21 +1,43 @@
 .introduce-container {
   margin: 3rem 0 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  justify-content: center;
 }
 
-.copy {
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  text-align: center;
-  line-height: 1.5rem;
-  word-break: keep-all;
+.hero {
+  position: relative;
+  width: min(100%, 360px);
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #f1f3f5;
 }
 
-.p {
-  margin: 0;
+.heroImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+
+  &[data-image="loading"],
+  &[data-image="failed"] {
+    visibility: hidden;
+  }
+
+  &[data-image="sprite"] {
+    width: 400%;
+    visibility: hidden;
+  }
+}
+
+// Match the <source> query so a sprite never paints before it is ready.
+@media (scripting: enabled) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [data-sprite-candidate="true"] .heroImage {
+    visibility: hidden;
+
+    &[data-image="sprite"] {
+      visibility: visible;
+    }
+  }
 }
