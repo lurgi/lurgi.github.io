@@ -1,10 +1,16 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  type PointerEvent,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import styles from "./Introduce.module.scss";
 
 const posterSrc = "/statics/apple-hero-poster.webp";
 const spriteSrc = "/statics/apple-hero-sprite.webp";
 const spriteMedia =
-  "(scripting: enabled) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
+  "(scripting: enabled) and (prefers-reduced-motion: no-preference)";
 const spriteColumns = 4;
 const frameCount = 13;
 const duration = 480;
@@ -15,9 +21,34 @@ type ImageState = "initial" | "loading" | "sprite" | "poster" | "failed";
 export default function AppleHero() {
   const heroRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const position = useRef(0);
+  const touchPointer = useRef<number | null>(null);
+  const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
   const [imageState, setImageState] = useState<ImageState>("initial");
   const [usePoster, setUsePoster] = useState(false);
   const spriteReady = imageState === "sprite";
+  const active = hovered || pressed;
+
+  function startPress(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== "touch" || touchPointer.current !== null) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    touchPointer.current = event.pointerId;
+    setHovered(false);
+    setPressed(true);
+  }
+
+  function endPress(event: PointerEvent<HTMLDivElement>) {
+    if (touchPointer.current !== event.pointerId) return;
+    touchPointer.current = null;
+    setPressed(false);
+  }
+
+  useLayoutEffect(() => {
+    if (window.matchMedia("(hover: hover)").matches) {
+      setHovered(heroRef.current!.matches(":hover"));
+    }
+  }, []);
 
   useEffect(() => {
     const image = imageRef.current!;
@@ -97,57 +128,53 @@ export default function AppleHero() {
   }, [usePoster]);
 
   useLayoutEffect(() => {
-    if (!spriteReady) return;
-    const hero = heroRef.current!;
     const image = imageRef.current!;
-    let position = 0;
-    let target = 0;
-    let lastTime = 0;
-    let request: number | null = null;
+    if (!spriteReady) {
+      position.current = 0;
+      image.style.removeProperty("transform");
+      return;
+    }
+
+    const target = active ? duration : 0;
+    if (position.current === target) return;
+    let lastTime = performance.now();
+    let request: number;
 
     function tick(now: number) {
-      const distance = target - position;
-      const step = Math.min(Math.abs(distance), now - lastTime);
-      position += Math.sign(distance) * step;
+      const distance = target - position.current;
+      const step = Math.min(Math.abs(distance), Math.max(0, now - lastTime));
+      position.current += Math.sign(distance) * step;
       lastTime = now;
 
-      const frame = Math.round((position / duration) * (frameCount - 1));
+      const frame = Math.round(
+        (position.current / duration) * (frameCount - 1)
+      );
       const column = frame % spriteColumns;
       const row = Math.floor(frame / spriteColumns);
       image.style.transform = `translate(${-column * 25}%, ${-row * 25}%)`;
-      request = position === target ? null : window.requestAnimationFrame(tick);
-    }
-
-    function playTo(nextTarget: number) {
-      target = nextTarget;
-      if (request === null && position !== target) {
-        lastTime = performance.now();
+      if (position.current !== target)
         request = window.requestAnimationFrame(tick);
-      }
     }
 
-    function enter(event: PointerEvent) {
-      if (event.pointerType !== "touch") playTo(duration);
-    }
-
-    function leave(event: PointerEvent) {
-      if (event.pointerType !== "touch") playTo(0);
-    }
-
-    hero.addEventListener("pointerenter", enter);
-    hero.addEventListener("pointerleave", leave);
-    if (hero.matches(":hover")) playTo(duration);
-
-    return () => {
-      if (request !== null) window.cancelAnimationFrame(request);
-      hero.removeEventListener("pointerenter", enter);
-      hero.removeEventListener("pointerleave", leave);
-      image.style.removeProperty("transform");
-    };
-  }, [spriteReady]);
+    request = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(request);
+  }, [active, spriteReady]);
 
   return (
-    <div ref={heroRef} className={styles.hero}>
+    <div
+      ref={heroRef}
+      className={styles.hero}
+      onPointerEnter={(event) => {
+        if (event.pointerType !== "touch") setHovered(true);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType !== "touch") setHovered(false);
+      }}
+      onPointerDown={startPress}
+      onPointerUp={endPress}
+      onPointerCancel={endPress}
+      onLostPointerCapture={endPress}
+    >
       <picture data-sprite-candidate={!usePoster}>
         {!usePoster && <source media={spriteMedia} srcSet={spriteSrc} />}
         {/* Keep the native image so the browser selects the source in the initial HTML. */}

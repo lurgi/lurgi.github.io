@@ -13,6 +13,7 @@
 }
 
 .heroImage {
+  pointer-events: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -32,7 +33,7 @@
 }
 
 // Match the <source> query so a sprite never paints before it is ready.
-@media (scripting: enabled) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   [data-sprite-candidate="true"] .heroImage {
     visibility: hidden;
 
