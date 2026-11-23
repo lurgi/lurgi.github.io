@@ -18,6 +18,14 @@
   padding: 0px 0px 32px !important;
 }
 
+.notion-container :global(.notion-title) {
+  line-height: 1.4;
+}
+
+.notion-container :global(.notion-h) {
+  line-height: 1.5;
+}
+
 .notion-container :global(.notion-text) {
   line-height: 1.72;
 }
