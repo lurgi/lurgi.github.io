@@ -34,12 +34,52 @@
   font-size: 1em;
 }
 
-.notion-container :global(.notion-text + .notion-text) {
+.notion-container
+  :global(:not(.notion-page-content-inner) > .notion-text + .notion-text) {
   margin-top: 0.35rem;
 }
 
 .notion-container :global(.notion-list li) {
   line-height: 1.7;
+}
+
+.notion-container :global(.notion-page-content-inner > *) {
+  margin-block: 0;
+}
+
+.notion-container :global(.notion-page-content-inner > :first-child) {
+  margin-block-start: 0;
+}
+
+.notion-container :global(.notion-page-content-inner > * + *) {
+  margin-block-start: 0.5rem;
+}
+
+.notion-container
+  :global(.notion-page-content-inner > .notion-h1:not(:first-child)) {
+  margin-block-start: 1.08em;
+}
+
+.notion-container
+  :global(.notion-page-content-inner > .notion-h2:not(:first-child)) {
+  margin-block-start: 1.1em;
+}
+
+.notion-container
+  :global(.notion-page-content-inner > .notion-h3:not(:first-child)),
+.notion-container
+  :global(.notion-page-content-inner > .notion-h4:not(:first-child)) {
+  margin-block-start: 1em;
+}
+
+/* Each top-level list item is rendered in its own ul or ol. */
+.notion-container
+  :global(.notion-page-content-inner > .notion-list-disc + .notion-list-disc),
+.notion-container
+  :global(
+    .notion-page-content-inner > .notion-list-numbered + .notion-list-numbered
+  ) {
+  margin-block-start: 0;
 }
 
 .notion-page-title-wrapper {
