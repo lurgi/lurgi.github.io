@@ -22,6 +22,10 @@
   line-height: 1.72;
 }
 
+.notion-container :global(.notion-quote) {
+  font-size: 1em;
+}
+
 .notion-container :global(.notion-text + .notion-text) {
   margin-top: 0.35rem;
 }

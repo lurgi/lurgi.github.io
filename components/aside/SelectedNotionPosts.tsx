@@ -20,7 +20,7 @@ export default function SelectedNotionPosts({
   }
 
   return (
-    <section className={styles.section} aria-label="선택 글">
+    <section className={styles.section} aria-label="최신 글">
       <ul className={styles.list}>
         {posts.map(({ uriId, postType, title, date }) => {
           const isCurrentPost =
