@@ -20,6 +20,7 @@
 
 .notion-container :global(.notion-title) {
   line-height: 1.4;
+  margin-block-end: 2.625rem;
 }
 
 .notion-container :global(.notion-h) {
@@ -41,6 +42,7 @@
 
 .notion-container :global(.notion-list li) {
   line-height: 1.7;
+  padding-block: 4px;
 }
 
 .notion-container :global(.notion-page-content-inner > *) {
